@@ -68,7 +68,7 @@ export default function ShareAchievementModal({
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#5F4930] text-[#FFFDF9]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/75 border border-white/80 shadow-[inset_0_1px_1px_#fff] text-[#7D613D]">
               <Sparkles size={18} />
             </div>
             <div>
@@ -79,7 +79,7 @@ export default function ShareAchievementModal({
             </div>
           </div>
           <button
-            className="flex h-8 w-8 items-center justify-center rounded-md text-text-muted hover:bg-[#F1E9DE] hover:text-text transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-text-muted hover:bg-white/60 hover:text-text transition-colors"
             onClick={onClose}
             aria-label="Close"
           >
@@ -88,13 +88,13 @@ export default function ShareAchievementModal({
         </div>
 
         {/* Milestone Visual Card */}
-        <div className={`rounded-xl border ${tierStyle.border} bg-[#FAF7F2] p-5 text-center space-y-3 shadow-xs`}>
+        <div className={`rounded-2xl border ${tierStyle.border} bg-white/65 p-5 text-center space-y-3 shadow-[inset_0_1px_1.5px_#fff,0_4px_20px_rgba(70,50,30,0.04)] backdrop-blur-md`}>
           <div className="text-4xl select-none" role="img" aria-label={achievement.title}>
             {achievement.icon}
           </div>
           <div>
             <div className="inline-block mb-1">
-              <span className={`rounded-full px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-[0.08em] ${tierStyle.badge}`}>
+              <span className={`rounded-full px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-[0.08em] shadow-xs ${tierStyle.badge}`}>
                 {achievement.tier} Achievement
               </span>
             </div>
@@ -111,13 +111,13 @@ export default function ShareAchievementModal({
             <span>Post Preview</span>
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-1 text-[0.6875rem] font-bold text-[#8B6F47] hover:underline"
+              className="inline-flex items-center gap-1 text-[0.6875rem] font-bold text-[#7D613D] hover:underline"
             >
-              {copied ? <Check size={12} className="text-[#6F8064]" /> : <Copy size={12} />}
+              {copied ? <Check size={12} className="text-[#526844]" /> : <Copy size={12} />}
               <span>{copied ? 'Copied!' : 'Copy snippet'}</span>
             </button>
           </div>
-          <div className="rounded-lg border border-border bg-[#FFFDF9] p-3 text-xs text-[#29251F] font-mono leading-relaxed whitespace-pre-wrap select-all">
+          <div className="rounded-xl border border-white/80 bg-white/70 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] p-3 text-xs text-[#231E18] font-mono leading-relaxed whitespace-pre-wrap select-all">
             {fullShareText}
           </div>
         </div>
