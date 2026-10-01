@@ -1,7 +1,13 @@
-import type { DSAQuestion, QuestionStatus } from './types';
-import { calculateRevisionDates, generateId, getTodayISO } from './dates';
+import type { DSAQuestion, QuestionStatus, RevisionRecord, RevisionInterval } from './types';
+import { REVISION_INTERVALS, REVISION_KEYS } from './types';
+import { calculateRevisionDates, generateId, getTodayISO, isCheckpointCompleted } from './dates';
 
 const STORAGE_KEY = 'dsarecall_questions';
+const RECORDS_KEY = 'dsarecall_revision_records';
+
+// ────────────────────────────────────────────────
+// Questions CRUD
+// ────────────────────────────────────────────────
 
 /**
  * Get all questions from localStorage.
@@ -55,6 +61,7 @@ export function addQuestion(
 
 /**
  * Update an existing question by ID.
+ * If dateSolved changes, recalculates scheduled dates and updates scheduledDate on records.
  */
 export function updateQuestion(
   id: string,
@@ -70,6 +77,22 @@ export function updateQuestion(
   if (updates.dateSolved && updates.dateSolved !== existing.dateSolved) {
     const revisions = calculateRevisionDates(updates.dateSolved);
     Object.assign(existing, revisions);
+
+    // Also update scheduledDate on existing revision records
+    const records = getRevisionRecords();
+    let recordsUpdated = false;
+    for (const r of records) {
+      if (r.questionId === id) {
+        const newDate = revisions[REVISION_KEYS[r.interval]];
+        if (newDate) {
+          r.scheduledDate = newDate;
+          recordsUpdated = true;
+        }
+      }
+    }
+    if (recordsUpdated) {
+      saveRevisionRecords(records);
+    }
   }
 
   Object.assign(existing, {
@@ -84,13 +107,21 @@ export function updateQuestion(
 }
 
 /**
- * Delete a question by ID.
+ * Delete a question by ID. Also cleans up its revision records.
  */
 export function deleteQuestion(id: string): boolean {
   const questions = getQuestions();
   const filtered = questions.filter((q) => q.id !== id);
   if (filtered.length === questions.length) return false;
   saveQuestions(filtered);
+
+  // Clean up associated records
+  const records = getRevisionRecords();
+  const filteredRecords = records.filter((r) => r.questionId !== id);
+  if (filteredRecords.length !== records.length) {
+    saveRevisionRecords(filteredRecords);
+  }
+
   return true;
 }
 
@@ -102,108 +133,167 @@ export function getQuestionById(id: string): DSAQuestion | null {
   return questions.find((q) => q.id === id) || null;
 }
 
+// ────────────────────────────────────────────────
+// Revision Records
+// ────────────────────────────────────────────────
+
 /**
- * Get questions that are due for revision today.
- * A question is "due today" if any of its revision dates match today's date.
+ * Get all revision records from localStorage.
  */
-export function getDueToday(): DSAQuestion[] {
-  const today = getTodayISO();
-  const questions = getQuestions();
-  return questions.filter((q) => {
-    return (
-      q.revision3 === today ||
-      q.revision7 === today ||
-      q.revision15 === today ||
-      q.revision30 === today ||
-      q.revision60 === today ||
-      q.revision120 === today
-    );
-  });
+export function getRevisionRecords(): RevisionRecord[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(RECORDS_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as RevisionRecord[];
+  } catch {
+    return [];
+  }
 }
 
 /**
- * Get questions with upcoming revisions (next 7 days, excluding today).
+ * Save all revision records to localStorage.
  */
-export function getUpcoming(days: number = 7): { question: DSAQuestion; revisionDate: string; label: string }[] {
-  const today = getTodayISO();
+export function saveRevisionRecords(records: RevisionRecord[]): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
+}
+
+/**
+ * Return a Map of revision records keyed by `${questionId}_${interval}`.
+ */
+export function getRevisionRecordsMap(): Map<string, RevisionRecord> {
+  const records = getRevisionRecords();
+  const map = new Map<string, RevisionRecord>();
+  for (const r of records) {
+    map.set(`${r.questionId}_${r.interval}`, r);
+  }
+  return map;
+}
+
+/**
+ * Mark a revision checkpoint completed or uncompleted.
+ * - Scheduled dates stay fixed.
+ * - Automatically advances/updates question status:
+ *   - All 6 intervals completed -> 'Completed'
+ *   - >= 1 interval completed -> 'In Progress' (if previously 'Pending')
+ *   - 0 completed -> 'Pending' (if was previously auto-'In Progress')
+ */
+export function markRevisionCompleted(
+  questionId: string,
+  interval: RevisionInterval,
+  completed: boolean = true
+): { question: DSAQuestion | null; record: RevisionRecord } {
   const questions = getQuestions();
+  const question = questions.find((q) => q.id === questionId) || null;
+  const records = getRevisionRecords();
 
-  const revisionFields = [
-    { key: 'revision3' as const, label: '+3 Days' },
-    { key: 'revision7' as const, label: '+7 Days' },
-    { key: 'revision15' as const, label: '+15 Days' },
-    { key: 'revision30' as const, label: '+30 Days' },
-    { key: 'revision60' as const, label: '+60 Days' },
-    { key: 'revision120' as const, label: '+120 Days' },
-  ];
+  const now = new Date().toISOString();
+  const existingRecordIndex = records.findIndex(
+    (r) => r.questionId === questionId && r.interval === interval
+  );
 
-  const upcoming: { question: DSAQuestion; revisionDate: string; label: string }[] = [];
+  let record: RevisionRecord;
 
-  for (const q of questions) {
-    for (const field of revisionFields) {
-      const dateVal = q[field.key];
-      if (dateVal > today) {
-        upcoming.push({
-          question: q,
-          revisionDate: dateVal,
-          label: field.label,
-        });
-      }
+  if (existingRecordIndex >= 0) {
+    record = {
+      ...records[existingRecordIndex],
+      completed,
+      completedAt: completed ? now : null,
+    };
+    records[existingRecordIndex] = record;
+  } else {
+    const scheduledDate = question ? question[REVISION_KEYS[interval]] : '';
+    record = {
+      id: generateId(),
+      questionId,
+      interval,
+      scheduledDate,
+      completed,
+      completedAt: completed ? now : null,
+    };
+    records.push(record);
+  }
+
+  saveRevisionRecords(records);
+
+  // Auto-update question status if question exists
+  if (question) {
+    const qRecords = records.filter((r) => r.questionId === questionId && r.completed);
+    const completedCount = qRecords.length;
+
+    let newStatus = question.status;
+    if (completedCount === REVISION_INTERVALS.length) {
+      newStatus = 'Completed';
+    } else if (completedCount > 0 && question.status === 'Pending') {
+      newStatus = 'In Progress';
+    } else if (completedCount === 0 && question.status === 'In Progress') {
+      newStatus = 'Pending';
+    }
+
+    if (newStatus !== question.status) {
+      question.status = newStatus;
+      question.updatedAt = now;
+      saveQuestions(questions);
     }
   }
 
-  // Sort by date ascending
-  upcoming.sort((a, b) => a.revisionDate.localeCompare(b.revisionDate));
-
-  // Limit to the specified number of upcoming days
-  const limitDate = new Date();
-  limitDate.setDate(limitDate.getDate() + days);
-  const limitStr = limitDate.toISOString().split('T')[0];
-
-  return upcoming.filter((item) => item.revisionDate <= limitStr);
+  return { question, record };
 }
 
+// ────────────────────────────────────────────────
+// Derived queries & Stats
+// ────────────────────────────────────────────────
+
 /**
- * Get statistics about the question set.
+ * Get statistics about the question set taking revision completions into account.
  */
 export function getStats(): {
   total: number;
   dueToday: number;
+  overdue: number;
   completed: number;
   upcoming: number;
 } {
   const questions = getQuestions();
+  const recordsMap = getRevisionRecordsMap();
   const today = getTodayISO();
 
-  const dueToday = questions.filter((q) => {
-    return (
-      q.revision3 === today ||
-      q.revision7 === today ||
-      q.revision15 === today ||
-      q.revision30 === today ||
-      q.revision60 === today ||
-      q.revision120 === today
-    );
-  }).length;
+  let dueTodayCount = 0;
+  let overdueCount = 0;
+  let upcomingCount = 0;
 
-  const completed = questions.filter((q) => q.status === 'Completed').length;
+  for (const q of questions) {
+    let hasDueToday = false;
+    let hasOverdue = false;
+    let hasUpcoming = false;
 
-  // Upcoming = questions with at least one future revision date
-  const upcoming = questions.filter((q) => {
-    return (
-      q.revision3 > today ||
-      q.revision7 > today ||
-      q.revision15 > today ||
-      q.revision30 > today ||
-      q.revision60 > today ||
-      q.revision120 > today
-    );
-  }).length;
+    for (const interval of REVISION_INTERVALS) {
+      const isDone = isCheckpointCompleted(q.id, interval, recordsMap);
+      if (isDone) continue;
+
+      const dateStr = q[REVISION_KEYS[interval]];
+      if (dateStr === today) {
+        hasDueToday = true;
+      } else if (dateStr < today) {
+        hasOverdue = true;
+      } else if (dateStr > today) {
+        hasUpcoming = true;
+      }
+    }
+
+    if (hasDueToday) dueTodayCount++;
+    if (hasOverdue) overdueCount++;
+    if (hasUpcoming) upcomingCount++;
+  }
+
+  const completedQuestionsCount = questions.filter((q) => q.status === 'Completed').length;
 
   return {
     total: questions.length,
-    dueToday,
-    completed,
-    upcoming,
+    dueToday: dueTodayCount,
+    overdue: overdueCount,
+    completed: completedQuestionsCount,
+    upcoming: upcomingCount,
   };
 }

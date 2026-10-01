@@ -1,5 +1,5 @@
-import { addDays, parseISO, format, differenceInCalendarDays } from 'date-fns';
-import type { RevisionDates, DSAQuestion, RevisionInterval, RevisionItem } from './types';
+import { addDays, format, differenceInCalendarDays } from 'date-fns';
+import type { RevisionDates, DSAQuestion, RevisionInterval, RevisionItem, RevisionRecord } from './types';
 import { REVISION_INTERVALS, REVISION_KEYS, REVISION_LABELS } from './types';
 
 // ────────────────────────────────────────────────
@@ -22,7 +22,7 @@ export function getTodayISO(): string {
  * Parse a YYYY-MM-DD string into a local-midnight Date,
  * avoiding timezone offset issues from parseISO/new Date(str).
  */
-function parseLocalDate(dateStr: string): Date {
+export function parseLocalDate(dateStr: string): Date {
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(y, m - 1, d);
 }
@@ -33,6 +33,7 @@ function parseLocalDate(dateStr: string): Date {
 
 /**
  * Calculate all six revision dates from a solved date.
+ * Exactly: dateSolved + 3, +7, +15, +30, +60, +120 days.
  * @param dateSolved — YYYY-MM-DD
  */
 export function calculateRevisionDates(dateSolved: string): RevisionDates {
@@ -76,7 +77,7 @@ export function daysBetween(reference: string, target: string): number {
 
 /**
  * Days from today until a given date.
- * Positive = future, negative = past/overdue.
+ * Positive = future, 0 = today, negative = past/overdue.
  */
 export function getDaysUntilRevision(dateStr: string): number {
   return daysBetween(getTodayISO(), dateStr);
@@ -87,37 +88,74 @@ export function getDaysUntilRevision(dateStr: string): number {
 // ────────────────────────────────────────────────
 
 /**
- * Does any revision date on this question equal today?
- * Mirrors Excel: IF(any rev date = TODAY(), TRUE)
+ * Helper to check if a specific revision checkpoint is completed.
  */
-export function isDueToday(question: DSAQuestion): boolean {
-  const today = getTodayISO();
-  return REVISION_INTERVALS.some(
-    (i) => question[REVISION_KEYS[i]] === today
-  );
+export function isCheckpointCompleted(
+  questionId: string,
+  interval: RevisionInterval,
+  recordsMap?: Map<string, RevisionRecord>
+): boolean {
+  if (!recordsMap) return false;
+  const key = `${questionId}_${interval}`;
+  return recordsMap.get(key)?.completed === true;
 }
 
 /**
- * Does any revision date on this question fall before today?
+ * Does any uncompleted revision date on this question equal today?
+ * If recordsMap is omitted, checks purely by date.
  */
-export function isOverdue(question: DSAQuestion): boolean {
+export function isDueToday(
+  question: DSAQuestion,
+  recordsMap?: Map<string, RevisionRecord>
+): boolean {
   const today = getTodayISO();
-  return REVISION_INTERVALS.some(
-    (i) => question[REVISION_KEYS[i]] < today
-  );
+  return REVISION_INTERVALS.some((i) => {
+    if (recordsMap && isCheckpointCompleted(question.id, i, recordsMap)) {
+      return false;
+    }
+    return question[REVISION_KEYS[i]] === today;
+  });
 }
 
 /**
- * Get the next upcoming revision for a question (earliest future date).
- * Returns null if all revisions are in the past or today.
+ * Does any uncompleted revision date on this question fall before today?
+ * If recordsMap is omitted, checks purely by date.
+ */
+export function isOverdue(
+  question: DSAQuestion,
+  recordsMap?: Map<string, RevisionRecord>
+): boolean {
+  const today = getTodayISO();
+  return REVISION_INTERVALS.some((i) => {
+    if (recordsMap && isCheckpointCompleted(question.id, i, recordsMap)) {
+      return false;
+    }
+    return question[REVISION_KEYS[i]] < today;
+  });
+}
+
+/**
+ * Get the next upcoming revision for a question (earliest uncompleted date >= today,
+ * or earliest future date).
+ * Returns null if all revisions are completed or in the past.
  */
 export function getNextRevision(
-  question: DSAQuestion
-): { interval: RevisionInterval; date: string } | null {
+  question: DSAQuestion,
+  recordsMap?: Map<string, RevisionRecord>
+): { interval: RevisionInterval; date: string; daysUntil: number } | null {
   const today = getTodayISO();
   for (const interval of REVISION_INTERVALS) {
+    if (recordsMap && isCheckpointCompleted(question.id, interval, recordsMap)) {
+      continue;
+    }
     const d = question[REVISION_KEYS[interval]];
-    if (d > today) return { interval, date: d };
+    if (d >= today) {
+      return {
+        interval,
+        date: d,
+        daysUntil: getDaysUntilRevision(d),
+      };
+    }
   }
   return null;
 }
@@ -136,23 +174,35 @@ export function getRevisionDates(
 }
 
 /**
- * Which intervals on this question are due today?
+ * Which intervals on this question are due today and uncompleted?
  */
-export function getDueTodayIntervals(question: DSAQuestion): RevisionInterval[] {
+export function getDueTodayIntervals(
+  question: DSAQuestion,
+  recordsMap?: Map<string, RevisionRecord>
+): RevisionInterval[] {
   const today = getTodayISO();
-  return REVISION_INTERVALS.filter(
-    (i) => question[REVISION_KEYS[i]] === today
-  );
+  return REVISION_INTERVALS.filter((i) => {
+    if (recordsMap && isCheckpointCompleted(question.id, i, recordsMap)) {
+      return false;
+    }
+    return question[REVISION_KEYS[i]] === today;
+  });
 }
 
 /**
- * Which intervals on this question are overdue?
+ * Which intervals on this question are overdue and uncompleted?
  */
-export function getOverdueIntervals(question: DSAQuestion): RevisionInterval[] {
+export function getOverdueIntervals(
+  question: DSAQuestion,
+  recordsMap?: Map<string, RevisionRecord>
+): RevisionInterval[] {
   const today = getTodayISO();
-  return REVISION_INTERVALS.filter(
-    (i) => question[REVISION_KEYS[i]] < today
-  );
+  return REVISION_INTERVALS.filter((i) => {
+    if (recordsMap && isCheckpointCompleted(question.id, i, recordsMap)) {
+      return false;
+    }
+    return question[REVISION_KEYS[i]] < today;
+  });
 }
 
 // ────────────────────────────────────────────────
@@ -161,16 +211,19 @@ export function getOverdueIntervals(question: DSAQuestion): RevisionInterval[] {
 
 /** "Oct 4, 2026" */
 export function formatDateDisplay(dateStr: string): string {
+  if (!dateStr) return '';
   return format(parseLocalDate(dateStr), 'MMM d, yyyy');
 }
 
 /** "Oct 4" */
 export function formatDateShort(dateStr: string): string {
+  if (!dateStr) return '';
   return format(parseLocalDate(dateStr), 'MMM d');
 }
 
 /** "October 4, 2026" */
 export function formatDateLong(dateStr: string): string {
+  if (!dateStr) return '';
   return format(parseLocalDate(dateStr), 'MMMM d, yyyy');
 }
 
@@ -180,14 +233,16 @@ export function formatTodayLong(): string {
 }
 
 /**
- * Relative label for a date.
- * "Today", "Tomorrow", "Yesterday", "Oct 4", etc.
+ * Human-friendly relative label for a date.
+ * "Today", "Tomorrow", "Yesterday", "In 3 days", "3 days overdue", or formatted date.
  */
 export function formatRelativeDate(dateStr: string): string {
   const diff = getDaysUntilRevision(dateStr);
   if (diff === 0) return 'Today';
   if (diff === 1) return 'Tomorrow';
   if (diff === -1) return 'Yesterday';
+  if (diff > 1 && diff <= 14) return `In ${diff} days`;
+  if (diff < -1 && diff >= -14) return `${Math.abs(diff)} days overdue`;
   return formatDateDisplay(dateStr);
 }
 
@@ -211,19 +266,18 @@ export function generateId(): string {
 // ────────────────────────────────────────────────
 
 /**
- * Build a flat list of RevisionItems from questions,
- * useful for listing due/overdue/upcoming revisions.
+ * Build a flat list of RevisionItems from questions.
  */
 export function buildRevisionItems(
   questions: DSAQuestion[],
-  records: Map<string, import('./types').RevisionRecord>,
+  recordsMap: Map<string, RevisionRecord>
 ): RevisionItem[] {
   const items: RevisionItem[] = [];
   for (const q of questions) {
     for (const interval of REVISION_INTERVALS) {
       const scheduledDate = q[REVISION_KEYS[interval]];
       const recordKey = `${q.id}_${interval}`;
-      const record = records.get(recordKey) ?? null;
+      const record = recordsMap.get(recordKey) ?? null;
       items.push({ question: q, interval, scheduledDate, record });
     }
   }
