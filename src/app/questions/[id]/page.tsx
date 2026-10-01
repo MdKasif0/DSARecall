@@ -31,6 +31,7 @@ import {
 } from '@/lib/types';
 import StatusBadge from '@/components/StatusBadge';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import RevisionTimeline from '@/components/RevisionTimeline';
 import { openEditModal } from '@/lib/events';
 
 export default function QuestionDetailPage() {
@@ -233,121 +234,11 @@ export default function QuestionDetailPage() {
       </div>
 
       {/* Spaced Revision Schedule Timeline */}
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-lg font-bold text-text">Spaced Revision Schedule</h2>
-          <p className="text-xs text-text-muted mt-0.5">
-            Original intervals: +3, +7, +15, +30, +60, +120 days from solved date. Scheduled dates remain fixed.
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          {REVISION_INTERVALS.map((interval, index) => {
-            const scheduledDate = question[REVISION_KEYS[interval]];
-            const key = `${question.id}_${interval}`;
-            const record = recordsMap.get(key);
-            const isDone = record?.completed === true;
-            const diff = getDaysUntilRevision(scheduledDate);
-            const isDue = diff === 0 && !isDone;
-            const isOverdueItem = diff < 0 && !isDone;
-
-            let cardBorder = 'border-border';
-            let statusBadge = null;
-
-            if (isDone) {
-              cardBorder = 'border-emerald-300 bg-emerald-50/20';
-              statusBadge = (
-                <span className="rev-completed">
-                  <Check size={12} strokeWidth={2.5} />
-                  Completed
-                </span>
-              );
-            } else if (isDue) {
-              cardBorder = 'border-amber-400 bg-amber-50/20';
-              statusBadge = <span className="rev-today">Due Today</span>;
-            } else if (isOverdueItem) {
-              cardBorder = 'border-danger bg-danger-light/10';
-              statusBadge = (
-                <span className="rev-overdue">
-                  <AlertCircle size={12} />
-                  {Math.abs(diff)}d Overdue
-                </span>
-              );
-            } else {
-              statusBadge = (
-                <span className="text-xs font-medium text-text-muted">
-                  In {diff} days
-                </span>
-              );
-            }
-
-            return (
-              <div
-                key={interval}
-                className={`card p-4 transition-all border ${cardBorder} flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3`}
-              >
-                <div className="flex items-start sm:items-center gap-3 min-w-0">
-                  <div
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                      isDone
-                        ? 'bg-primary text-white'
-                        : isDue
-                        ? 'bg-amber-100 text-amber-800'
-                        : isOverdueItem
-                        ? 'bg-danger-light text-danger'
-                        : 'bg-slate-100 text-slate-600'
-                    }`}
-                  >
-                    #{index + 1}
-                  </div>
-
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-text text-sm">
-                        {REVISION_LABELS[interval]} Checkpoint
-                      </span>
-                      {statusBadge}
-                    </div>
-
-                    <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-text-muted">
-                      <span>Scheduled: {formatDateLong(scheduledDate)}</span>
-                      {isDone && record?.completedAt && (
-                        <>
-                          <span>•</span>
-                          <span className="text-primary font-medium">
-                            Completed on {formatDateDisplay(record.completedAt.slice(0, 10))}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center sm:self-center self-end">
-                  {isDone ? (
-                    <button
-                      className="btn btn-ghost btn-sm text-text-muted hover:text-danger"
-                      onClick={() => markRevision(question.id, interval, false)}
-                      title="Unmark completion"
-                    >
-                      <CheckCircle2 size={15} className="text-primary" />
-                      Completed (Undo)
-                    </button>
-                  ) : (
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => markRevision(question.id, interval, true)}
-                    >
-                      <Check size={14} />
-                      Mark Revised
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <RevisionTimeline
+        question={question}
+        recordsMap={recordsMap}
+        onMarkRevision={markRevision}
+      />
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
