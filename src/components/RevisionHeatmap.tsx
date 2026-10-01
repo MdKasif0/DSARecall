@@ -10,12 +10,12 @@ interface RevisionHeatmapProps {
 }
 
 const LEVEL_COLORS: Record<0 | 1 | 2 | 3 | 4 | 5, string> = {
-  0: '#EEE8DE',
-  1: '#E3D6C3',
-  2: '#D2BFA3',
-  3: '#B89B73',
-  4: '#98764F',
-  5: '#6B5035',
+  0: 'rgba(226, 232, 240, 0.8)',
+  1: '#A7F3D0',
+  2: '#6EE7B7',
+  3: '#34D399',
+  4: '#10B981',
+  5: '#047857',
 };
 
 export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
@@ -33,7 +33,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[rgba(255,255,255,0.6)] pb-3.5 mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Calendar size={16} className="text-[#7D613D]" />
+            <Calendar size={16} className="text-[#059669]" />
             <h3 className="text-sm font-bold text-text">Revision Activity</h3>
           </div>
           <p className="text-xs text-text-muted mt-0.5">
@@ -42,7 +42,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-white/70 backdrop-blur-md border border-white/80 px-3 py-0.5 text-xs font-bold text-[#543E26] shadow-xs">
+          <span className="rounded-full bg-white/70 backdrop-blur-md border border-white/80 px-3 py-0.5 text-xs font-bold text-[#0F172A] shadow-xs">
             Last 12 months
           </span>
         </div>
@@ -91,7 +91,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
                       return (
                         <div
                           key={day.date}
-                          className="h-[12px] w-[12px] rounded-[2px] transition-transform hover:scale-125 cursor-pointer relative"
+                          className="h-[12px] w-[12px] rounded-[3px] transition-transform hover:scale-125 cursor-pointer relative shadow-[inset_0_0.5px_0.5px_rgba(255,255,255,0.8)]"
                           style={{ backgroundColor: color }}
                           onMouseEnter={() => setHoveredDay(day)}
                           onMouseLeave={() => setHoveredDay(null)}
@@ -104,7 +104,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
             </div>
 
             {/* Legend & Hover Info */}
-            <div className="mt-3.5 flex items-center justify-between text-xs text-text-muted border-t border-border pt-2.5">
+            <div className="mt-3.5 flex items-center justify-between text-xs text-text-muted border-t border-[rgba(226,232,240,0.7)] pt-2.5">
               <div className="min-h-[20px]">
                 {hoveredDay ? (
                   <span className="font-semibold text-text">
@@ -134,7 +134,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
         {/* Streak & Activity Summary Beside Heatmap */}
         <div className="border-t lg:border-t-0 lg:border-l border-[rgba(255,255,255,0.6)] pt-4 lg:pt-0 lg:pl-6 space-y-3.5">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] text-[#7D613D]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/75 border border-white/85 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(15,23,42,0.03)] text-amber-500">
               <Flame size={16} />
             </div>
             <div>
@@ -146,7 +146,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] text-[#7D613D]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/75 border border-white/85 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(15,23,42,0.03)] text-emerald-600">
               <Trophy size={16} />
             </div>
             <div>
@@ -158,7 +158,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] text-[#7D613D]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/75 border border-white/85 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(15,23,42,0.03)] text-sky-600">
               <BarChart3 size={16} />
             </div>
             <div>
@@ -170,7 +170,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] text-[#7D613D]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/75 border border-white/85 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(15,23,42,0.03)] text-indigo-600">
               <Target size={16} />
             </div>
             <div>
