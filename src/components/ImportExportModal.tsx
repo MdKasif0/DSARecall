@@ -115,83 +115,66 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
       aria-modal="true"
       aria-labelledby="backup-modal-title"
     >
-      <div className="modal-content !p-0 overflow-hidden shadow-[0_24px_64px_rgba(15,23,42,0.18),inset_0_1px_1.5px_rgba(255,255,255,0.95)] border border-white/80" onClick={(e) => e.stopPropagation()}>
-        {/* Header with macOS traffic lights & specular sheen */}
-        <div className="flex items-center justify-between border-b border-white/60 bg-white/40 px-6 py-4.5 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 mr-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]/80 shadow-[inset_0_0.5px_1px_rgba(255,255,255,0.8)]" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]/80 shadow-[inset_0_0.5px_1px_rgba(255,255,255,0.8)]" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]/80 shadow-[inset_0_0.5px_1px_rgba(255,255,255,0.8)]" />
-            </div>
-            <div>
-              <h2 id="backup-modal-title" className="text-base font-bold text-slate-900 tracking-tight">
-                Data Transfer & Backup
-              </h2>
-              <p className="text-[11px] text-slate-500 font-medium">Export, restore, or load curated problem sets</p>
-            </div>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <div className="flex items-center gap-2">
+            <h2 id="backup-modal-title" className="text-base font-semibold text-text">
+              Backup & Transfer
+            </h2>
           </div>
-          <button
-            className="flex h-7 w-7 items-center justify-center rounded-full bg-white/60 hover:bg-white text-slate-500 hover:text-slate-800 transition-all border border-white/80 shadow-xs"
-            onClick={onClose}
-            aria-label="Close modal"
-          >
-            <X size={15} />
+          <button className="btn-icon btn-ghost" onClick={onClose} aria-label="Close modal">
+            <X size={18} />
           </button>
         </div>
 
-        {/* Tab selection (macOS segmented capsule control) */}
-        <div className="px-6 pt-4 pb-2">
-          <div className="flex p-1 bg-slate-200/50 backdrop-blur-md border border-white/70 rounded-xl gap-1">
-            <button
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold rounded-lg transition-all ${
-                activeTab === 'export'
-                  ? 'bg-white text-slate-900 shadow-sm border border-white/90'
-                  : 'text-slate-600 hover:text-slate-900'
+        {/* Tab selection */}
+        <div className="flex border-b border-border px-5">
+          <button
+            className={`flex items-center gap-2 border-b-2 py-3 px-4 text-xs font-semibold transition-colors ${activeTab === 'export'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-text-muted hover:text-text'
               }`}
-              onClick={() => setActiveTab('export')}
-            >
-              <Download size={14} />
-              Export
-            </button>
-            <button
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold rounded-lg transition-all ${
-                activeTab === 'import'
-                  ? 'bg-white text-slate-900 shadow-sm border border-white/90'
-                  : 'text-slate-600 hover:text-slate-900'
+            onClick={() => setActiveTab('export')}
+          >
+            <Download size={14} />
+            Export Data
+          </button>
+          <button
+            className={`flex items-center gap-2 border-b-2 py-3 px-4 text-xs font-semibold transition-colors ${activeTab === 'import'
+                ? 'border-[#8B6F47] text-[#5F4930]'
+                : 'border-transparent text-text-muted hover:text-text'
               }`}
-              onClick={() => setActiveTab('import')}
-            >
-              <Upload size={14} />
-              Import
-            </button>
-            <button
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold rounded-lg transition-all ${
-                activeTab === 'sample'
-                  ? 'bg-white text-slate-900 shadow-sm border border-white/90'
-                  : 'text-slate-600 hover:text-slate-900'
+            onClick={() => setActiveTab('import')}
+          >
+            <Upload size={14} />
+            Import Data
+          </button>
+          <button
+            className={`flex items-center gap-2 border-b-2 py-3 px-4 text-xs font-semibold transition-colors ${activeTab === 'sample'
+                ? 'border-[#8B6F47] text-[#5F4930]'
+                : 'border-transparent text-text-muted hover:text-text'
               }`}
-              onClick={() => setActiveTab('sample')}
-            >
-              <Sparkles size={14} className="text-emerald-600" />
-              Demo Data
-            </button>
-          </div>
+            onClick={() => setActiveTab('sample')}
+          >
+            <Sparkles size={14} />
+            Sample Data
+          </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 pt-2">
+        <div className="p-5">
           {activeTab === 'export' ? (
             <div className="space-y-4">
               <div>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Download a complete backup of your questions and revision records. You can save it locally or sync across your devices.
+                <p className="text-xs text-text-muted">
+                  Download a backup of your questions and revision records. You can save it locally or transfer to another device.
                 </p>
-                <div className="mt-2.5 flex items-center gap-2 text-xs font-semibold">
-                  <span className="rounded-lg bg-white/70 backdrop-blur-sm border border-white/90 px-2.5 py-1 text-slate-700 shadow-xs">
+                <div className="mt-2 flex items-center gap-3 text-xs font-medium text-text">
+                  <span className="rounded bg-slate-100 px-2 py-1">
                     {questions.length} Questions
                   </span>
-                  <span className="rounded-lg bg-white/70 backdrop-blur-sm border border-white/90 px-2.5 py-1 text-slate-700 shadow-xs">
+                  <span className="rounded bg-slate-100 px-2 py-1">
                     {records.length} Revision Records
                   </span>
                 </div>
@@ -199,13 +182,13 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {/* JSON Export */}
-                <div className="card-glass p-4 rounded-xl flex flex-col justify-between gap-3 border border-white/80 hover:border-emerald-500/40 transition-all">
+                <div className="card p-4 flex flex-col justify-between gap-3 border hover:border-primary/50 transition-colors">
                   <div>
-                    <div className="flex items-center gap-2 text-emerald-600 mb-1.5">
+                    <div className="flex items-center gap-2 text-primary mb-1">
                       <FileJson size={20} />
-                      <span className="text-sm font-bold text-slate-900">Full Backup (JSON)</span>
+                      <span className="text-sm font-semibold text-text">Full Backup (JSON)</span>
                     </div>
-                    <p className="text-xs text-slate-500 leading-relaxed">
+                    <p className="text-xs text-text-muted">
                       Complete state including revision records, status, and metadata. Best for restoring or moving to another browser.
                     </p>
                   </div>
@@ -220,14 +203,14 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
                 </div>
 
                 {/* CSV Export */}
-                <div className="card-glass p-4 rounded-xl flex flex-col justify-between gap-3 border border-white/80 hover:border-emerald-500/40 transition-all">
+                <div className="card p-4 flex flex-col justify-between gap-3 border hover:border-primary/50 transition-colors">
                   <div>
-                    <div className="flex items-center gap-2 text-emerald-700 mb-1.5">
+                    <div className="flex items-center gap-2 text-[#15803d] mb-1">
                       <FileSpreadsheet size={20} />
-                      <span className="text-sm font-bold text-slate-900">Spreadsheet (CSV)</span>
+                      <span className="text-sm font-semibold text-text">Spreadsheet (CSV)</span>
                     </div>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Original Excel table format with all 6 interval dates (+3, +7, etc.). Opens seamlessly in Excel or Google Sheets.
+                    <p className="text-xs text-text-muted">
+                      Original Excel table format with all 6 interval dates (+3, +7, etc.). Opens in Excel or Google Sheets.
                     </p>
                   </div>
                   <button
@@ -243,13 +226,13 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
             </div>
           ) : activeTab === 'import' ? (
             <div className="space-y-4">
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Restore questions from a previously exported <code className="text-emerald-700 bg-emerald-500/10 px-1.5 py-0.5 rounded font-mono font-semibold">.json</code> backup file.
+              <p className="text-xs text-text-muted">
+                Restore questions from a previously exported <code className="text-primary font-semibold">.json</code> backup file.
               </p>
 
               {/* File upload dropzone */}
               <div
-                className="card-glass border-dashed border-2 border-white/90 p-6 text-center cursor-pointer hover:bg-white/70 transition-all rounded-2xl"
+                className="card border-dashed border-2 p-5 text-center cursor-pointer hover:bg-slate-50 transition-colors"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <input
@@ -260,13 +243,13 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
                   onChange={handleFileChange}
                 />
                 <div className="flex flex-col items-center justify-center gap-2">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-700 border border-emerald-500/25 shadow-xs">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-light text-primary">
                     <Upload size={18} />
                   </div>
-                  <span className="text-xs font-bold text-slate-800">
+                  <span className="text-xs font-semibold text-text">
                     {selectedFile ? selectedFile.name : 'Click to select JSON backup file'}
                   </span>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="text-[0.6875rem] text-text-muted">
                     Only valid DSARecall JSON files are supported
                   </span>
                 </div>
@@ -274,44 +257,44 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
 
               {/* Error message */}
               {importError && (
-                <div className="flex items-center gap-2 rounded-xl bg-rose-500/10 border border-rose-500/25 p-3 text-xs text-rose-800 backdrop-blur-sm shadow-xs">
-                  <AlertTriangle size={15} className="shrink-0 text-rose-600" />
+                <div className="flex items-center gap-2 rounded-lg bg-danger-light p-3 text-xs text-danger">
+                  <AlertTriangle size={15} className="shrink-0" />
                   <span>{importError}</span>
                 </div>
               )}
 
               {/* Parsed Preview */}
               {parsedData && !importError && (
-                <div className="rounded-xl border border-white/80 bg-white/50 backdrop-blur-md p-4 space-y-3 shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.95)]">
-                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-700">
+                <div className="rounded-lg border border-border bg-slate-50/60 p-3.5 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-primary">
                     <FileCheck size={16} />
                     <span>File Validated Successfully</span>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 text-xs text-slate-800">
-                    <span className="rounded-lg bg-white/80 backdrop-blur-sm border border-white/90 px-2.5 py-1 font-medium shadow-xs">
-                      <strong className="text-slate-900 font-bold">{parsedData.questions?.length || 0}</strong> questions found
+                  <div className="flex flex-wrap gap-2 text-xs text-text">
+                    <span className="rounded bg-white border border-border px-2 py-1">
+                      <strong>{parsedData.questions?.length || 0}</strong> questions found
                     </span>
-                    <span className="rounded-lg bg-white/80 backdrop-blur-sm border border-white/90 px-2.5 py-1 font-medium shadow-xs">
-                      <strong className="text-slate-900 font-bold">{parsedData.records?.length || 0}</strong> revision checkpoints found
+                    <span className="rounded bg-white border border-border px-2 py-1">
+                      <strong>{parsedData.records?.length || 0}</strong> revision checkpoints found
                     </span>
                   </div>
 
                   {/* Overwrite or Merge Option */}
-                  <div className="pt-2 border-t border-white/60 space-y-2">
-                    <label className="flex items-center gap-2 text-xs text-slate-800 cursor-pointer">
+                  <div className="pt-2 border-t border-border space-y-2">
+                    <label className="flex items-center gap-2 text-xs text-text cursor-pointer">
                       <input
                         type="checkbox"
                         checked={overwrite}
                         onChange={(e) => setOverwrite(e.target.checked)}
-                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                        className="rounded border-border text-primary focus:ring-primary"
                       />
-                      <span className="font-medium">
+                      <span>
                         Replace all existing data (Warning: will overwrite current questions)
                       </span>
                     </label>
                     {!overwrite && (
-                      <p className="text-[11px] text-slate-500 pl-5">
+                      <p className="text-[0.6875rem] text-text-muted">
                         Unchecked: Items will be merged safely with your existing data.
                       </p>
                     )}
@@ -320,7 +303,7 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
               )}
 
               {/* Action */}
-              <div className="flex justify-end gap-2 pt-3 border-t border-white/60">
+              <div className="flex justify-end gap-2 pt-2 border-t border-border">
                 <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>
                   Cancel
                 </button>
@@ -338,18 +321,18 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
           ) : (
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Load Curated DSA Practice Dataset</h3>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                  Populate 18 realistic DSA questions across topics (Binary Search, Two Sum, LRU Cache, Trapping Rain Water, Number of Islands, etc.) with completed revisions, active 12-day streak, and historical activity.
+                <h3 className="text-sm font-bold text-text">Load Curated DSA Practice Dataset</h3>
+                <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                  Populate 18 realistic DSA questions across topics (Binary Search, Two Sum, LRU Cache, Trapping Rain Water, Number of Islands, etc.) with completed revisions, active 12-day streak, and historical activity matching the visual benchmark.
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-white/80 bg-white/50 backdrop-blur-md p-4 space-y-2.5 shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.95)]">
-                <div className="flex items-center gap-2 text-xs font-bold text-emerald-800">
-                  <Sparkles size={14} className="text-emerald-600" />
+              <div className="rounded-lg border border-border bg-[#FAF7F2] p-4 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#5F4930]">
+                  <Sparkles size={14} className="text-[#8B6F47]" />
                   <span>Included in Demo Data</span>
                 </div>
-                <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-4 font-medium">
+                <ul className="text-xs text-text-secondary space-y-1 list-disc pl-4">
                   <li>18 curated problems across Arrays, Trees, Graphs, DP, Binary Search</li>
                   <li>Today&apos;s revisions (2 actionable questions due today)</li>
                   <li>Overdue revision (1 item for testing alerts)</li>
@@ -358,7 +341,7 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
                 </ul>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-white/60">
+              <div className="flex justify-end gap-2 pt-2 border-t border-border">
                 <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>
                   Cancel
                 </button>

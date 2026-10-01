@@ -153,18 +153,18 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2 self-start flex-wrap">
           <Link
             href="/practice"
-            className="btn btn-secondary btn-sm gap-1.5 text-xs font-semibold hover:border-slate-300 hover:text-slate-900 no-underline"
+            className="btn btn-secondary btn-sm gap-1.5 text-xs font-semibold hover:border-[#8B6F47] hover:text-[#5F4930] no-underline"
             title="Explore topic-wise practice questions"
           >
-            <Compass size={14} className="text-slate-500" />
+            <Compass size={14} className="text-[#8B6F47]" />
             <span>Practice</span>
           </Link>
           <Link
             href="/achievements"
-            className="btn btn-secondary btn-sm gap-1.5 text-xs font-semibold hover:border-slate-300 hover:text-slate-900 no-underline"
+            className="btn btn-secondary btn-sm gap-1.5 text-xs font-semibold hover:border-[#8B6F47] hover:text-[#5F4930] no-underline"
             title="View achievements and share on LinkedIn / X"
           >
-            <Trophy size={14} className="text-slate-500" />
+            <Trophy size={14} className="text-[#8B6F47]" />
             <span>Achievements</span>
           </Link>
           <button
@@ -272,9 +272,8 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={`${question.id}_${interval}`}
-                    className={`card p-4 transition-all border-l-4 border-l-[#A65D50] ${
-                      justDoneTime ? 'opacity-70 bg-[#FBF8F2]' : 'hover:border-[#D5CCBF]'
-                    }`}
+                    className={`card p-4 transition-all border-l-4 border-l-[#A65D50] ${justDoneTime ? 'opacity-70 bg-[#FBF8F2]' : 'hover:border-[#D5CCBF]'
+                      }`}
                   >
                     <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0 flex-1">
@@ -332,9 +331,8 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={`${question.id}_${interval}`}
-                    className={`card p-4 transition-all border-l-4 border-l-[#B18A50] ${
-                      justDoneTime ? 'opacity-70 bg-[#FBF8F2]' : 'hover:border-[#D5CCBF]'
-                    }`}
+                    className={`card p-4 transition-all border-l-4 border-l-[#B18A50] ${justDoneTime ? 'opacity-70 bg-[#FBF8F2]' : 'hover:border-[#D5CCBF]'
+                      }`}
                   >
                     <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0 flex-1">
@@ -436,10 +434,10 @@ export default function DashboardPage() {
                         {completedCount} / {total} · {percent}%
                       </span>
                     </div>
-                    {/* Thin specular liquid progress bar */}
-                    <div className="w-full bg-white/60 border border-white/70 shadow-[inset_0_1px_1px_rgba(0,0,0,0.03)] rounded-full h-[6px] overflow-hidden">
+                    {/* Thin 5px progress bar */}
+                    <div className="w-full bg-[#E7DED1] rounded-full h-[5px] overflow-hidden">
                       <div
-                        className="bg-gradient-to-r from-[#8B6F47] to-[#6B5035] h-[6px] rounded-full transition-all duration-300 shadow-xs"
+                        className="bg-[#8B6F47] h-[5px] rounded-full transition-all duration-300"
                         style={{ width: `${percent}%` }}
                       />
                     </div>
@@ -473,7 +471,7 @@ export default function DashboardPage() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Clock size={16} className="text-[#7D613D]" />
+            <Clock size={16} className="text-[#8B6F47]" />
             <h2 className="text-base font-bold text-text">Upcoming Revisions</h2>
           </div>
           {upcomingItems.length > 0 && (
@@ -496,11 +494,11 @@ export default function DashboardPage() {
             />
           </div>
         ) : (
-          <div className="card divide-y divide-[rgba(255,255,255,0.6)] overflow-hidden">
+          <div className="card divide-y divide-border overflow-hidden">
             {upcomingSlice.map(({ question, interval, date, diff }) => (
               <div
                 key={`${question.id}_${interval}`}
-                className="flex items-center justify-between px-4 py-3 hover:bg-white/45 transition-colors"
+                className="flex items-center justify-between px-4 py-3 hover:bg-[#FAF7F2] transition-colors"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -510,7 +508,7 @@ export default function DashboardPage() {
                     >
                       {question.questionName}
                     </Link>
-                    <span className="rounded-md bg-white/70 px-2 py-0.5 text-[0.6875rem] font-bold text-[#635A4F] border border-white/80 shadow-xs backdrop-blur-sm">
+                    <span className="rounded bg-[#F2ECE2] px-1.5 py-0.5 text-[0.6875rem] font-semibold text-[#71695F] border border-[#E4DDD2]">
                       {REVISION_LABELS[interval]}
                     </span>
                   </div>
@@ -520,7 +518,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-white/75 backdrop-blur-md px-3 py-0.5 text-xs font-bold text-[#543E26] border border-white/85 shadow-xs">
+                  <span className="rounded-full bg-[#F1E9DE] px-2.5 py-0.5 text-xs font-semibold text-[#5F4930] border border-[#E4DDD2]">
                     {diff === 1 ? 'Tomorrow' : `In ${diff} days`}
                   </span>
                   <button

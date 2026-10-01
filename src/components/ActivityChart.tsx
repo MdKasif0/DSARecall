@@ -47,10 +47,10 @@ export default function ActivityChart({ data }: ActivityChartProps) {
   return (
     <div className="card p-5">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.6)] pb-3 mb-3">
+      <div className="flex items-center justify-between border-b border-border pb-3 mb-3">
         <div>
           <div className="flex items-center gap-1.5">
-            <TrendingUp size={16} className="text-[#059669]" />
+            <TrendingUp size={16} className="text-[#8B6F47]" />
             <h3 className="text-sm font-bold text-text">Revision Activity</h3>
           </div>
           <p className="text-xs text-text-muted mt-0.5">
@@ -58,7 +58,7 @@ export default function ActivityChart({ data }: ActivityChartProps) {
           </p>
         </div>
 
-        <span className="rounded-full bg-white/70 backdrop-blur-md border border-white/80 px-3 py-0.5 text-xs font-bold text-[#0F172A] shadow-xs">
+        <span className="rounded bg-surface-secondary border border-border px-2 py-0.5 text-xs font-semibold text-text-secondary">
           Last 30 days
         </span>
       </div>
@@ -70,9 +70,9 @@ export default function ActivityChart({ data }: ActivityChartProps) {
           className="w-full h-auto overflow-visible select-none"
         >
           <defs>
-            <linearGradient id="emeraldGlassFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10B981" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="#10B981" stopOpacity="0.0" />
+            <linearGradient id="warmBeigeFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#8B6F47" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#8B6F47" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -86,7 +86,7 @@ export default function ActivityChart({ data }: ActivityChartProps) {
                 y1={y}
                 x2={chartWidth - paddingX}
                 y2={y}
-                stroke="rgba(226, 232, 240, 0.85)"
+                stroke="#E8E1D7"
                 strokeWidth="1"
                 strokeDasharray="3 3"
               />
@@ -94,14 +94,14 @@ export default function ActivityChart({ data }: ActivityChartProps) {
           })}
 
           {/* Area Fill */}
-          <path d={areaPath} fill="url(#emeraldGlassFill)" />
+          <path d={areaPath} fill="url(#warmBeigeFill)" />
 
           {/* Main Stroke Line */}
           <path
             d={linePath}
             fill="none"
-            stroke="#10B981"
-            strokeWidth="2.5"
+            stroke="#8B6F47"
+            strokeWidth="2.25"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -113,8 +113,8 @@ export default function ActivityChart({ data }: ActivityChartProps) {
               cx={p.x}
               cy={p.y}
               r={hoverIndex === idx ? 4.5 : 2}
-              fill={hoverIndex === idx ? '#047857' : '#10B981'}
-              stroke="#FFFFFF"
+              fill={hoverIndex === idx ? '#5F4930' : '#8B6F47'}
+              stroke="#FFFDF9"
               strokeWidth="1.5"
               className="transition-all cursor-pointer"
               onMouseEnter={() => setHoverIndex(idx)}
@@ -130,7 +130,7 @@ export default function ActivityChart({ data }: ActivityChartProps) {
                 y1={paddingY}
                 x2={hoveredPoint.x}
                 y2={chartHeight - paddingY}
-                stroke="#059669"
+                stroke="#8B6F47"
                 strokeWidth="1"
                 strokeDasharray="2 2"
               />
@@ -138,8 +138,8 @@ export default function ActivityChart({ data }: ActivityChartProps) {
                 cx={hoveredPoint.x}
                 cy={hoveredPoint.y}
                 r="5"
-                fill="#047857"
-                stroke="#FFFFFF"
+                fill="#5F4930"
+                stroke="#FFFDF9"
                 strokeWidth="2"
               />
             </g>
@@ -149,13 +149,13 @@ export default function ActivityChart({ data }: ActivityChartProps) {
         {/* Floating Tooltip */}
         {hoveredPoint && (
           <div
-            className="absolute -top-3 z-20 pointer-events-none -translate-x-1/2 rounded-lg bg-[#0F172A]/90 border border-white/20 px-2.5 py-1 text-center text-xs text-white shadow-lg backdrop-blur-md animate-in fade-in zoom-in-95"
+            className="absolute -top-3 z-20 pointer-events-none -translate-x-1/2 rounded bg-[#2F2922] px-2.5 py-1 text-center text-xs text-white shadow-md animate-in fade-in zoom-in-95"
             style={{
               left: `${(hoveredPoint.x / chartWidth) * 100}%`,
             }}
           >
             <p className="font-bold text-[0.6875rem]">{hoveredPoint.displayDate}</p>
-            <p className="text-[0.625rem] text-emerald-300">
+            <p className="text-[0.625rem] text-[#D8C5AA]">
               {hoveredPoint.count} revision{hoveredPoint.count !== 1 ? 's' : ''}
             </p>
           </div>

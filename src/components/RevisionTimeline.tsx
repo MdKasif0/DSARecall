@@ -31,30 +31,30 @@ export default function RevisionTimeline({
   onMarkRevision,
 }: RevisionTimelineProps) {
   return (
-    <div className="card-glass p-6 space-y-6 rounded-2xl border border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.03),inset_0_1px_1.5px_rgba(255,255,255,0.95)]">
-      <div className="border-b border-white/60 pb-3.5">
-        <h3 className="text-base font-bold text-slate-900">Revision Timeline</h3>
-        <p className="text-xs text-slate-500 mt-0.5 font-medium">
+    <div className="card p-6 space-y-6">
+      <div className="border-b border-border pb-3.5">
+        <h3 className="text-base font-bold text-text">Revision Timeline</h3>
+        <p className="text-xs text-text-muted mt-0.5">
           Spaced repetition cycle (+3, +7, +15, +30, +60, +120 days)
         </p>
       </div>
 
-      <div className="relative pl-7 space-y-6 before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-3 before:w-[2px] before:bg-white/80 before:shadow-[0_0_8px_rgba(255,255,255,0.9)]">
+      <div className="relative pl-7 space-y-6 before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-3 before:w-[2px] before:bg-[#E4DDD2]">
         {/* Origin Step: Solved */}
         <div className="relative flex items-start justify-between gap-4">
           {/* Node Icon */}
-          <div className="absolute -left-7 top-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-700 text-white shadow-sm ring-4 ring-white/90">
+          <div className="absolute -left-7 top-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#5F4930] text-white shadow-sm ring-4 ring-[#FFFDF9]">
             <Check size={12} strokeWidth={3} />
           </div>
 
           <div className="flex-1">
-            <p className="text-sm font-bold text-slate-900">Solved</p>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-sm font-bold text-text">Solved</p>
+            <p className="text-xs text-text-secondary mt-0.5">
               {formatDateDisplay(question.dateSolved)}
             </p>
           </div>
 
-          <span className="rounded-lg bg-emerald-500/15 px-2.5 py-0.5 text-xs font-bold text-emerald-800 border border-emerald-500/25">
+          <span className="rounded bg-[#E8EDE4] px-2.5 py-0.5 text-xs font-semibold text-[#65755D] border border-[#D7DFD2]">
             Initial Solve
           </span>
         </div>
@@ -71,18 +71,17 @@ export default function RevisionTimeline({
           const isOverdue = diff < 0 && !isDone;
 
           return (
-            <div key={interval} className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-white/80 bg-white/50 backdrop-blur-md hover:bg-white/70 transition-all shadow-xs">
-              {/* Node Bullet */}
+            <div key={interval} className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-lg border border-border bg-[#FAF7F2] hover:bg-[#F8F4ED] transition-colors">
+              {/* Node Bullet matching Section 19 */}
               <div
-                className={`absolute -left-7 top-4 flex h-6 w-6 items-center justify-center rounded-full shadow-sm ring-4 ring-white/90 ${
-                  isDone
-                    ? 'bg-emerald-600 text-white'
+                className={`absolute -left-7 top-3.5 flex h-6 w-6 items-center justify-center rounded-full shadow-sm ring-4 ring-[#FFFDF9] ${isDone
+                    ? 'bg-[#5F4930] text-white'
                     : isDue
-                    ? 'bg-amber-500/20 text-amber-800 border-2 border-amber-500'
-                    : isOverdue
-                    ? 'bg-rose-500/20 text-rose-700 border-2 border-rose-500'
-                    : 'bg-white text-slate-400 border-2 border-slate-300'
-                }`}
+                      ? 'bg-[#EDE1CF] text-[#795B39] border-2 border-[#8B6F47]'
+                      : isOverdue
+                        ? 'bg-[#F4E4DF] text-[#A65D50] border-2 border-[#A65D50]'
+                        : 'bg-[#FFFDF9] text-[#9A9287] border-2 border-[#D5CCBF]'
+                  }`}
               >
                 {isDone ? (
                   <Check size={12} strokeWidth={3} />
@@ -91,41 +90,41 @@ export default function RevisionTimeline({
                 ) : isOverdue ? (
                   <AlertCircle size={11} strokeWidth={2.5} />
                 ) : (
-                  <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#D5CCBF]" />
                 )}
               </div>
 
               {/* Checkpoint Info */}
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-bold text-slate-900">
+                  <span className="text-sm font-bold text-text">
                     {REVISION_LABELS[interval]}
                   </span>
-                  <span className="text-xs text-slate-600 font-medium">
+                  <span className="text-xs text-text-secondary font-medium">
                     {formatDateDisplay(scheduledDate)}
                   </span>
 
                   {isDone ? (
-                    <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/15 px-2.5 py-0.5 text-xs font-bold text-emerald-800 border border-emerald-500/25">
+                    <span className="inline-flex items-center gap-1 rounded bg-[#E8EDE4] px-2 py-0.5 text-xs font-semibold text-[#65755D] border border-[#D7DFD2]">
                       Completed
                     </span>
                   ) : isDue ? (
-                    <span className="inline-flex items-center gap-1 rounded-lg bg-amber-500/15 px-2.5 py-0.5 text-xs font-bold text-amber-800 border border-amber-500/25">
+                    <span className="inline-flex items-center gap-1 rounded bg-[#EDE1CF] px-2 py-0.5 text-xs font-bold text-[#795B39] border border-[#DFD1BC]">
                       Due Today
                     </span>
                   ) : isOverdue ? (
-                    <span className="inline-flex items-center gap-1 rounded-lg bg-rose-500/15 px-2.5 py-0.5 text-xs font-bold text-rose-700 border border-rose-500/25">
+                    <span className="inline-flex items-center gap-1 rounded bg-[#F4E4DF] px-2 py-0.5 text-xs font-bold text-[#A65D50] border border-[#E6D0CA]">
                       {Math.abs(diff)}d Overdue
                     </span>
                   ) : (
-                    <span className="rounded-lg bg-white/70 backdrop-blur-sm px-2.5 py-0.5 text-[11px] font-semibold text-slate-600 border border-white/80 shadow-xs">
+                    <span className="rounded bg-[#F2ECE2] px-2 py-0.5 text-[0.6875rem] font-medium text-[#71695F]">
                       In {diff} days
                     </span>
                   )}
                 </div>
 
                 {isDone && record?.completedAt && (
-                  <p className="mt-1 text-xs text-emerald-700 font-semibold">
+                  <p className="mt-1 text-xs text-[#6F8064] font-medium">
                     Revised on {formatDateShort(record.completedAt.slice(0, 10))}
                   </p>
                 )}
@@ -135,7 +134,7 @@ export default function RevisionTimeline({
               <div className="self-end sm:self-center shrink-0">
                 {isDone ? (
                   <button
-                    className="btn btn-ghost btn-sm text-xs text-slate-400 hover:text-rose-600 rounded-xl"
+                    className="btn btn-ghost btn-sm text-xs text-text-muted hover:text-[#A65D50]"
                     onClick={() => onMarkRevision(question.id, interval, false)}
                     title="Undo completion"
                   >
@@ -144,9 +143,8 @@ export default function RevisionTimeline({
                   </button>
                 ) : (
                   <button
-                    className={`btn btn-sm ${
-                      isDue || isOverdue ? 'btn-primary' : 'btn-secondary'
-                    }`}
+                    className={`btn btn-sm ${isDue || isOverdue ? 'btn-primary' : 'btn-secondary'
+                      }`}
                     onClick={() => onMarkRevision(question.id, interval, true)}
                   >
                     <CheckCircle2 size={13} />

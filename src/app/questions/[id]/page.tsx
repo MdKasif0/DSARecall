@@ -113,30 +113,30 @@ export default function QuestionDetailPage() {
       {/* Top Bar with Breadcrumb and Profile */}
       <TopBar />
 
-      {/* Main Question Header Card (Liquid Glass) */}
-      <div className="card-glass p-6 rounded-2xl border border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.03),inset_0_1px_1.5px_rgba(255,255,255,0.95)]">
+      {/* Main Question Header Card */}
+      <div className="card p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 break-words">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text break-words">
                 {question.questionName}
               </h1>
               {question.topic && (
-                <span className="rounded-lg bg-white/70 backdrop-blur-sm px-2.5 py-0.5 text-xs font-semibold text-slate-700 border border-white/80 shadow-xs">
+                <span className="rounded bg-[#F2ECE2] px-2.5 py-0.5 text-xs font-semibold text-[#71695F] border border-[#E4DDD2]">
                   {question.topic}
                 </span>
               )}
               <StatusBadge status={question.status} />
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
-              <span className="flex items-center gap-1.5 text-slate-700 font-semibold">
-                <Calendar size={14} className="text-emerald-600" />
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-text-muted">
+              <span className="flex items-center gap-1.5 text-text-secondary font-medium">
+                <Calendar size={14} className="text-[#8B6F47]" />
                 Solved on {formatDateLong(question.dateSolved)}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5">
-                <Clock size={14} className="text-slate-400" />
+                <Clock size={14} className="text-text-muted" />
                 Added {formatDateDisplay(question.createdAt.slice(0, 10))}
               </span>
             </div>
@@ -146,7 +146,7 @@ export default function QuestionDetailPage() {
           <div className="flex flex-wrap items-center gap-2 self-start">
             <select
               id="status-select"
-              className="select text-xs py-1.5 px-3 h-9 w-auto min-w-[125px] bg-white/70 backdrop-blur-md border border-white/80 rounded-xl shadow-xs"
+              className="select text-xs py-1 px-2.5 h-8.5 w-auto min-w-[125px]"
               value={question.status}
               onChange={(e) => handleStatusChange(e.target.value as QuestionStatus)}
               aria-label="Change question status"
@@ -166,7 +166,7 @@ export default function QuestionDetailPage() {
               <span>Edit</span>
             </button>
             <button
-              className="btn btn-ghost btn-sm text-rose-700 hover:bg-rose-500/10 rounded-xl"
+              className="btn btn-ghost btn-sm text-[#A65D50] hover:bg-[#F4E4DF]"
               onClick={() => setDeleteOpen(true)}
             >
               <Trash2 size={13} />
@@ -176,38 +176,38 @@ export default function QuestionDetailPage() {
         </div>
 
         {/* Progress Bar & Next Checkpoint */}
-        <div className="mt-6 border-t border-white/60 pt-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2.5">
+        <div className="mt-6 border-t border-border pt-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2">
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">
+              <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-text-muted">
                 REVISION PROGRESS
               </span>
-              <p className="text-sm font-bold text-slate-900 mt-0.5">
+              <p className="text-sm font-semibold text-text mt-0.5">
                 {completedCount} of 6 revisions completed ({progressPercent}%)
               </p>
             </div>
             {nextCheckpoint && (
               <div className="text-left sm:text-right">
-                <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">
+                <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-text-muted">
                   NEXT CHECKPOINT
                 </span>
-                <p className="text-xs font-bold text-emerald-700 mt-0.5">
+                <p className="text-xs font-bold text-[#8B6F47] mt-0.5">
                   {REVISION_LABELS[nextCheckpoint.interval]} · {formatDateDisplay(nextCheckpoint.date)}{' '}
-                  <span className="font-normal text-slate-500 text-[11px]">
+                  <span className="font-normal text-text-muted text-[0.6875rem]">
                     ({nextCheckpoint.daysUntil === 0
                       ? 'Due today'
                       : nextCheckpoint.daysUntil === 1
-                      ? 'Tomorrow'
-                      : `in ${nextCheckpoint.daysUntil} days`})
+                        ? 'Tomorrow'
+                        : `in ${nextCheckpoint.daysUntil} days`})
                   </span>
                 </p>
               </div>
             )}
           </div>
 
-          <div className="w-full bg-slate-200/60 rounded-full h-[6px] overflow-hidden">
+          <div className="w-full bg-[#E7DED1] rounded-full h-[6px] overflow-hidden">
             <div
-              className="bg-emerald-600 h-[6px] rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(16,185,129,0.35)]"
+              className="bg-[#8B6F47] h-[6px] rounded-full transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>

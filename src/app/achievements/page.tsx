@@ -65,7 +65,7 @@ export default function AchievementsPage() {
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text">
               Achievements & Milestones
             </h1>
-            <span className="rounded-full bg-white/75 backdrop-blur-md border border-white/80 px-3 py-0.5 text-xs font-bold text-[#543E26] shadow-xs">
+            <span className="rounded-full bg-[#E9DDCB] px-2.5 py-0.5 text-xs font-bold text-[#5F4930]">
               {unlockedCount} / {achievements.length} Unlocked
             </span>
           </div>
@@ -76,10 +76,10 @@ export default function AchievementsPage() {
       </div>
 
       {/* Overview Progress Card */}
-      <div className="card p-5 bg-white/65 border border-white/80 backdrop-blur-md shadow-[inset_0_1px_1.5px_#fff,0_4px_20px_rgba(70,50,30,0.04)]">
+      <div className="card p-5 bg-[#FAF7F2] border border-[#E4DDD2]">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-b from-[#6E5338] to-[#4F3A24] text-[#FFFDF9] shadow-md border border-white/25">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#5F4930] text-[#FFFDF9] shadow-sm">
               <Trophy size={22} />
             </div>
             <div>
@@ -95,12 +95,12 @@ export default function AchievementsPage() {
           <div className="flex items-center gap-3 self-end sm:self-center">
             <div className="text-right">
               <p className="text-xs font-semibold text-text-muted">ACTIVE STREAK</p>
-              <p className="text-base font-bold text-[#7D613D] flex items-center gap-1 justify-end">
+              <p className="text-base font-bold text-[#8B6F47] flex items-center gap-1 justify-end">
                 <Flame size={16} />
                 {stats.currentStreak} Days
               </p>
             </div>
-            <div className="h-8 w-px bg-white/60" />
+            <div className="h-8 w-px bg-border" />
             <div className="text-right">
               <p className="text-xs font-semibold text-text-muted">REVISIONS</p>
               <p className="text-base font-bold text-text">
@@ -110,53 +110,49 @@ export default function AchievementsPage() {
           </div>
         </div>
 
-        {/* Thin specular liquid progress bar */}
-        <div className="w-full bg-white/60 border border-white/70 shadow-[inset_0_1px_1px_rgba(0,0,0,0.03)] rounded-full h-[6px] overflow-hidden mt-4">
+        {/* Thin 5px progress bar */}
+        <div className="w-full bg-[#E7DED1] rounded-full h-[5px] overflow-hidden mt-4">
           <div
-            className="bg-gradient-to-r from-[#8B6F47] to-[#543E26] h-[6px] rounded-full transition-all duration-300 shadow-xs"
+            className="bg-[#8B6F47] h-[5px] rounded-full transition-all duration-300"
             style={{ width: `${completionPct}%` }}
           />
         </div>
       </div>
 
-      {/* Category Filter Pills (iOS Floating Segmented Control) */}
-      <div className="flex items-center gap-1 p-1 bg-white/60 backdrop-blur-md border border-white/80 rounded-full self-start overflow-x-auto shadow-[inset_0_1px_1px_#fff]">
+      {/* Category Filter Pills */}
+      <div className="flex items-center gap-1.5 p-1 bg-[#F2ECE2] border border-[#E4DDD2] rounded-lg self-start overflow-x-auto">
         <button
-          className={`btn btn-sm rounded-full ${
-            selectedCategory === 'all'
-              ? 'bg-gradient-to-b from-[#6E5338] to-[#4F3A24] text-white shadow-md border border-white/20'
-              : 'btn-ghost text-text-secondary hover:bg-white/60'
-          }`}
+          className={`btn btn-sm ${selectedCategory === 'all'
+              ? 'bg-[#6B5035] text-white hover:bg-[#57412C] shadow-none'
+              : 'btn-ghost text-text-secondary'
+            }`}
           onClick={() => setSelectedCategory('all')}
         >
           All ({achievements.length})
         </button>
         <button
-          className={`btn btn-sm rounded-full ${
-            selectedCategory === 'streak'
-              ? 'bg-gradient-to-b from-[#6E5338] to-[#4F3A24] text-white shadow-md border border-white/20'
-              : 'btn-ghost text-text-secondary hover:bg-white/60'
-          }`}
+          className={`btn btn-sm ${selectedCategory === 'streak'
+              ? 'bg-[#6B5035] text-white hover:bg-[#57412C] shadow-none'
+              : 'btn-ghost text-text-secondary'
+            }`}
           onClick={() => setSelectedCategory('streak')}
         >
           Streaks
         </button>
         <button
-          className={`btn btn-sm rounded-full ${
-            selectedCategory === 'revisions'
-              ? 'bg-gradient-to-b from-[#6E5338] to-[#4F3A24] text-white shadow-md border border-white/20'
-              : 'btn-ghost text-text-secondary hover:bg-white/60'
-          }`}
+          className={`btn btn-sm ${selectedCategory === 'revisions'
+              ? 'bg-[#6B5035] text-white hover:bg-[#57412C] shadow-none'
+              : 'btn-ghost text-text-secondary'
+            }`}
           onClick={() => setSelectedCategory('revisions')}
         >
           Revisions
         </button>
         <button
-          className={`btn btn-sm rounded-full ${
-            selectedCategory === 'mastery'
-              ? 'bg-gradient-to-b from-[#6E5338] to-[#4F3A24] text-white shadow-md border border-white/20'
-              : 'btn-ghost text-text-secondary hover:bg-white/60'
-          }`}
+          className={`btn btn-sm ${selectedCategory === 'mastery'
+              ? 'bg-[#6B5035] text-white hover:bg-[#57412C] shadow-none'
+              : 'btn-ghost text-text-secondary'
+            }`}
           onClick={() => setSelectedCategory('mastery')}
         >
           Mastery & Topics
@@ -172,20 +168,17 @@ export default function AchievementsPage() {
           return (
             <div
               key={item.id}
-              className={`card p-5 flex flex-col justify-between transition-all hover:bg-white/85 hover:-translate-y-0.5 ${
-                item.unlocked
-                  ? 'bg-white/65 border-white/85 shadow-[inset_0_1px_1.5px_#fff,0_4px_16px_rgba(70,50,30,0.04)]'
-                  : 'opacity-65 bg-white/40 border-white/60'
-              }`}
+              className={`card p-5 flex flex-col justify-between transition-all hover:border-[#D5CCBF] ${item.unlocked ? 'bg-[#FFFDF9]' : 'opacity-70 bg-[#FAF7F2]'
+                }`}
             >
               <div>
                 {/* Header row: Icon + Tier */}
                 <div className="flex items-start justify-between">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff] text-2xl select-none">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FAF7F2] border border-border text-2xl select-none">
                     {item.icon}
                   </div>
                   <span
-                    className={`rounded-full px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-[0.08em] shadow-xs ${tierStyle.badge}`}
+                    className={`rounded-full px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-[0.08em] ${tierStyle.badge}`}
                   >
                     {item.tier}
                   </span>
@@ -201,11 +194,11 @@ export default function AchievementsPage() {
               </div>
 
               {/* Progress and Share Action */}
-              <div className="mt-5 pt-3.5 border-t border-[rgba(255,255,255,0.6)] space-y-2.5">
+              <div className="mt-5 pt-3.5 border-t border-border space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-text-muted text-[0.6875rem] font-medium">
                     {item.unlocked ? (
-                      <span className="inline-flex items-center gap-1 text-[#526844] font-bold">
+                      <span className="inline-flex items-center gap-1 text-[#6F8064] font-bold">
                         <CheckCircle2 size={13} />
                         Completed
                       </span>
@@ -221,14 +214,11 @@ export default function AchievementsPage() {
                   </span>
                 </div>
 
-                {/* Thin specular liquid progress bar */}
-                <div className="w-full bg-white/60 border border-white/70 shadow-[inset_0_1px_1px_rgba(0,0,0,0.03)] rounded-full h-[6px] overflow-hidden">
+                {/* Thin 5px progress bar */}
+                <div className="w-full bg-[#E7DED1] rounded-full h-[5px] overflow-hidden">
                   <div
-                    className={`h-[6px] rounded-full transition-all duration-300 shadow-xs ${
-                      item.unlocked
-                        ? 'bg-gradient-to-r from-[#526844] to-[#6F8064]'
-                        : 'bg-gradient-to-r from-[#8B6F47] to-[#543E26]'
-                    }`}
+                    className={`h-[5px] rounded-full transition-all duration-300 ${item.unlocked ? 'bg-[#6F8064]' : 'bg-[#8B6F47]'
+                      }`}
                     style={{ width: `${pct}%` }}
                   />
                 </div>
@@ -236,7 +226,7 @@ export default function AchievementsPage() {
                 {/* Share Button for unlocked achievements */}
                 {item.unlocked && (
                   <button
-                    className="btn btn-secondary btn-sm w-full mt-2 text-xs font-bold gap-1.5 shadow-sm"
+                    className="btn btn-secondary btn-sm w-full mt-2 text-xs font-bold gap-1.5 hover:border-[#8B6F47] hover:text-[#5F4930]"
                     onClick={() => setShareTarget(item)}
                     title="Share this achievement on LinkedIn or Twitter / X"
                   >
