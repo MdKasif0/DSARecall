@@ -1,32 +1,48 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Search, List } from 'lucide-react';
+import { Plus, Search, List, Filter } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
 import QuestionsTable from '@/components/QuestionsTable';
 import QuestionCard from '@/components/QuestionCard';
 import EmptyState from '@/components/EmptyState';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { openAddModal, openEditModal } from '@/lib/events';
+import { isDueToday, isOverdue } from '@/lib/dates';
+import type { QuestionStatus } from '@/lib/types';
+
+type FilterType = 'all' | 'dueToday' | 'overdue' | QuestionStatus;
 
 export default function QuestionsPage() {
-  const { questions, isLoaded, deleteQuestion } = useQuestions();
+  const { questions, recordsMap, isLoaded, deleteQuestion } = useQuestions();
   const [search, setSearch] = useState('');
+  const [filterType, setFilterType] = useState<FilterType>('all');
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-sm text-text-muted">Loading...</p>
+        <p className="text-sm text-text-muted">Loading questions...</p>
       </div>
     );
   }
 
-  const filtered = search.trim()
-    ? questions.filter((q) =>
-        q.questionName.toLowerCase().includes(search.toLowerCase())
-      )
-    : questions;
+  // Filter questions
+  let filtered = questions;
+
+  if (search.trim()) {
+    filtered = filtered.filter((q) =>
+      q.questionName.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+
+  if (filterType === 'dueToday') {
+    filtered = filtered.filter((q) => isDueToday(q, recordsMap));
+  } else if (filterType === 'overdue') {
+    filtered = filtered.filter((q) => isOverdue(q, recordsMap));
+  } else if (filterType !== 'all') {
+    filtered = filtered.filter((q) => q.status === filterType);
+  }
 
   const questionToDelete = deleteId
     ? questions.find((q) => q.id === deleteId)
@@ -46,7 +62,7 @@ export default function QuestionsPage() {
         <div>
           <h1 className="text-xl font-bold text-text">All Questions</h1>
           <p className="text-sm text-text-muted">
-            {questions.length} question{questions.length !== 1 ? 's' : ''} tracked
+            Original spreadsheet view: {questions.length} tracked problem{questions.length !== 1 ? 's' : ''}
           </p>
         </div>
         <button className="btn btn-primary btn-sm" onClick={openAddModal}>
@@ -55,20 +71,41 @@ export default function QuestionsPage() {
         </button>
       </div>
 
-      {/* Search */}
+      {/* Search & Filter Bar */}
       {questions.length > 0 && (
-        <div className="relative max-w-sm">
-          <Search
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
-          />
-          <input
-            type="text"
-            className="input pl-9"
-            placeholder="Search questions..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 justify-between">
+          <div className="relative max-w-sm flex-1">
+            <Search
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
+            />
+            <input
+              type="text"
+              className="input pl-9 text-xs"
+              placeholder="Search by question name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+            <span className="text-xs font-medium text-text-muted flex items-center gap-1">
+              <Filter size={13} />
+              Filter:
+            </span>
+            <select
+              className="select text-xs py-1.5 px-2.5 h-8 w-auto min-w-[140px]"
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value as FilterType)}
+            >
+              <option value="all">All ({questions.length})</option>
+              <option value="dueToday">Due Today</option>
+              <option value="overdue">Has Overdue</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
         </div>
       )}
 
@@ -92,15 +129,27 @@ export default function QuestionsPage() {
           <EmptyState
             icon={<Search size={40} />}
             title="No matches found"
-            description={`No questions matching "${search}". Try a different search term.`}
+            description={`No questions matching your search or active filter.`}
+            action={
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => {
+                  setSearch('');
+                  setFilterType('all');
+                }}
+              >
+                Reset Filters
+              </button>
+            }
           />
         </div>
       ) : (
         <>
-          {/* Desktop table */}
+          {/* Desktop table matching original Excel layout */}
           <div className="hide-mobile">
             <QuestionsTable
               questions={filtered}
+              recordsMap={recordsMap}
               onEdit={openEditModal}
               onDelete={setDeleteId}
             />
@@ -112,6 +161,7 @@ export default function QuestionsPage() {
               <QuestionCard
                 key={q.id}
                 question={q}
+                recordsMap={recordsMap}
                 onEdit={openEditModal}
                 onDelete={setDeleteId}
               />
