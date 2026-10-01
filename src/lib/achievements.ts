@@ -217,7 +217,9 @@ export function generateTwitterShareUrl(achievement: Achievement): string {
   return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
 }
 
-export function generateLinkedInShareUrl(achievement: Achievement): string {
-  const url = 'https://dsarecall.app';
+export function generateLinkedInShareUrl(achievement?: Achievement): string {
+  const url = achievement
+    ? `https://dsarecall.app/achievements#${achievement.id}`
+    : 'https://dsarecall.app';
   return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
 }

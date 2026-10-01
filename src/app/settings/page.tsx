@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
-  Settings as SettingsIcon,
   Calendar,
   Save,
   RotateCcw,
@@ -31,31 +30,22 @@ import {
   saveRevisionRecords,
 } from '@/lib/storage';
 import { useQuestions } from '@/lib/context';
-import { getTodayISO, addDays, parseLocalDate, format } from 'date-fns';
+import { addDays, format } from 'date-fns';
+import { getTodayISO, parseLocalDate } from '@/lib/dates';
 import TopBar from '@/components/TopBar';
 
 export default function SettingsPage() {
   const { questions, refreshQuestions } = useQuestions();
 
-  const [settings, setSettings] = useState<AppSettings | null>(null);
-  const [activePreset, setActivePreset] = useState<string>('standard');
-  const [customIntervals, setCustomIntervals] = useState<number[]>([3, 7, 15, 30, 60, 120]);
-  const [userName, setUserName] = useState<string>('Kasif');
-  const [dailyTarget, setDailyTarget] = useState<number>(5);
-  const [enableSound, setEnableSound] = useState<boolean>(false);
+  const [settings, setSettings] = useState<AppSettings>(() => getSettings());
+  const [activePreset, setActivePreset] = useState<string>(() => getSettings().activePresetId);
+  const [customIntervals, setCustomIntervals] = useState<number[]>(() => getSettings().intervals);
+  const [userName, setUserName] = useState<string>(() => getSettings().userName || 'Kasif');
+  const [dailyTarget, setDailyTarget] = useState<number>(() => getSettings().dailyTarget || 5);
+  const [enableSound, setEnableSound] = useState<boolean>(() => getSettings().enableSound || false);
 
   const [savedNotice, setSavedNotice] = useState<string | null>(null);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loaded = getSettings();
-    setSettings(loaded);
-    setActivePreset(loaded.activePresetId);
-    setCustomIntervals(loaded.intervals);
-    setUserName(loaded.userName || 'Kasif');
-    setDailyTarget(loaded.dailyTarget || 5);
-    setEnableSound(loaded.enableSound || false);
-  }, []);
 
   const handlePresetSelect = (presetId: string) => {
     setActivePreset(presetId);

@@ -13,6 +13,8 @@ import {
   FileText,
   Calendar,
   Flame,
+  Compass,
+  Trophy,
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
 import {
@@ -36,6 +38,7 @@ import StatusBreakdown from '@/components/StatusBreakdown';
 import TopBar from '@/components/TopBar';
 import { computeActivityStats } from '@/lib/analytics';
 import { openAddModal } from '@/lib/events';
+import { getSettings } from '@/lib/settings';
 
 interface ActionItem {
   question: DSAQuestion;
@@ -48,13 +51,25 @@ export default function DashboardPage() {
   const { questions, records, recordsMap, isLoaded, markRevision } = useQuestions();
   const [justCompletedIds, setJustCompletedIds] = useState<Map<string, string>>(new Map());
 
+  const [userName] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return getSettings().userName || 'Kasif';
+      } catch {
+        return 'Kasif';
+      }
+    }
+    return 'Kasif';
+  });
+
   // Dynamic greeting based on current local hour
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning, Kasif';
-    if (hour < 18) return 'Good afternoon, Kasif';
-    return 'Good evening, Kasif';
-  }, []);
+    const name = userName ? `, ${userName}` : '';
+    if (hour < 12) return `Good morning${name}`;
+    if (hour < 18) return `Good afternoon${name}`;
+    return `Good evening${name}`;
+  }, [userName]);
 
   // Compute analytics stats for heatmap and chart
   const stats = useMemo(() => {
@@ -135,14 +150,32 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <button
-          className="btn btn-primary btn-sm self-start"
-          onClick={openAddModal}
-          title="Add a new solved DSA problem"
-        >
-          <Plus size={15} />
-          <span>Add Question</span>
-        </button>
+        <div className="flex items-center gap-2 self-start flex-wrap">
+          <Link
+            href="/practice"
+            className="btn btn-secondary btn-sm gap-1.5 text-xs font-semibold hover:border-[#8B6F47] hover:text-[#5F4930] no-underline"
+            title="Explore topic-wise practice questions"
+          >
+            <Compass size={14} className="text-[#8B6F47]" />
+            <span>Practice</span>
+          </Link>
+          <Link
+            href="/achievements"
+            className="btn btn-secondary btn-sm gap-1.5 text-xs font-semibold hover:border-[#8B6F47] hover:text-[#5F4930] no-underline"
+            title="View achievements and share on LinkedIn / X"
+          >
+            <Trophy size={14} className="text-[#8B6F47]" />
+            <span>Achievements</span>
+          </Link>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={openAddModal}
+            title="Add a new solved DSA problem"
+          >
+            <Plus size={15} />
+            <span>Add Question</span>
+          </button>
+        </div>
       </div>
 
       {/* Metric Row: Total, Due Today, Overdue, Streak, Completion */}

@@ -7,8 +7,9 @@ import {
   LayoutDashboard,
   List,
   CalendarCheck,
-  CalendarClock,
-  ClockAlert,
+  Compass,
+  Trophy,
+  Settings,
   Plus,
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
@@ -23,7 +24,6 @@ export default function MobileNav() {
   const today = getTodayISO();
 
   let dueTodayCount = 0;
-  let overdueCount = 0;
 
   for (const q of questions) {
     for (const interval of REVISION_INTERVALS) {
@@ -31,8 +31,6 @@ export default function MobileNav() {
       const d = q[REVISION_KEYS[interval]];
       if (d === today) {
         dueTodayCount++;
-      } else if (d < today) {
-        overdueCount++;
       }
     }
   }
@@ -51,22 +49,22 @@ export default function MobileNav() {
       badge: 0,
     },
     {
+      href: '/practice',
+      label: 'Practice',
+      icon: Compass,
+      badge: 0,
+    },
+    {
       href: '/today',
       label: 'Today',
       icon: CalendarCheck,
       badge: dueTodayCount,
     },
     {
-      href: '/upcoming',
-      label: 'Upcoming',
-      icon: CalendarClock,
+      href: '/achievements',
+      label: 'Trophies',
+      icon: Trophy,
       badge: 0,
-    },
-    {
-      href: '/overdue',
-      label: 'Overdue',
-      icon: ClockAlert,
-      badge: overdueCount,
     },
   ];
 
@@ -89,14 +87,24 @@ export default function MobileNav() {
             </div>
           </Link>
 
-          <button
-            className="btn btn-primary btn-sm px-2.5 py-1 text-xs"
-            onClick={openAddModal}
-            aria-label="Add Question"
-          >
-            <Plus size={14} />
-            <span>Add</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/settings"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#E4DDD2] bg-[#FFFDF9] text-[#71695F] hover:bg-[#F2ECE2]"
+              title="Settings"
+              aria-label="Settings"
+            >
+              <Settings size={15} />
+            </Link>
+            <button
+              className="btn btn-primary btn-sm px-2.5 py-1 text-xs"
+              onClick={openAddModal}
+              aria-label="Add Question"
+            >
+              <Plus size={14} />
+              <span>Add</span>
+            </button>
+          </div>
         </div>
       </header>
 
