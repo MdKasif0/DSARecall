@@ -57,35 +57,35 @@ export default function TopBar({ onSearchClick }: TopBarProps) {
   }
 
   return (
-    <div className="hide-mobile flex items-center justify-between pb-4">
-      {/* Breadcrumb / Section Link */}
+    <div className="hide-mobile flex items-center justify-between pb-5">
+      {/* Liquid Glass Breadcrumb Capsule */}
       <Link
         href={backHref}
-        className="inline-flex items-center gap-2 text-xs font-semibold text-text-secondary hover:text-text no-underline transition-colors group"
+        className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-bold text-[#543E26] bg-white/65 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_4px_rgba(70,50,30,0.03)] hover:bg-white/90 no-underline transition-all group"
       >
         <ArrowLeft
-          size={14}
-          className="text-text-muted group-hover:text-text group-hover:-translate-x-0.5 transition-transform"
+          size={13}
+          className="text-[#8F8578] group-hover:text-[#543E26] group-hover:-translate-x-0.5 transition-transform"
         />
         <span>{pageTitle}</span>
       </Link>
 
       {/* Top right utility controls */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         {/* Search trigger */}
         <button
-          className="flex h-8 w-8 items-center justify-center rounded-full text-text-secondary hover:bg-surface-secondary hover:text-text transition-colors"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-[#635A4F] bg-white/65 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] hover:bg-white/95 hover:text-[#231E18] hover:scale-105 transition-all"
           onClick={onSearchClick}
           aria-label="Quick Search"
           title="Search questions"
         >
-          <Search size={16} />
+          <Search size={15} />
         </button>
 
         {/* Notifications / Pending Revisions Alert */}
         <Link
           href="/today"
-          className="relative flex h-8 w-8 items-center justify-center rounded-full text-text-secondary hover:bg-surface-secondary hover:text-text transition-colors"
+          className="relative flex h-8 w-8 items-center justify-center rounded-full text-[#635A4F] bg-white/65 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] hover:bg-white/95 hover:text-[#231E18] hover:scale-105 transition-all"
           aria-label={
             pendingCount > 0 ? `${pendingCount} revisions need attention` : 'All caught up'
           }
@@ -93,16 +93,16 @@ export default function TopBar({ onSearchClick }: TopBarProps) {
             pendingCount > 0 ? `${pendingCount} revisions need attention` : 'All revisions up to date'
           }
         >
-          <Bell size={16} />
+          <Bell size={15} />
           {pendingCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#A65D50]" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#994738] shadow-[0_0_6px_rgba(153,71,56,0.6)]" />
           )}
         </Link>
 
         {/* User Avatar Circle */}
         <Link
           href="/settings"
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-[#8B6F47] text-[#FFFDF9] text-xs font-bold shadow-sm select-none hover:bg-[#6B5035] transition-colors"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-b from-[#7A5D3E] to-[#4F3A24] text-[#FFFDF9] text-xs font-bold shadow-sm border border-white/30 select-none hover:scale-105 transition-all"
           title="Settings & Profile"
           aria-label="User settings"
         >
