@@ -61,8 +61,6 @@ export default function DashboardPage() {
     return computeActivityStats(records, questions);
   }, [records, questions]);
 
-  const today = getTodayISO();
-
   // Find due today, overdue, and upcoming revisions
   const dueTodayItems: ActionItem[] = [];
   const overdueItems: ActionItem[] = [];

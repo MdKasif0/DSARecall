@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, type FormEvent } from 'react';
-import { X, CalendarDays, AlertCircle, Clock } from 'lucide-react';
-import { calculateRevisionDates, formatDateDisplay, formatDateShort, getTodayISO } from '@/lib/dates';
+import { X, AlertCircle, Clock } from 'lucide-react';
+import { calculateRevisionDates, formatDateShort, getTodayISO } from '@/lib/dates';
 import { useQuestions } from '@/lib/context';
 import type { QuestionStatus, QuestionDifficulty, QuestionPriority } from '@/lib/types';
 import {
@@ -226,6 +226,25 @@ function AddQuestionForm({
             </select>
           </div>
         </div>
+
+        {/* Status when editing */}
+        {isEditing && (
+          <div>
+            <label htmlFor="question-status" className="label text-xs font-bold text-text mb-1">
+              Status
+            </label>
+            <select
+              id="question-status"
+              className="select text-xs"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as QuestionStatus)}
+            >
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        )}
 
         {dateChanged && (
           <p className="text-xs text-[#795B39] bg-[#EDE1CF] rounded-md p-2.5 border border-[#DFD1BC]">

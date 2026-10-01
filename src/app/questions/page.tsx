@@ -6,7 +6,6 @@ import {
   Search,
   List,
   TableProperties,
-  ArrowUpDown,
   Download,
   Filter,
   X,

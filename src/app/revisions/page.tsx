@@ -245,7 +245,7 @@ export default function RevisionsPage() {
 
                 {/* Question items scheduled for this date */}
                 <div className="card divide-y divide-border overflow-hidden">
-                  {group.items.map(({ question, interval, scheduledDate, daysUntil }) => (
+                  {group.items.map(({ question, interval }) => (
                     <div
                       key={`${question.id}_${interval}`}
                       className="p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 hover:bg-[#FAF7F2] transition-colors"
