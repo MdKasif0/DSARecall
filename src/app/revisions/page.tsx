@@ -141,14 +141,14 @@ export default function RevisionsPage() {
         </div>
       </div>
 
-      {/* Toolbar: Timeframe pills + Search */}
-      <div className="card p-3 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-        <div className="flex items-center gap-1.5 p-1 bg-[#F2ECE2] border border-[#E4DDD2] rounded-lg self-start">
+      {/* Toolbar: Timeframe segmented pills + Search */}
+      <div className="card-glass p-3 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between rounded-2xl border border-white/80 shadow-xs">
+        <div className="flex items-center gap-1 p-1 bg-slate-200/50 backdrop-blur-md border border-white/70 rounded-xl self-start">
           <button
             className={`btn btn-sm ${
               filter === 'all'
-                ? 'bg-[#6B5035] text-white hover:bg-[#57412C] shadow-none'
-                : 'btn-ghost text-text-secondary'
+                ? 'bg-white text-slate-900 shadow-sm border border-white/90 font-bold'
+                : 'btn-ghost text-slate-600 font-semibold'
             }`}
             onClick={() => setFilter('all')}
           >
@@ -157,8 +157,8 @@ export default function RevisionsPage() {
           <button
             className={`btn btn-sm ${
               filter === '7days'
-                ? 'bg-[#6B5035] text-white hover:bg-[#57412C] shadow-none'
-                : 'btn-ghost text-text-secondary'
+                ? 'bg-white text-slate-900 shadow-sm border border-white/90 font-bold'
+                : 'btn-ghost text-slate-600 font-semibold'
             }`}
             onClick={() => setFilter('7days')}
           >
@@ -167,8 +167,8 @@ export default function RevisionsPage() {
           <button
             className={`btn btn-sm ${
               filter === '30days'
-                ? 'bg-[#6B5035] text-white hover:bg-[#57412C] shadow-none'
-                : 'btn-ghost text-text-secondary'
+                ? 'bg-white text-slate-900 shadow-sm border border-white/90 font-bold'
+                : 'btn-ghost text-slate-600 font-semibold'
             }`}
             onClick={() => setFilter('30days')}
           >
@@ -180,18 +180,18 @@ export default function RevisionsPage() {
         <div className="relative min-w-[200px] sm:w-64">
           <Search
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
           />
           <input
             type="text"
-            className="input pl-8.5 pr-7 text-xs h-8.5"
+            className="input pl-9 pr-7 text-xs h-9 bg-white/70 backdrop-blur-md border border-white/80 rounded-xl shadow-xs focus:bg-white"
             placeholder="Search upcoming..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           {search && (
             <button
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-800"
               onClick={() => setSearch('')}
             >
               <X size={12} />
@@ -202,9 +202,9 @@ export default function RevisionsPage() {
 
       {/* Date-grouped timeline schedule */}
       {dateGroups.length === 0 ? (
-        <div className="card">
+        <div className="card-glass p-8 rounded-2xl">
           <EmptyState
-            icon={<CalendarClock size={40} className="text-text-muted" />}
+            icon={<CalendarClock size={40} className="text-slate-400" />}
             title="No revisions match your filter"
             description="All upcoming spaced repetitions have either been completed or none are scheduled in this timeframe."
             action={
@@ -222,52 +222,52 @@ export default function RevisionsPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="relative pl-6 space-y-7 before:content-[''] before:absolute before:left-[9px] before:top-2 before:bottom-3 before:w-[2px] before:bg-[#E4DDD2]">
+          <div className="relative pl-6 space-y-7 before:content-[''] before:absolute before:left-[9px] before:top-2 before:bottom-3 before:w-[2px] before:bg-white/80 before:shadow-[0_0_8px_rgba(255,255,255,0.9)]">
             {dateGroups.map((group) => (
               <div key={group.dateStr} className="relative space-y-3">
                 {/* Timeline Marker */}
-                <div className="absolute -left-6 top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#FFFDF9] border-2 border-[#8B6F47] shadow-sm">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#8B6F47]" />
+                <div className="absolute -left-6 top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white border-2 border-emerald-600 shadow-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                 </div>
 
-                {/* Date header matching Section 20 */}
+                {/* Date header */}
                 <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-bold text-text">
+                  <h2 className="text-sm font-bold text-slate-900">
                     {group.label}
                   </h2>
-                  <span className="rounded bg-[#F2ECE2] px-2 py-0.5 text-xs font-semibold text-[#71695F] border border-[#E4DDD2]">
+                  <span className="rounded-lg bg-white/70 backdrop-blur-sm px-2.5 py-0.5 text-xs font-semibold text-slate-700 border border-white/80 shadow-xs">
                     {group.count} question{group.count !== 1 ? 's' : ''}
                   </span>
-                  <span className="text-xs text-text-muted">
+                  <span className="text-xs text-slate-500 font-medium">
                     (in {group.daysUntil} day{group.daysUntil !== 1 ? 's' : ''})
                   </span>
                 </div>
 
                 {/* Question items scheduled for this date */}
-                <div className="card divide-y divide-border overflow-hidden">
+                <div className="card-glass divide-y divide-white/60 rounded-2xl overflow-hidden shadow-xs border border-white/80">
                   {group.items.map(({ question, interval }) => (
                     <div
                       key={`${question.id}_${interval}`}
-                      className="p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 hover:bg-[#FAF7F2] transition-colors"
+                      className="p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 hover:bg-white/40 transition-colors"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <Link
                             href={`/questions/${question.id}`}
-                            className="font-bold text-sm text-text hover:text-[#8B6F47] no-underline truncate"
+                            className="font-bold text-sm text-slate-900 hover:text-emerald-700 no-underline truncate"
                           >
                             {question.questionName}
                           </Link>
                           {question.topic && (
-                            <span className="rounded bg-[#F2ECE2] px-1.5 py-0.5 text-[0.6875rem] font-medium text-[#71695F] border border-[#E4DDD2]">
+                            <span className="rounded-lg bg-white/70 backdrop-blur-sm px-2 py-0.5 text-[11px] font-semibold text-slate-700 border border-white/80 shadow-xs">
                               {question.topic}
                             </span>
                           )}
-                          <span className="rounded bg-[#EDE1CF] px-2 py-0.5 text-xs font-semibold text-[#795B39] border border-[#DFD1BC]">
+                          <span className="rounded-lg bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-800 border border-amber-500/25">
                             {REVISION_LABELS[interval]}
                           </span>
                         </div>
-                        <p className="text-xs text-text-muted mt-0.5">
+                        <p className="text-xs text-slate-500 mt-0.5">
                           Originally solved {formatDateDisplay(question.dateSolved)}
                         </p>
                       </div>

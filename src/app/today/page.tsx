@@ -115,33 +115,33 @@ export default function TodayPage() {
         </div>
       </div>
 
-      {/* Quick Summary Strip */}
+      {/* Quick Summary Strip (Liquid Glass Capsules) */}
       <div className="flex flex-wrap items-center gap-2.5 text-xs">
-        <span className="rounded-lg border border-border bg-surface px-3 py-1.5 font-medium text-text-secondary">
-          Due Today: <strong className="text-text font-bold ml-1">{dueTodayItems.length}</strong>
+        <span className="card-glass rounded-xl px-3.5 py-2 font-semibold text-slate-700 shadow-xs border border-white/80">
+          Due Today: <strong className="text-slate-900 font-bold ml-1">{dueTodayItems.length}</strong>
         </span>
-        <span className="rounded-lg border border-border bg-surface px-3 py-1.5 font-medium text-text-secondary">
+        <span className="card-glass rounded-xl px-3.5 py-2 font-semibold text-slate-700 shadow-xs border border-white/80">
           Overdue:{' '}
           <strong
             className={`font-bold ml-1 ${
-              overdueItems.length > 0 ? 'text-[#A65D50]' : 'text-text'
+              overdueItems.length > 0 ? 'text-rose-600' : 'text-slate-900'
             }`}
           >
             {overdueItems.length}
           </strong>
         </span>
-        <span className="rounded-lg border border-border bg-surface px-3 py-1.5 font-medium text-text-secondary">
+        <span className="card-glass rounded-xl px-3.5 py-2 font-semibold text-slate-700 shadow-xs border border-white/80">
           Completed Today:{' '}
-          <strong className="text-[#6F8064] font-bold ml-1">
+          <strong className="text-emerald-700 font-bold ml-1">
             {completedTodayRecords.length}
           </strong>
         </span>
       </div>
 
       {totalActionItems === 0 && completedTodayRecords.length === 0 ? (
-        <div className="card">
+        <div className="card-glass p-8 rounded-2xl">
           <EmptyState
-            icon={<CheckCircle2 size={44} className="text-[#6F8064]" />}
+            icon={<CheckCircle2 size={44} className="text-emerald-600" />}
             title="You're all caught up."
             description="Your revision schedule is clear for today. Add another solved DSA problem to keep building long-term memory."
             action={
@@ -163,10 +163,10 @@ export default function TodayPage() {
           {overdueItems.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#F4E4DF] text-[#A65D50]">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-500/15 text-rose-700 border border-rose-500/25">
                   <AlertCircle size={12} />
                 </div>
-                <h2 className="text-xs font-bold uppercase tracking-[0.08em] text-[#A65D50]">
+                <h2 className="text-xs font-bold uppercase tracking-[0.08em] text-rose-700">
                   OVERDUE REVISIONS · {overdueItems.length}
                 </h2>
               </div>
@@ -177,39 +177,39 @@ export default function TodayPage() {
                   return (
                     <div
                       key={`${question.id}_${interval}`}
-                      className={`card p-4 transition-all border-l-4 border-l-[#A65D50] ${
-                        doneTime ? 'opacity-70 bg-[#FBF8F2]' : 'hover:border-[#D5CCBF]'
-                      }`}
+                      className={`card-glass rounded-2xl p-4 transition-all border-l-4 border-l-rose-500 ${
+                        doneTime ? 'opacity-65 bg-white/40' : 'hover:border-white'
+                      } shadow-[0_4px_24px_rgba(244,63,94,0.06),inset_0_1px_1.5px_rgba(255,255,255,0.95)]`}
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2.5">
                             <Link
                               href={`/questions/${question.id}`}
-                              className="font-bold text-base text-text hover:text-[#8B6F47] no-underline"
+                              className="font-bold text-base text-slate-900 hover:text-emerald-700 no-underline"
                             >
                               {question.questionName}
                             </Link>
                             {question.topic && (
-                              <span className="rounded bg-[#F2ECE2] px-2 py-0.5 text-[0.6875rem] font-medium text-[#71695F] border border-[#E4DDD2]">
+                              <span className="rounded-lg bg-white/70 backdrop-blur-sm px-2.5 py-0.5 text-[11px] font-semibold text-slate-700 border border-white/80 shadow-xs">
                                 {question.topic}
                               </span>
                             )}
-                            <span className="inline-flex items-center gap-1 rounded px-2.5 py-0.5 text-xs font-bold bg-[#F4E4DF] text-[#925A4D] border border-[#E6D0CA]">
+                            <span className="inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs font-bold bg-rose-500/15 text-rose-700 border border-rose-500/25">
                               <AlertCircle size={11} />
                               +{interval} DAYS
                             </span>
                           </div>
 
-                          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-text-secondary">
+                          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                             <span>
                               Originally solved{' '}
-                              <strong className="text-text font-semibold">
+                              <strong className="text-slate-800 font-semibold">
                                 {formatDateDisplay(question.dateSolved)}
                               </strong>
                             </span>
                             <span>•</span>
-                            <span className="text-[#A65D50] font-semibold">
+                            <span className="text-rose-700 font-semibold">
                               {Math.abs(daysUntil)} day{Math.abs(daysUntil) === 1 ? '' : 's'} overdue
                               (Due {formatDateDisplay(scheduledDate)})
                             </span>
@@ -218,7 +218,7 @@ export default function TodayPage() {
 
                         <div className="flex items-center gap-2 self-end sm:self-center">
                           {doneTime ? (
-                            <span className="inline-flex items-center gap-1.5 rounded-md bg-[#E8EDE4] px-3 py-1.5 text-xs font-bold text-[#65755D] border border-[#D7DFD2]">
+                            <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/15 px-3 py-1.5 text-xs font-bold text-emerald-800 border border-emerald-500/25">
                               <CheckCircle2 size={14} />
                               Completed {doneTime}
                             </span>
@@ -244,10 +244,10 @@ export default function TodayPage() {
           {dueTodayItems.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EDE1CF] text-[#795B39]">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/15 text-amber-700 border border-amber-500/25">
                   <CalendarCheck size={12} />
                 </div>
-                <h2 className="text-xs font-bold uppercase tracking-[0.08em] text-[#795B39]">
+                <h2 className="text-xs font-bold uppercase tracking-[0.08em] text-amber-800">
                   DUE TODAY · {dueTodayItems.length}
                 </h2>
               </div>
@@ -258,39 +258,39 @@ export default function TodayPage() {
                   return (
                     <div
                       key={`${question.id}_${interval}`}
-                      className={`card p-4 transition-all border-l-4 border-l-[#B18A50] ${
-                        doneTime ? 'opacity-70 bg-[#FBF8F2]' : 'hover:border-[#D5CCBF]'
-                      }`}
+                      className={`card-glass rounded-2xl p-4 transition-all border-l-4 border-l-amber-500 ${
+                        doneTime ? 'opacity-65 bg-white/40' : 'hover:border-white'
+                      } shadow-[0_4px_24px_rgba(245,158,11,0.06),inset_0_1px_1.5px_rgba(255,255,255,0.95)]`}
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2.5">
                             <Link
                               href={`/questions/${question.id}`}
-                              className="font-bold text-base text-text hover:text-[#8B6F47] no-underline"
+                              className="font-bold text-base text-slate-900 hover:text-emerald-700 no-underline"
                             >
                               {question.questionName}
                             </Link>
                             {question.topic && (
-                              <span className="rounded bg-[#F2ECE2] px-2 py-0.5 text-[0.6875rem] font-medium text-[#71695F] border border-[#E4DDD2]">
+                              <span className="rounded-lg bg-white/70 backdrop-blur-sm px-2.5 py-0.5 text-[11px] font-semibold text-slate-700 border border-white/80 shadow-xs">
                                 {question.topic}
                               </span>
                             )}
-                            <span className="inline-flex items-center gap-1 rounded px-2.5 py-0.5 text-xs font-bold bg-[#EDE1CF] text-[#795B39] border border-[#DFD1BC]">
+                            <span className="inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs font-bold bg-amber-500/15 text-amber-800 border border-amber-500/25">
                               <Clock size={11} />
                               +{interval} DAYS
                             </span>
                           </div>
 
-                          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-text-secondary">
+                          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                             <span>
                               Originally solved{' '}
-                              <strong className="text-text font-semibold">
+                              <strong className="text-slate-800 font-semibold">
                                 {formatDateDisplay(question.dateSolved)}
                               </strong>
                             </span>
                             <span>•</span>
-                            <span className="text-[#B18A50] font-semibold">
+                            <span className="text-amber-800 font-semibold">
                               Due today ({formatDateDisplay(scheduledDate)})
                             </span>
                           </div>
@@ -298,7 +298,7 @@ export default function TodayPage() {
 
                         <div className="flex items-center gap-2 self-end sm:self-center">
                           {doneTime ? (
-                            <span className="inline-flex items-center gap-1.5 rounded-md bg-[#E8EDE4] px-3 py-1.5 text-xs font-bold text-[#65755D] border border-[#D7DFD2]">
+                            <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/15 px-3 py-1.5 text-xs font-bold text-emerald-800 border border-emerald-500/25">
                               <CheckCircle2 size={14} />
                               Completed {doneTime}
                             </span>
@@ -322,10 +322,10 @@ export default function TodayPage() {
 
           {/* Already Completed Today */}
           {completedTodayRecords.length > 0 && (
-            <div className="space-y-3 pt-4 border-t border-border">
+            <div className="space-y-3 pt-4 border-t border-white/60">
               <div className="flex items-center gap-2">
-                <CheckCircle2 size={15} className="text-[#6F8064]" />
-                <h2 className="text-xs font-bold uppercase tracking-[0.08em] text-[#6F8064]">
+                <CheckCircle2 size={15} className="text-emerald-600" />
+                <h2 className="text-xs font-bold uppercase tracking-[0.08em] text-emerald-800">
                   COMPLETED TODAY · {completedTodayRecords.length}
                 </h2>
               </div>
@@ -344,17 +344,17 @@ export default function TodayPage() {
                   return (
                     <div
                       key={r.id}
-                      className="card p-3 bg-[#FAF7F2] flex items-center justify-between gap-2"
+                      className="card-glass rounded-xl p-3 flex items-center justify-between gap-2 border border-white/80"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-xs text-text truncate">
+                        <p className="font-bold text-xs text-slate-900 truncate">
                           {q.questionName}
                         </p>
-                        <p className="text-[0.6875rem] text-text-muted mt-0.5">
+                        <p className="text-[11px] text-slate-500 mt-0.5 font-medium">
                           {REVISION_LABELS[r.interval]} checkpoint
                         </p>
                       </div>
-                      <span className="text-[0.6875rem] font-bold text-[#6F8064] bg-[#E8EDE4] px-2 py-0.5 rounded border border-[#D7DFD2]">
+                      <span className="text-[11px] font-bold text-emerald-800 bg-emerald-500/15 px-2.5 py-0.5 rounded-lg border border-emerald-500/25">
                         ✓ {time}
                       </span>
                     </div>
