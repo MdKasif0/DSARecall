@@ -38,42 +38,42 @@ export default function QuestionCard({
   const nextRev = recordsMap ? getNextRevision(question, recordsMap) : null;
 
   return (
-    <div className="card card-hover p-4 space-y-3">
+    <div className="card-glass p-4 space-y-3 rounded-2xl border border-white/80 shadow-[0_4px_20px_rgba(0,0,0,0.03),inset_0_1px_1.5px_rgba(255,255,255,0.95)]">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
             <Link
               href={`/questions/${question.id}`}
-              className="flex items-center gap-1 text-sm font-bold text-text hover:text-[#8B6F47] no-underline transition-colors"
+              className="flex items-center gap-1 text-sm font-bold text-slate-900 hover:text-emerald-700 no-underline transition-colors"
             >
               <span className="truncate">{question.questionName}</span>
-              <ChevronRight size={14} className="shrink-0 text-text-muted" />
+              <ChevronRight size={14} className="shrink-0 text-slate-400" />
             </Link>
             {question.topic && (
-              <span className="rounded bg-[#F2ECE2] px-2 py-0.5 text-[0.6875rem] font-medium text-[#71695F] border border-[#E4DDD2]">
+              <span className="rounded-lg bg-white/70 backdrop-blur-sm px-2 py-0.5 text-[11px] font-semibold text-slate-600 border border-white/80 shadow-xs">
                 {question.topic}
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-xs text-text-muted">
+          <p className="mt-0.5 text-xs text-slate-400 font-medium">
             Solved: {formatDateDisplay(question.dateSolved)}
           </p>
         </div>
         <StatusBadge status={question.status} />
       </div>
 
-      {/* Progress Bar (5px matching Section 16) */}
+      {/* Progress Bar */}
       <div className="space-y-1">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-text-muted text-[0.6875rem]">Progress</span>
-          <span className="font-semibold text-text text-[0.75rem]">
+          <span className="text-slate-400 font-medium text-[11px]">Progress</span>
+          <span className="font-bold text-slate-800 text-[12px]">
             {completedCount} / {total} revisions ({percent}%)
           </span>
         </div>
-        <div className="w-full bg-[#E7DED1] rounded-full h-[5px] overflow-hidden">
+        <div className="w-full bg-slate-200/60 rounded-full h-[5px] overflow-hidden">
           <div
-            className="bg-[#8B6F47] h-[5px] rounded-full transition-all duration-300"
+            className="bg-emerald-600 h-[5px] rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(16,185,129,0.35)]"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -81,9 +81,9 @@ export default function QuestionCard({
 
       {/* Next Revision callout if available */}
       {nextRev && (
-        <div className="rounded-md bg-[#FAF7F2] border border-border px-3 py-1.5 text-xs flex items-center justify-between">
-          <span className="text-text-muted">Next Checkpoint:</span>
-          <span className="font-semibold text-[#8B6F47]">
+        <div className="rounded-xl bg-white/60 backdrop-blur-sm border border-white/80 px-3 py-1.5 text-xs flex items-center justify-between shadow-xs">
+          <span className="text-slate-500 font-medium">Next Checkpoint:</span>
+          <span className="font-bold text-emerald-700">
             {REVISION_LABELS[nextRev.interval]} · {formatDateDisplay(nextRev.date)}
           </span>
         </div>
@@ -98,25 +98,25 @@ export default function QuestionCard({
           const today = isToday(dateStr);
           const past = isPast(dateStr);
 
-          let badgeClass = 'bg-[#FAF7F2] text-text-muted border border-border';
+          let badgeClass = 'bg-white/60 text-slate-600 border border-white/80';
           if (completed) {
-            badgeClass = 'bg-[#E8EDE4] text-[#65755D] font-medium border border-[#D7DFD2]';
+            badgeClass = 'bg-emerald-500/15 text-emerald-800 font-bold border border-emerald-500/25';
           } else if (today) {
-            badgeClass = 'bg-[#EDE1CF] text-[#795B39] font-bold border border-[#DFD1BC]';
+            badgeClass = 'bg-amber-500/15 text-amber-800 font-bold border border-amber-500/25';
           } else if (past) {
-            badgeClass = 'bg-[#F4E4DF] text-[#925A4D] font-bold border border-[#E6D0CA]';
+            badgeClass = 'bg-rose-500/15 text-rose-700 font-bold border border-rose-500/25';
           }
 
           return (
             <div
               key={interval}
-              className={`flex items-center justify-between rounded px-2 py-1.5 text-xs ${badgeClass}`}
+              className={`flex items-center justify-between rounded-lg px-2 py-1.5 text-xs ${badgeClass} shadow-xs`}
             >
-              <span className="flex items-center gap-1 text-[0.6875rem]">
+              <span className="flex items-center gap-1 text-[11px]">
                 {completed && <Check size={11} strokeWidth={2.5} />}
                 {REVISION_LABELS[interval]}
               </span>
-              <span className="font-bold text-[0.6875rem]">
+              <span className="font-bold text-[11px]">
                 {formatDateDisplay(dateStr).replace(/, \d{4}$/, '')}
               </span>
             </div>
@@ -125,16 +125,16 @@ export default function QuestionCard({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-between border-t border-border pt-2.5">
+      <div className="flex items-center justify-between border-t border-white/60 pt-2.5">
         <Link
           href={`/questions/${question.id}`}
-          className="text-xs font-semibold text-[#8B6F47] hover:underline no-underline"
+          className="text-xs font-bold text-emerald-700 hover:text-emerald-800 no-underline"
         >
           View Full Timeline →
         </Link>
         <div className="flex items-center gap-1">
           <button
-            className="btn btn-ghost btn-sm py-1 px-2 text-xs"
+            className="btn btn-ghost btn-sm py-1 px-2 text-xs rounded-lg text-slate-600 hover:bg-white/80"
             onClick={() => onEdit(question.id)}
             aria-label={`Edit ${question.questionName}`}
           >
@@ -142,7 +142,7 @@ export default function QuestionCard({
             <span>Edit</span>
           </button>
           <button
-            className="btn btn-ghost btn-sm py-1 px-2 text-xs text-[#A65D50] hover:bg-[#F4E4DF]"
+            className="btn btn-ghost btn-sm py-1 px-2 text-xs text-rose-700 hover:bg-rose-500/10 rounded-lg"
             onClick={() => onDelete(question.id)}
             aria-label={`Delete ${question.questionName}`}
           >
