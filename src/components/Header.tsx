@@ -8,25 +8,44 @@ import {
   LayoutDashboard,
   List,
   CalendarCheck,
+  CalendarClock,
   Plus,
   Menu,
   X,
 } from 'lucide-react';
-import { formatTodayLong } from '@/lib/dates';
+import { formatTodayLong, getTodayISO, isCheckpointCompleted } from '@/lib/dates';
+import { useQuestions } from '@/lib/context';
+import { REVISION_INTERVALS, REVISION_KEYS } from '@/lib/types';
 
 interface HeaderProps {
   onAddClick: () => void;
 }
 
-const navLinks = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/questions', label: 'Questions', icon: List },
-  { href: '/revisions', label: "Today's Revisions", icon: CalendarCheck },
-];
-
 export default function Header({ onAddClick }: HeaderProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { questions, recordsMap } = useQuestions();
+
+  const today = getTodayISO();
+
+  // Count items needing attention today or overdue
+  let actionCount = 0;
+  for (const q of questions) {
+    for (const interval of REVISION_INTERVALS) {
+      if (isCheckpointCompleted(q.id, interval, recordsMap)) continue;
+      const d = q[REVISION_KEYS[interval]];
+      if (d <= today) {
+        actionCount++;
+      }
+    }
+  }
+
+  const navLinks = [
+    { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/today', label: 'Today', icon: CalendarCheck, badge: actionCount },
+    { href: '/revisions', label: 'Upcoming', icon: CalendarClock },
+    { href: '/questions', label: 'All Questions', icon: List },
+  ];
 
   return (
     <>
@@ -54,7 +73,7 @@ export default function Header({ onAddClick }: HeaderProps) {
 
           {/* Center: Desktop navigation */}
           <nav className="hide-mobile flex items-center gap-1">
-            {navLinks.map(({ href, label, icon: Icon }) => {
+            {navLinks.map(({ href, label, icon: Icon, badge }) => {
               const active = pathname === href;
               return (
                 <Link
@@ -67,7 +86,12 @@ export default function Header({ onAddClick }: HeaderProps) {
                   }`}
                 >
                   <Icon size={15} />
-                  {label}
+                  <span>{label}</span>
+                  {badge !== undefined && badge > 0 && (
+                    <span className="ml-1 inline-flex items-center justify-center px-1.5 py-0.2 text-[0.6875rem] font-bold rounded-full bg-danger text-white min-w-[18px] h-[18px]">
+                      {badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -113,21 +137,28 @@ export default function Header({ onAddClick }: HeaderProps) {
             </div>
 
             <nav className="p-3">
-              {navLinks.map(({ href, label, icon: Icon }) => {
+              {navLinks.map(({ href, label, icon: Icon, badge }) => {
                 const active = pathname === href;
                 return (
                   <Link
                     key={href}
                     href={href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium no-underline transition-colors ${
+                    className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium no-underline transition-colors ${
                       active
                         ? 'bg-primary-light text-primary'
                         : 'text-text-muted hover:bg-bg hover:text-text'
                     }`}
                   >
-                    <Icon size={18} />
-                    {label}
+                    <div className="flex items-center gap-2.5">
+                      <Icon size={18} />
+                      <span>{label}</span>
+                    </div>
+                    {badge !== undefined && badge > 0 && (
+                      <span className="inline-flex items-center justify-center px-1.5 py-0.2 text-[0.6875rem] font-bold rounded-full bg-danger text-white min-w-[18px] h-[18px]">
+                        {badge}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
