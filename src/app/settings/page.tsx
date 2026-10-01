@@ -231,10 +231,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Section 1: Revision Schedule & Intervals */}
-      <div className="card p-5 bg-[#FFFDF9] border border-[#E4DDD2] space-y-5">
+      <div className="card p-5 bg-white/65 border border-white/80 backdrop-blur-md shadow-[inset_0_1px_1.5px_#fff,0_4px_20px_rgba(70,50,30,0.04)] space-y-5">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F2ECE2] text-[#5F4930]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff] text-[#7D613D]">
               <Calendar size={18} />
             </div>
             <div>
@@ -256,10 +256,10 @@ export default function SettingsPage() {
               <div
                 key={preset.id}
                 onClick={() => handlePresetSelect(preset.id)}
-                className={`cursor-pointer rounded-lg border p-3.5 transition-all ${
+                className={`cursor-pointer rounded-xl border p-3.5 transition-all duration-150 ${
                   isSelected
-                    ? 'border-[#8B6F47] bg-[#FAF7F2] ring-1 ring-[#8B6F47]'
-                    : 'border-[#E4DDD2] bg-[#FFFDF9] hover:border-[#D5CCBF]'
+                    ? 'border-[#7D613D] bg-white/85 ring-1 ring-[#7D613D] shadow-[inset_0_1px_1.5px_#fff,0_4px_16px_rgba(125,97,61,0.08)]'
+                    : 'border-white/70 bg-white/50 hover:bg-white/75 hover:border-white/90 shadow-xs'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -267,7 +267,7 @@ export default function SettingsPage() {
                     {preset.name}
                   </span>
                   {isSelected && (
-                    <span className="rounded-full bg-[#E9DDCB] px-2 py-0.5 text-[0.625rem] font-bold text-[#5F4930]">
+                    <span className="rounded-full bg-white/80 border border-white/90 px-2 py-0.5 text-[0.625rem] font-bold text-[#543E26] shadow-xs">
                       Active
                     </span>
                   )}
@@ -279,7 +279,7 @@ export default function SettingsPage() {
                   {preset.intervals.map((day, idx) => (
                     <span
                       key={idx}
-                      className="rounded bg-[#F2ECE2] px-1.5 py-0.5 text-[0.625rem] font-mono font-bold text-[#5F4930]"
+                      className="rounded-md bg-white/75 px-1.5 py-0.5 text-[0.625rem] font-mono font-bold text-[#543E26] border border-white/80 shadow-xs"
                     >
                       +{day}d
                     </span>
@@ -292,10 +292,10 @@ export default function SettingsPage() {
           {/* Custom Preset Card */}
           <div
             onClick={() => setActivePreset('custom')}
-            className={`cursor-pointer rounded-lg border p-3.5 transition-all ${
+            className={`cursor-pointer rounded-xl border p-3.5 transition-all duration-150 ${
               activePreset === 'custom'
-                ? 'border-[#8B6F47] bg-[#FAF7F2] ring-1 ring-[#8B6F47]'
-                : 'border-[#E4DDD2] bg-[#FFFDF9] hover:border-[#D5CCBF]'
+                ? 'border-[#7D613D] bg-white/85 ring-1 ring-[#7D613D] shadow-[inset_0_1px_1.5px_#fff,0_4px_16px_rgba(125,97,61,0.08)]'
+                : 'border-white/70 bg-white/50 hover:bg-white/75 hover:border-white/90 shadow-xs'
             }`}
           >
             <div className="flex items-center justify-between">
@@ -303,7 +303,7 @@ export default function SettingsPage() {
                 Custom Intervals
               </span>
               {activePreset === 'custom' && (
-                <span className="rounded-full bg-[#E9DDCB] px-2 py-0.5 text-[0.625rem] font-bold text-[#5F4930]">
+                <span className="rounded-full bg-white/80 border border-white/90 px-2 py-0.5 text-[0.625rem] font-bold text-[#543E26] shadow-xs">
                   Active
                 </span>
               )}
@@ -315,7 +315,7 @@ export default function SettingsPage() {
               {customIntervals.map((day, idx) => (
                 <span
                   key={idx}
-                  className="rounded bg-[#F2ECE2] px-1.5 py-0.5 text-[0.625rem] font-mono font-bold text-[#5F4930]"
+                  className="rounded-md bg-white/75 px-1.5 py-0.5 text-[0.625rem] font-mono font-bold text-[#543E26] border border-white/80 shadow-xs"
                 >
                   +{day}d
                 </span>
