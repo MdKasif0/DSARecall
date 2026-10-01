@@ -1,15 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, ArrowRight, CheckCircle2 } from 'lucide-react';
 import type { DSAQuestion, RevisionRecord } from '@/lib/types';
-import { formatDateDisplay } from '@/lib/dates';
+import {
+  formatDateDisplay,
+  formatDateShort,
+  getNextRevision,
+  getQuestionProgress,
+  REVISION_LABELS,
+  getTodayISO,
+} from '@/lib/dates';
 import StatusBadge from './StatusBadge';
-import RevisionCell from './RevisionCell';
 
 interface QuestionsTableProps {
   questions: DSAQuestion[];
-  recordsMap?: Map<string, RevisionRecord>;
+  recordsMap: Map<string, RevisionRecord>;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }
@@ -20,102 +26,152 @@ export default function QuestionsTable({
   onEdit,
   onDelete,
 }: QuestionsTableProps) {
-  const isDone = (qId: string, interval: number) => {
-    if (!recordsMap) return false;
-    return recordsMap.get(`${qId}_${interval}`)?.completed === true;
-  };
+  const today = getTodayISO();
 
   return (
     <div className="table-container card">
       <table className="data-table">
         <thead>
-          <tr>
+          <tr className="bg-slate-50/80">
             <th>Question</th>
-            <th>Date Solved</th>
-            <th>+3 Days</th>
-            <th>+7 Days</th>
-            <th>+15 Days</th>
-            <th>+30 Days</th>
-            <th>+60 Days</th>
-            <th>+120 Days</th>
+            <th>Solved</th>
+            <th>Next Revision</th>
             <th>Status</th>
-            <th>Actions</th>
+            <th className="min-w-[150px]">Progress</th>
+            <th className="text-right">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          {questions.map((q) => (
-            <tr key={q.id}>
-              <td className="font-medium text-text max-w-[220px]">
-                <Link
-                  href={`/questions/${q.id}`}
-                  className="font-medium text-text hover:text-primary transition-colors no-underline block truncate"
-                  title={q.questionName}
-                >
-                  {q.questionName}
-                </Link>
-              </td>
-              <td className="text-text-muted">{formatDateDisplay(q.dateSolved)}</td>
-              <td>
-                <RevisionCell
-                  dateStr={q.revision3}
-                  isCompleted={isDone(q.id, 3)}
-                />
-              </td>
-              <td>
-                <RevisionCell
-                  dateStr={q.revision7}
-                  isCompleted={isDone(q.id, 7)}
-                />
-              </td>
-              <td>
-                <RevisionCell
-                  dateStr={q.revision15}
-                  isCompleted={isDone(q.id, 15)}
-                />
-              </td>
-              <td>
-                <RevisionCell
-                  dateStr={q.revision30}
-                  isCompleted={isDone(q.id, 30)}
-                />
-              </td>
-              <td>
-                <RevisionCell
-                  dateStr={q.revision60}
-                  isCompleted={isDone(q.id, 60)}
-                />
-              </td>
-              <td>
-                <RevisionCell
-                  dateStr={q.revision120}
-                  isCompleted={isDone(q.id, 120)}
-                />
-              </td>
-              <td>
-                <StatusBadge status={q.status} />
-              </td>
-              <td>
-                <div className="flex items-center gap-1">
-                  <button
-                    className="btn-icon btn-ghost"
-                    onClick={() => onEdit(q.id)}
-                    aria-label={`Edit ${q.questionName}`}
-                    title="Edit Question"
-                  >
-                    <Pencil size={14} />
-                  </button>
-                  <button
-                    className="btn-icon btn-ghost text-danger"
-                    onClick={() => onDelete(q.id)}
-                    aria-label={`Delete ${q.questionName}`}
-                    title="Delete Question"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+        <tbody className="divide-y divide-border">
+          {questions.map((q) => {
+            const nextRev = getNextRevision(q, recordsMap);
+            const { completedCount, total, percent } = getQuestionProgress(q.id, recordsMap);
+
+            // Compute next revision pill styling
+            let nextRevElement = null;
+            if (!nextRev) {
+              if (completedCount === 6) {
+                nextRevElement = (
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                    <CheckCircle2 size={13} />
+                    All 6 Done
+                  </span>
+                );
+              } else {
+                nextRevElement = <span className="text-xs text-text-muted">None pending</span>;
+              }
+            } else {
+              const isDue = nextRev.date === today;
+              const isPast = nextRev.date < today;
+
+              let badgeStyle = 'bg-slate-100 text-slate-700';
+              if (isDue) {
+                badgeStyle = 'bg-[#FEF3C7] text-[#B45309] font-bold border border-[#FDE68A]';
+              } else if (isPast) {
+                badgeStyle = 'bg-danger-light text-danger font-bold border border-[#FECACA]';
+              }
+
+              nextRevElement = (
+                <div className="flex flex-col gap-0.5">
+                  <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs ${badgeStyle}`}>
+                    <span>{REVISION_LABELS[nextRev.interval]}</span>
+                    <span>·</span>
+                    <span>{formatDateShort(nextRev.date)}</span>
+                  </span>
+                  <span className="text-[0.6875rem] text-text-muted pl-0.5">
+                    {nextRev.daysUntil === 0
+                      ? 'Due Today'
+                      : nextRev.daysUntil < 0
+                      ? `${Math.abs(nextRev.daysUntil)}d overdue`
+                      : nextRev.daysUntil === 1
+                      ? 'Tomorrow'
+                      : `in ${nextRev.daysUntil} days`}
+                  </span>
                 </div>
-              </td>
-            </tr>
-          ))}
+              );
+            }
+
+            return (
+              <tr key={q.id} className="hover:bg-slate-50/60 transition-colors">
+                {/* Question Name & Topic */}
+                <td className="font-medium text-text max-w-[260px]">
+                  <div className="flex flex-col gap-1">
+                    <Link
+                      href={`/questions/${q.id}`}
+                      className="font-semibold text-text hover:text-primary no-underline block truncate"
+                      title={q.questionName}
+                    >
+                      {q.questionName}
+                    </Link>
+                    {q.topic && (
+                      <span className="inline-block self-start rounded bg-slate-100 px-2 py-0.5 text-[0.6875rem] font-medium text-slate-600">
+                        {q.topic}
+                      </span>
+                    )}
+                  </div>
+                </td>
+
+                {/* Solved Date */}
+                <td className="text-xs text-text-muted">
+                  {formatDateDisplay(q.dateSolved)}
+                </td>
+
+                {/* Next Revision */}
+                <td>{nextRevElement}</td>
+
+                {/* Status */}
+                <td>
+                  <StatusBadge status={q.status} />
+                </td>
+
+                {/* Progress Bar: X / 6 (Y%) */}
+                <td>
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-text font-medium">
+                        {completedCount} / {total}
+                      </span>
+                      <span className="text-text-muted font-semibold">{percent}%</span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden border border-border">
+                      <div
+                        className="bg-primary h-1.5 rounded-full transition-all duration-300"
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                  </div>
+                </td>
+
+                {/* Actions */}
+                <td className="text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <Link
+                      href={`/questions/${q.id}`}
+                      className="btn btn-ghost btn-sm text-primary p-1.5"
+                      title="View Details"
+                    >
+                      <ArrowRight size={15} />
+                    </Link>
+                    <button
+                      className="btn-icon btn-ghost p-1.5"
+                      onClick={() => onEdit(q.id)}
+                      aria-label={`Edit ${q.questionName}`}
+                      title="Edit Question"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    <button
+                      className="btn-icon btn-ghost p-1.5 text-danger"
+                      onClick={() => onDelete(q.id)}
+                      aria-label={`Delete ${q.questionName}`}
+                      title="Delete Question"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
