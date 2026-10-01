@@ -69,7 +69,7 @@
   --color-warning: var(--status-warning);
   --color-danger: var(--status-danger);
 
-  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-manrope), "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 /* ─── Base ─── */
