@@ -22,11 +22,13 @@ interface QuestionsContextValue {
     name: string,
     dateSolved: string,
     status?: QuestionStatus,
-    topic?: string
+    topic?: string,
+    difficulty?: import('@/lib/types').QuestionDifficulty,
+    priority?: import('@/lib/types').QuestionPriority
   ) => DSAQuestion;
   updateQuestion: (
     id: string,
-    updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status' | 'topic'>>
+    updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status' | 'topic' | 'difficulty' | 'priority'>>
   ) => DSAQuestion | null;
   deleteQuestion: (id: string) => boolean;
   markRevision: (questionId: string, interval: RevisionInterval, completed?: boolean) => void;
@@ -75,8 +77,15 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
   }, [records]);
 
   const handleAdd = useCallback(
-    (name: string, dateSolved: string, status?: QuestionStatus, topic?: string) => {
-      const q = storage.addQuestion(name, dateSolved, status, topic);
+    (
+      name: string,
+      dateSolved: string,
+      status?: QuestionStatus,
+      topic?: string,
+      difficulty?: import('@/lib/types').QuestionDifficulty,
+      priority?: import('@/lib/types').QuestionPriority
+    ) => {
+      const q = storage.addQuestion(name, dateSolved, status, topic, difficulty, priority);
       refreshQuestions();
       toast.success(`Added "${q.questionName}"`);
       return q;
@@ -87,7 +96,7 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
   const handleUpdate = useCallback(
     (
       id: string,
-      updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status' | 'topic'>>
+      updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status' | 'topic' | 'difficulty' | 'priority'>>
     ) => {
       const q = storage.updateQuestion(id, updates);
       refreshQuestions();
