@@ -5,7 +5,7 @@ import type {
   RevisionInterval,
   TrackerExportData,
 } from './types';
-import { REVISION_INTERVALS, REVISION_KEYS, REVISION_LABELS } from './types';
+import { REVISION_INTERVALS, REVISION_KEYS } from './types';
 import {
   calculateRevisionDates,
   generateId,
