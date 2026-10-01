@@ -86,31 +86,38 @@ function AddQuestionForm({
   };
 
   return (
-    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-      {/* Header matching Section 23 */}
-      <div className="flex items-center justify-between border-b border-border px-6 py-4.5">
-        <div>
-          <h2 className="text-lg font-bold tracking-tight text-text">
-            {isEditing ? 'Edit Question' : 'Add Question'}
-          </h2>
-          <p className="text-xs text-text-muted mt-0.5">
-            DSA spaced-repetition tracker
-          </p>
+    <div className="modal-content !p-0 overflow-hidden shadow-[0_24px_64px_rgba(15,23,42,0.18),inset_0_1px_1.5px_rgba(255,255,255,0.95)] border border-white/80" onClick={(e) => e.stopPropagation()}>
+      {/* Header with macOS window control & subtle specular sheen */}
+      <div className="flex items-center justify-between border-b border-white/60 bg-white/40 px-6 py-4.5 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 mr-1">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]/80 shadow-[inset_0_0.5px_1px_rgba(255,255,255,0.8)]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]/80 shadow-[inset_0_0.5px_1px_rgba(255,255,255,0.8)]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]/80 shadow-[inset_0_0.5px_1px_rgba(255,255,255,0.8)]" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold tracking-tight text-slate-900">
+              {isEditing ? 'Edit Question' : 'Add Question'}
+            </h2>
+            <p className="text-[11px] text-slate-500 font-medium">
+              Spaced-repetition memory system
+            </p>
+          </div>
         </div>
         <button
-          className="flex h-8 w-8 items-center justify-center rounded-md text-text-muted hover:bg-[#F1E9DE] hover:text-text transition-colors"
+          className="flex h-7 w-7 items-center justify-center rounded-full bg-white/60 hover:bg-white text-slate-500 hover:text-slate-800 transition-all border border-white/80 shadow-xs"
           onClick={onClose}
           aria-label="Close modal"
         >
-          <X size={17} />
+          <X size={15} />
         </button>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="p-6 space-y-4.5">
         {error && (
-          <div className="flex items-center gap-2 rounded-lg bg-[#F4E4DF] border border-[#E6D0CA] p-3 text-xs text-[#A65D50]">
-            <AlertCircle size={15} className="shrink-0" />
+          <div className="flex items-center gap-2 rounded-xl bg-rose-500/10 border border-rose-500/25 p-3 text-xs text-rose-800 backdrop-blur-sm shadow-xs">
+            <AlertCircle size={15} className="shrink-0 text-rose-600" />
             <span>{error}</span>
           </div>
         )}
@@ -247,17 +254,17 @@ function AddQuestionForm({
         )}
 
         {dateChanged && (
-          <p className="text-xs text-[#795B39] bg-[#EDE1CF] rounded-md p-2.5 border border-[#DFD1BC]">
+          <p className="text-xs text-amber-900 bg-amber-500/10 rounded-xl p-3 border border-amber-500/25 backdrop-blur-sm shadow-xs leading-relaxed">
             Notice: Modifying the solved date automatically recalculates all revision dates (+3, +7, +15, +30, +60, +120 days).
           </p>
         )}
 
         {/* Timeline Preview: "Your Revision Schedule" matching Section 23 */}
         {preview && (
-          <div className="rounded-lg border border-border bg-[#FAF7F2] p-3.5 space-y-2.5">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-text">
-              <Clock size={14} className="text-[#8B6F47]" />
-              <span>Your Revision Schedule</span>
+          <div className="rounded-xl border border-white/80 bg-white/50 backdrop-blur-md p-4 space-y-3 shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.95)]">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+              <Clock size={14} className="text-emerald-600" />
+              <span>Calculated Revision Schedule</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -267,12 +274,12 @@ function AddQuestionForm({
                 return (
                   <div
                     key={interval}
-                    className="rounded-md bg-white border border-[#E4DDD2] p-2 flex flex-col gap-0.5 shadow-xs"
+                    className="rounded-lg bg-white/70 backdrop-blur-sm border border-white/90 p-2 flex flex-col gap-0.5 shadow-xs"
                   >
-                    <span className="text-[0.6875rem] font-bold text-[#8B6F47]">
+                    <span className="text-[0.6875rem] font-bold text-emerald-700">
                       {REVISION_LABELS[interval]}
                     </span>
-                    <span className="text-xs font-bold text-[#29251F]">
+                    <span className="text-xs font-bold text-slate-800">
                       {formatDateShort(dateVal)}
                     </span>
                   </div>
@@ -283,7 +290,7 @@ function AddQuestionForm({
         )}
 
         {/* Modal Actions */}
-        <div className="mt-6 flex items-center justify-end gap-2.5 pt-2 border-t border-border">
+        <div className="mt-6 flex items-center justify-end gap-2.5 pt-3 border-t border-white/60">
           <button
             type="button"
             className="btn btn-secondary btn-sm"
