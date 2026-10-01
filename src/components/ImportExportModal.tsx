@@ -32,6 +32,17 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
   const [overwrite, setOverwrite] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const today = getTodayISO();
@@ -96,12 +107,18 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="modal-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="backup-modal-title"
+    >
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-semibold text-text">
+            <h2 id="backup-modal-title" className="text-base font-semibold text-text">
               Backup & Transfer
             </h2>
           </div>
