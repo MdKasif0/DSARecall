@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ArrowLeft,
   Calendar,
   Clock,
   Pencil,
@@ -29,6 +28,7 @@ import {
 import StatusBadge from '@/components/StatusBadge';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import RevisionTimeline from '@/components/RevisionTimeline';
+import TopBar from '@/components/TopBar';
 import { openEditModal } from '@/lib/events';
 
 export default function QuestionDetailPage() {
@@ -54,15 +54,9 @@ export default function QuestionDetailPage() {
   if (!question) {
     return (
       <div className="space-y-4">
-        <Link
-          href="/questions"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-text no-underline"
-        >
-          <ArrowLeft size={16} />
-          Back to all questions
-        </Link>
+        <TopBar />
         <div className="card p-8 text-center">
-          <h2 className="text-lg font-semibold text-text">Question Not Found</h2>
+          <h2 className="text-lg font-bold text-text">Question Not Found</h2>
           <p className="mt-1 text-sm text-text-muted">
             The question you are looking for may have been deleted.
           </p>
@@ -116,52 +110,28 @@ export default function QuestionDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb / Back button */}
-      <div className="flex items-center justify-between">
-        <Link
-          href="/questions"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-text no-underline transition-colors"
-        >
-          <ArrowLeft size={16} />
-          Back to Questions
-        </Link>
-        <div className="flex items-center gap-2">
-          <button
-            className="btn btn-secondary btn-sm"
-            onClick={() => openEditModal(question.id)}
-          >
-            <Pencil size={14} />
-            Edit
-          </button>
-          <button
-            className="btn btn-ghost btn-sm text-danger hover:bg-danger-light"
-            onClick={() => setDeleteOpen(true)}
-          >
-            <Trash2 size={14} />
-            Delete
-          </button>
-        </div>
-      </div>
+      {/* Top Bar with Breadcrumb and Profile */}
+      <TopBar />
 
       {/* Main Question Header Card */}
       <div className="card p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-bold text-text break-words">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text break-words">
                 {question.questionName}
               </h1>
               {question.topic && (
-                <span className="rounded bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+                <span className="rounded bg-[#F2ECE2] px-2.5 py-0.5 text-xs font-semibold text-[#71695F] border border-[#E4DDD2]">
                   {question.topic}
                 </span>
               )}
               <StatusBadge status={question.status} />
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-text-muted">
-              <span className="flex items-center gap-1.5">
-                <Calendar size={14} className="text-text-muted" />
+            <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-text-muted">
+              <span className="flex items-center gap-1.5 text-text-secondary font-medium">
+                <Calendar size={14} className="text-[#8B6F47]" />
                 Solved on {formatDateLong(question.dateSolved)}
               </span>
               <span>•</span>
@@ -172,16 +142,14 @@ export default function QuestionDetailPage() {
             </div>
           </div>
 
-          {/* Quick status dropdown */}
-          <div className="flex items-center gap-2">
-            <label htmlFor="status-select" className="text-xs font-medium text-text-muted">
-              Status:
-            </label>
+          {/* Quick Actions & Status dropdown */}
+          <div className="flex flex-wrap items-center gap-2 self-start">
             <select
               id="status-select"
-              className="select text-xs py-1.5 px-2.5 h-8 w-auto min-w-[130px]"
+              className="select text-xs py-1 px-2.5 h-8.5 w-auto min-w-[125px]"
               value={question.status}
               onChange={(e) => handleStatusChange(e.target.value as QuestionStatus)}
+              aria-label="Change question status"
             >
               {STATUS_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>
@@ -189,29 +157,45 @@ export default function QuestionDetailPage() {
                 </option>
               ))}
             </select>
+
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={() => openEditModal(question.id)}
+            >
+              <Pencil size={13} />
+              <span>Edit</span>
+            </button>
+            <button
+              className="btn btn-ghost btn-sm text-[#A65D50] hover:bg-[#F4E4DF]"
+              onClick={() => setDeleteOpen(true)}
+            >
+              <Trash2 size={13} />
+              <span>Delete</span>
+            </button>
           </div>
         </div>
 
         {/* Progress Bar & Next Checkpoint */}
-        <div className="mt-6 border-t border-border pt-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-2">
+        <div className="mt-6 border-t border-border pt-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-                Revision Progress
+              <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-text-muted">
+                REVISION PROGRESS
               </span>
-              <p className="text-sm font-medium text-text">
+              <p className="text-sm font-semibold text-text mt-0.5">
                 {completedCount} of 6 revisions completed ({progressPercent}%)
               </p>
             </div>
             {nextCheckpoint && (
-              <div className="text-right">
-                <span className="text-xs text-text-muted">Next Checkpoint</span>
-                <p className="text-sm font-semibold text-primary">
-                  {REVISION_LABELS[nextCheckpoint.interval]} on{' '}
-                  {formatDateDisplay(nextCheckpoint.date)}{' '}
-                  <span className="font-normal text-text-muted text-xs">
+              <div className="text-left sm:text-right">
+                <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-text-muted">
+                  NEXT CHECKPOINT
+                </span>
+                <p className="text-xs font-bold text-[#8B6F47] mt-0.5">
+                  {REVISION_LABELS[nextCheckpoint.interval]} · {formatDateDisplay(nextCheckpoint.date)}{' '}
+                  <span className="font-normal text-text-muted text-[0.6875rem]">
                     ({nextCheckpoint.daysUntil === 0
-                      ? 'Today'
+                      ? 'Due today'
                       : nextCheckpoint.daysUntil === 1
                       ? 'Tomorrow'
                       : `in ${nextCheckpoint.daysUntil} days`})
@@ -221,16 +205,16 @@ export default function QuestionDetailPage() {
             )}
           </div>
 
-          <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-border">
+          <div className="w-full bg-[#E7DED1] rounded-full h-[6px] overflow-hidden">
             <div
-              className="bg-primary h-2 rounded-full transition-all duration-300"
+              className="bg-[#8B6F47] h-[6px] rounded-full transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
         </div>
       </div>
 
-      {/* Spaced Revision Schedule Timeline */}
+      {/* Spaced Revision Schedule Timeline matching Section 19 */}
       <RevisionTimeline
         question={question}
         recordsMap={recordsMap}
