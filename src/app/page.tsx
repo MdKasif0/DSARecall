@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import {
   BookOpen,
@@ -10,6 +11,9 @@ import {
   ArrowRight,
   AlertCircle,
   Sparkles,
+  Percent,
+  Download,
+  TableProperties,
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
 import {
@@ -29,6 +33,7 @@ import {
 import StatCard from '@/components/StatCard';
 import EmptyState from '@/components/EmptyState';
 import StatusBadge from '@/components/StatusBadge';
+import ImportExportModal from '@/components/ImportExportModal';
 import { openAddModal } from '@/lib/events';
 
 interface ActionItem {
@@ -39,7 +44,8 @@ interface ActionItem {
 }
 
 export default function DashboardPage() {
-  const { questions, recordsMap, isLoaded, markRevision } = useQuestions();
+  const { questions, records, recordsMap, isLoaded, markRevision } = useQuestions();
+  const [backupOpen, setBackupOpen] = useState(false);
 
   if (!isLoaded) {
     return (
@@ -80,7 +86,15 @@ export default function DashboardPage() {
   upcomingItems.sort((a, b) => a.date.localeCompare(b.date));
 
   const totalActions = dueTodayItems.length + overdueItems.length;
-  const completedQuestionsCount = questions.filter((q) => q.status === 'Completed').length;
+
+  // Real derived stats
+  const completedCheckpointsCount = records.filter((r) => r.completed).length;
+  const totalPossibleCheckpoints = questions.length * 6;
+  const completionRate =
+    totalPossibleCheckpoints > 0
+      ? Math.round((completedCheckpointsCount / totalPossibleCheckpoints) * 100)
+      : 0;
+
   const upcomingSlice = upcomingItems.slice(0, 6);
 
   return (
@@ -94,9 +108,17 @@ export default function DashboardPage() {
           <p className="mt-0.5 text-xs text-text-muted">{formatTodayLong()}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/today" className="btn btn-secondary btn-sm no-underline">
-            <CalendarCheck size={14} />
-            Today&apos;s Workspace
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setBackupOpen(true)}
+            title="Backup and Export Data"
+          >
+            <Download size={14} />
+            <span className="hide-mobile">Backup / Export</span>
+          </button>
+          <Link href="/questions" className="btn btn-secondary btn-sm no-underline">
+            <TableProperties size={14} />
+            <span className="hide-mobile">Questions Table</span>
           </Link>
           <button className="btn btn-primary btn-sm" onClick={openAddModal}>
             <Plus size={15} />
@@ -105,8 +127,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+      {/* Real Statistics Grid */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-6">
         <StatCard
           label="Total Questions"
           value={questions.length}
@@ -125,15 +147,21 @@ export default function DashboardPage() {
           accent="var(--danger)"
         />
         <StatCard
-          label="Completed"
-          value={completedQuestionsCount}
+          label="Upcoming"
+          value={upcomingItems.length}
+          icon={<Clock size={18} className="text-primary" />}
+          accent="var(--primary)"
+        />
+        <StatCard
+          label="Completed Revisions"
+          value={`${completedCheckpointsCount} / ${totalPossibleCheckpoints}`}
           icon={<CheckCircle2 size={18} className="text-success" />}
           accent="var(--success)"
         />
         <StatCard
-          label="Upcoming"
-          value={upcomingItems.length}
-          icon={<Clock size={18} className="text-primary" />}
+          label="Completion Rate"
+          value={`${completionRate}%`}
+          icon={<Percent size={18} className="text-primary" />}
           accent="var(--primary)"
         />
       </div>
@@ -200,6 +228,11 @@ export default function DashboardPage() {
                       >
                         {question.questionName}
                       </Link>
+                      {question.topic && (
+                        <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[0.6875rem] font-medium text-slate-700">
+                          {question.topic}
+                        </span>
+                      )}
                       <span className="rev-overdue text-xs">
                         {REVISION_LABELS[interval]}
                       </span>
@@ -244,6 +277,11 @@ export default function DashboardPage() {
                       >
                         {question.questionName}
                       </Link>
+                      {question.topic && (
+                        <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[0.6875rem] font-medium text-slate-700">
+                          {question.topic}
+                        </span>
+                      )}
                       <span className="rev-today text-xs">
                         {REVISION_LABELS[interval]}
                       </span>
@@ -341,6 +379,12 @@ export default function DashboardPage() {
           </div>
         )}
       </section>
+
+      {/* Backup & Export Modal */}
+      <ImportExportModal
+        open={backupOpen}
+        onClose={() => setBackupOpen(false)}
+      />
     </div>
   );
 }
