@@ -6,12 +6,9 @@ import Link from 'next/link';
 import {
   ArrowLeft,
   Calendar,
-  CheckCircle2,
   Clock,
   Pencil,
   Trash2,
-  AlertCircle,
-  Check,
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
 import {

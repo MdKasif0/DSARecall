@@ -17,7 +17,6 @@ import {
 import {
   formatDateDisplay,
   getDaysUntilRevision,
-  getTodayISO,
 } from '@/lib/dates';
 
 interface RevisionTimelineProps {
@@ -31,8 +30,6 @@ export default function RevisionTimeline({
   recordsMap,
   onMarkRevision,
 }: RevisionTimelineProps) {
-  const today = getTodayISO();
-
   return (
     <div className="card p-5 space-y-4">
       <div className="border-b border-border pb-3">
@@ -66,7 +63,6 @@ export default function RevisionTimeline({
           const diff = getDaysUntilRevision(scheduledDate);
           const isDue = diff === 0 && !isDone;
           const isOverdue = diff < 0 && !isDone;
-          const isFuture = diff > 0 && !isDone;
 
           let bulletClass = 'future';
           if (isDone) bulletClass = 'completed';
