@@ -347,17 +347,18 @@ export default function PracticePage() {
                   {/* Question Title */}
                   <h3 className="text-sm font-bold text-text group flex items-start justify-between gap-2">
                     <span>{item.name}</span>
-                    {item.link && (
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-text-muted hover:text-[#5F4930] transition-colors shrink-0 mt-0.5"
-                        title="View problem on LeetCode"
-                      >
-                        <ExternalLink size={13} />
-                      </a>
-                    )}
+                    <a
+                      href={
+                        item.link ||
+                        `https://leetcode.com/problem-list/all-codes/?search=${encodeURIComponent(item.name)}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-text-muted hover:text-[#5F4930] transition-colors shrink-0 mt-0.5"
+                      title="View problem on LeetCode"
+                    >
+                      <ExternalLink size={13} />
+                    </a>
                   </h3>
 
                   {/* Pattern badge */}

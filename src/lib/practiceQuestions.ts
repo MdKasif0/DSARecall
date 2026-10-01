@@ -6,6 +6,7 @@ export interface PracticeQuestion {
   pattern: string;
   leetcodeNumber: number;
   tip: string;
+  link?: string;
 }
 
 export const PRACTICE_TOPICS = [
