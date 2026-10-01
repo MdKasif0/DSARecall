@@ -197,34 +197,35 @@ export default function QuestionsPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2 self-start">
-          {/* Modern Table Toggle */}
-          <button
-            className={`btn btn-sm ${
-              viewMode === 'modern'
-                ? 'bg-[#6B5035] text-white hover:bg-[#57412C] border-[#6B5035]'
-                : 'btn-secondary text-text-secondary'
-            }`}
-            onClick={() => setViewMode('modern')}
-            title="Modern Table with Progress and Next Revision"
-          >
-            <List size={14} />
-            <span>Modern Table</span>
-          </button>
+        <div className="flex flex-wrap items-center gap-2.5 self-start">
+          {/* Segmented View Mode Toggle */}
+          <div className="flex p-1 bg-slate-200/50 backdrop-blur-md border border-white/70 rounded-xl gap-0.5">
+            <button
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                viewMode === 'modern'
+                  ? 'bg-white text-slate-900 shadow-sm border border-white/90'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+              onClick={() => setViewMode('modern')}
+              title="Modern Table with Progress and Next Revision"
+            >
+              <List size={14} />
+              <span>Modern Table</span>
+            </button>
 
-          {/* Excel View Toggle */}
-          <button
-            className={`btn btn-sm ${
-              viewMode === 'spreadsheet'
-                ? 'bg-[#6B5035] text-white hover:bg-[#57412C] border-[#6B5035]'
-                : 'btn-secondary text-text-secondary'
-            }`}
-            onClick={() => setViewMode('spreadsheet')}
-            title="Original Excel Spreadsheet View with all 6 intervals"
-          >
-            <TableProperties size={14} />
-            <span>Excel View</span>
-          </button>
+            <button
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                viewMode === 'spreadsheet'
+                  ? 'bg-white text-slate-900 shadow-sm border border-white/90'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+              onClick={() => setViewMode('spreadsheet')}
+              title="Original Excel Spreadsheet View with all 6 intervals"
+            >
+              <TableProperties size={14} />
+              <span>Excel View</span>
+            </button>
+          </div>
 
           {/* Backup / Export */}
           <button
