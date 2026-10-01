@@ -42,18 +42,18 @@ export default function ConfirmDialog({
       aria-labelledby="confirm-dialog-title"
     >
       <div
-        className="modal-content max-w-sm"
+        className="modal-content max-w-sm !p-0 overflow-hidden shadow-[0_24px_64px_rgba(15,23,42,0.18),inset_0_1px_1.5px_rgba(255,255,255,0.95)] border border-white/80"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-5">
-          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-danger-light">
-            <AlertTriangle size={20} className="text-danger" />
+        <div className="p-6">
+          <div className="mb-3.5 flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-700 border border-rose-500/25 shadow-xs">
+            <AlertTriangle size={20} className="text-rose-600" />
           </div>
-          <h3 id="confirm-dialog-title" className="text-base font-semibold text-text">
+          <h3 id="confirm-dialog-title" className="text-base font-bold text-slate-900 tracking-tight">
             {title}
           </h3>
-          <p className="mt-1 text-xs text-text-muted leading-relaxed">{message}</p>
-          <div className="mt-5 flex items-center justify-end gap-2">
+          <p className="mt-1.5 text-xs text-slate-500 leading-relaxed font-medium">{message}</p>
+          <div className="mt-6 flex items-center justify-end gap-2.5 pt-3 border-t border-white/60">
             <button
               className="btn btn-secondary btn-sm"
               onClick={onCancel}
