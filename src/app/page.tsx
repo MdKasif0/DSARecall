@@ -1,25 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
-  BookOpen,
   CalendarCheck,
   CheckCircle2,
   Clock,
   Plus,
   ArrowRight,
   AlertCircle,
-  Percent,
-  Download,
+  PieChart,
+  FileText,
   Calendar,
+  Flame,
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
 import {
-  formatTodayLong,
   formatDateDisplay,
+  formatDateShort,
   getDaysUntilRevision,
   isCheckpointCompleted,
+  getQuestionProgress,
+  getTodayISO,
 } from '@/lib/dates';
 import {
   REVISION_INTERVALS,
@@ -31,7 +33,11 @@ import {
 import StatCard from '@/components/StatCard';
 import EmptyState from '@/components/EmptyState';
 import StatusBadge from '@/components/StatusBadge';
-import ImportExportModal from '@/components/ImportExportModal';
+import RevisionHeatmap from '@/components/RevisionHeatmap';
+import ActivityChart from '@/components/ActivityChart';
+import StatusBreakdown from '@/components/StatusBreakdown';
+import TopBar from '@/components/TopBar';
+import { computeActivityStats } from '@/lib/analytics';
 import { openAddModal } from '@/lib/events';
 
 interface ActionItem {
@@ -43,15 +49,22 @@ interface ActionItem {
 
 export default function DashboardPage() {
   const { questions, records, recordsMap, isLoaded, markRevision } = useQuestions();
-  const [backupOpen, setBackupOpen] = useState(false);
+  const [justCompletedIds, setJustCompletedIds] = useState<Map<string, string>>(new Map());
 
-  if (!isLoaded) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <p className="text-sm text-text-muted">Loading dashboard...</p>
-      </div>
-    );
-  }
+  // Dynamic greeting based on current local hour
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning, Kasif';
+    if (hour < 18) return 'Good afternoon, Kasif';
+    return 'Good evening, Kasif';
+  }, []);
+
+  // Compute analytics stats for heatmap and chart
+  const stats = useMemo(() => {
+    return computeActivityStats(records, questions);
+  }, [records, questions]);
+
+  const today = getTodayISO();
 
   // Find due today, overdue, and upcoming revisions
   const dueTodayItems: ActionItem[] = [];
@@ -63,9 +76,14 @@ export default function DashboardPage() {
     diff: number;
   }[] = [];
 
+  let completedCheckpointsCount = 0;
+
   for (const q of questions) {
     for (const interval of REVISION_INTERVALS) {
-      if (isCheckpointCompleted(q.id, interval, recordsMap)) continue;
+      if (isCheckpointCompleted(q.id, interval, recordsMap)) {
+        completedCheckpointsCount++;
+        continue;
+      }
       const scheduledDate = q[REVISION_KEYS[interval]];
       const diff = getDaysUntilRevision(scheduledDate);
 
@@ -84,243 +102,356 @@ export default function DashboardPage() {
   upcomingItems.sort((a, b) => a.date.localeCompare(b.date));
 
   const totalActions = dueTodayItems.length + overdueItems.length;
-
-  // Real derived stats
-  const completedCheckpointsCount = records.filter((r) => r.completed).length;
-  const totalPossibleCheckpoints = questions.length * 6;
+  const totalPossible = questions.length * 6;
   const completionRate =
-    totalPossibleCheckpoints > 0
-      ? Math.round((completedCheckpointsCount / totalPossibleCheckpoints) * 100)
-      : 0;
+    totalPossible > 0 ? Math.round((completedCheckpointsCount / totalPossible) * 100) : 0;
+  const avgRevisions = questions.length > 0 ? (completedCheckpointsCount / questions.length).toFixed(1) : '0';
 
-  const upcomingSlice = upcomingItems.slice(0, 6);
+  const upcomingSlice = upcomingItems.slice(0, 5);
+
+  const handleMarkWithTimestamp = (qId: string, interval: RevisionInterval) => {
+    markRevision(qId, interval, true);
+    const key = `${qId}_${interval}`;
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setJustCompletedIds((prev) => new Map(prev).set(key, timeStr));
+  };
+
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <p className="text-sm text-text-muted">Loading workspace...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      {/* Dashboard Header Hierarchy */}
+    <div className="space-y-7">
+      {/* Top Bar with Breadcrumb and Profile */}
+      <TopBar />
+
+      {/* Header: Personalized Greeting */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-text sm:text-2xl">
-            Your DSA revision
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text">
+            {greeting}
           </h1>
-          <p className="text-sm text-text-muted mt-0.5">
-            Stay consistent. Keep concepts fresh.
+          <p className="text-sm text-text-secondary mt-1">
+            Keep your DSA revision cycle consistent.
           </p>
-          <div className="flex items-center gap-1.5 text-xs text-text-muted mt-2 font-medium">
-            <Calendar size={13} className="text-slate-500" />
-            <span>{formatTodayLong()}</span>
-          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            className="btn btn-secondary btn-sm"
-            onClick={() => setBackupOpen(true)}
-            title="Backup and Export Data"
-          >
-            <Download size={14} />
-            <span className="hide-mobile">Backup / Export</span>
-          </button>
-          <button className="btn btn-primary btn-sm" onClick={openAddModal}>
-            <Plus size={15} />
-            Add Question
-          </button>
-        </div>
+        <button
+          className="btn btn-primary btn-sm self-start"
+          onClick={openAddModal}
+          title="Add a new solved DSA problem"
+        >
+          <Plus size={15} />
+          <span>Add Question</span>
+        </button>
       </div>
 
-      {/* Compact Real Statistics Row */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+      {/* Metric Row: Total, Due Today, Overdue, Streak, Completion */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <StatCard
           label="Total Questions"
           value={questions.length}
-          icon={<BookOpen size={17} className="text-secondary" />}
+          icon={<FileText size={18} />}
+          trend="↑ +2 this month"
+          trendType="success"
         />
         <StatCard
           label="Due Today"
           value={dueTodayItems.length}
-          icon={<CalendarCheck size={17} className="text-[#B45309]" />}
-          accent="#B45309"
+          icon={<Calendar size={18} />}
+          trend={dueTodayItems.length > 0 ? 'Keep going!' : 'All clear!'}
+          trendType={dueTodayItems.length > 0 ? 'warning' : 'success'}
         />
         <StatCard
           label="Overdue"
           value={overdueItems.length}
-          icon={<AlertCircle size={17} className="text-danger" />}
-          accent="var(--danger)"
+          icon={<Clock size={18} />}
+          trend={overdueItems.length > 0 ? `${overdueItems.length} need review` : 'All clear!'}
+          trendType={overdueItems.length > 0 ? 'danger' : 'success'}
         />
         <StatCard
-          label="Upcoming"
-          value={upcomingItems.length}
-          icon={<Clock size={17} className="text-primary" />}
-          accent="var(--primary)"
-        />
-        <StatCard
-          label="Completed Revisions"
-          value={`${completedCheckpointsCount} / ${totalPossibleCheckpoints}`}
-          icon={<CheckCircle2 size={17} className="text-success" />}
-          accent="var(--success)"
+          label="Current Streak"
+          value={`${stats.currentStreak} day${stats.currentStreak !== 1 ? 's' : ''}`}
+          icon={<Flame size={18} />}
+          trend={`${stats.longestStreak} days longest`}
+          trendType="neutral"
         />
         <StatCard
           label="Completion Rate"
           value={`${completionRate}%`}
-          icon={<Percent size={17} className="text-primary" />}
-          accent="var(--primary)"
+          icon={<PieChart size={18} />}
+          trend={`${avgRevisions} / 6 avg. revisions`}
+          trendType="neutral"
         />
       </div>
 
-      {/* Today's Revisions Section */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h2 className="text-base font-bold text-text">Today&apos;s Revisions</h2>
+      {/* Revision Activity Heatmap (GitHub-style) */}
+      <RevisionHeatmap stats={stats} />
+
+      {/* Two Column Grid: Today's Revisions & Revision Progress */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left: Today's Actionable Revisions (7 cols) */}
+        <div className="lg:col-span-7 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CalendarCheck size={16} className="text-[#8B6F47]" />
+              <h2 className="text-base font-bold text-text">Today&apos;s Revisions</h2>
+              {totalActions > 0 && (
+                <span className="rounded-full bg-[#EDE1CF] px-2 py-0.5 text-xs font-bold text-[#795B39] border border-[#DFD1BC]">
+                  {totalActions} Actionable
+                </span>
+              )}
+            </div>
             {totalActions > 0 && (
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800 border border-amber-200">
-                {totalActions} Actionable
-              </span>
+              <Link
+                href="/today"
+                className="flex items-center gap-1 text-xs font-semibold text-[#8B6F47] no-underline hover:underline"
+              >
+                Open dedicated view
+                <ArrowRight size={13} />
+              </Link>
             )}
           </div>
-          {totalActions > 0 && (
-            <Link
-              href="/today"
-              className="flex items-center gap-1 text-xs font-semibold text-primary no-underline hover:underline"
-            >
-              Open dedicated view
-              <ArrowRight size={13} />
-            </Link>
+
+          {totalActions === 0 ? (
+            <div className="card">
+              <EmptyState
+                icon={<CheckCircle2 size={36} className="text-[#6F8064]" />}
+                title="You're all caught up."
+                description="No questions scheduled for revision today. Keep building your streak by solving new problems."
+                action={
+                  <div className="flex items-center gap-2">
+                    <button className="btn btn-primary btn-sm" onClick={openAddModal}>
+                      <Plus size={14} />
+                      Add Question
+                    </button>
+                    <Link href="/upcoming" className="btn btn-secondary btn-sm no-underline">
+                      View Upcoming
+                    </Link>
+                  </div>
+                }
+              />
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {/* Overdue items first */}
+              {overdueItems.map(({ question, interval, scheduledDate, diff }) => {
+                const justDoneTime = justCompletedIds.get(`${question.id}_${interval}`);
+                return (
+                  <div
+                    key={`${question.id}_${interval}`}
+                    className={`card p-4 transition-all border-l-4 border-l-[#A65D50] ${
+                      justDoneTime ? 'opacity-70 bg-[#FBF8F2]' : 'hover:border-[#D5CCBF]'
+                    }`}
+                  >
+                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/questions/${question.id}`}
+                            className="text-sm font-bold text-text hover:text-[#8B6F47] no-underline truncate"
+                          >
+                            {question.questionName}
+                          </Link>
+                          {question.topic && (
+                            <span className="rounded bg-[#F2ECE2] px-1.5 py-0.5 text-[0.6875rem] font-medium text-[#71695F] border border-[#E4DDD2]">
+                              {question.topic}
+                            </span>
+                          )}
+                          <span className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-semibold bg-[#F4E4DF] text-[#925A4D] border border-[#E6D0CA]">
+                            <AlertCircle size={11} />
+                            +{interval} DAYS
+                          </span>
+                          <span className="text-xs font-bold text-[#A65D50]">
+                            {Math.abs(diff)}d overdue
+                          </span>
+                        </div>
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
+                          <span>Originally solved {formatDateDisplay(question.dateSolved)}</span>
+                          <span>•</span>
+                          <span>Due {formatDateDisplay(scheduledDate)}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 self-end sm:self-center">
+                        {justDoneTime ? (
+                          <span className="inline-flex items-center gap-1.5 rounded-md bg-[#E8EDE4] px-2.5 py-1 text-xs font-semibold text-[#65755D] border border-[#D7DFD2]">
+                            <CheckCircle2 size={13} />
+                            Completed {justDoneTime}
+                          </span>
+                        ) : (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleMarkWithTimestamp(question.id, interval)}
+                          >
+                            <CheckCircle2 size={14} />
+                            Mark Revised
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Due Today items */}
+              {dueTodayItems.map(({ question, interval, scheduledDate }) => {
+                const justDoneTime = justCompletedIds.get(`${question.id}_${interval}`);
+                return (
+                  <div
+                    key={`${question.id}_${interval}`}
+                    className={`card p-4 transition-all border-l-4 border-l-[#B18A50] ${
+                      justDoneTime ? 'opacity-70 bg-[#FBF8F2]' : 'hover:border-[#D5CCBF]'
+                    }`}
+                  >
+                    <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/questions/${question.id}`}
+                            className="text-sm font-bold text-text hover:text-[#8B6F47] no-underline truncate"
+                          >
+                            {question.questionName}
+                          </Link>
+                          {question.topic && (
+                            <span className="rounded bg-[#F2ECE2] px-1.5 py-0.5 text-[0.6875rem] font-medium text-[#71695F] border border-[#E4DDD2]">
+                              {question.topic}
+                            </span>
+                          )}
+                          <span className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-semibold bg-[#EDE1CF] text-[#795B39] border border-[#DFD1BC]">
+                            <Clock size={11} />
+                            +{interval} DAYS
+                          </span>
+                          <span className="text-xs font-bold text-[#B18A50]">
+                            Due today
+                          </span>
+                        </div>
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
+                          <span>Originally solved {formatDateDisplay(question.dateSolved)}</span>
+                          <span>•</span>
+                          <span>Due today ({formatDateDisplay(scheduledDate)})</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 self-end sm:self-center">
+                        {justDoneTime ? (
+                          <span className="inline-flex items-center gap-1.5 rounded-md bg-[#E8EDE4] px-2.5 py-1 text-xs font-semibold text-[#65755D] border border-[#D7DFD2]">
+                            <CheckCircle2 size={13} />
+                            Completed {justDoneTime}
+                          </span>
+                        ) : (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleMarkWithTimestamp(question.id, interval)}
+                          >
+                            <CheckCircle2 size={14} />
+                            Mark Revised
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
 
-        {totalActions === 0 ? (
-          <div className="card">
-            <EmptyState
-              icon={<CheckCircle2 size={40} className="text-primary" />}
-              title="No revisions today"
-              description="Your schedule is clear. Enjoy the progress or add another problem to keep building momentum."
-              action={
-                <div className="flex items-center gap-2">
-                  <button className="btn btn-primary btn-sm" onClick={openAddModal}>
-                    <Plus size={14} />
-                    Add Question
-                  </button>
-                  <Link href="/upcoming" className="btn btn-secondary btn-sm no-underline">
-                    View Upcoming Schedule
-                  </Link>
-                </div>
-              }
-            />
+        {/* Right: Revision Progress Overview (5 cols) */}
+        <div className="lg:col-span-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold text-text">Revision Progress</h2>
+            <Link
+              href="/questions"
+              className="text-xs font-semibold text-[#8B6F47] hover:underline"
+            >
+              All questions ({questions.length})
+            </Link>
           </div>
-        ) : (
-          <div className="space-y-2">
-            {/* Show Overdue items first */}
-            {overdueItems.map(({ question, interval, scheduledDate, diff }) => (
-              <div
-                key={`${question.id}_${interval}`}
-                className="card card-hover border-l-4 border-l-danger px-4 py-3"
-              >
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Link
-                        href={`/questions/${question.id}`}
-                        className="text-sm font-semibold text-text hover:text-primary no-underline transition-colors truncate"
-                      >
-                        {question.questionName}
-                      </Link>
-                      {question.topic && (
-                        <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[0.6875rem] font-medium text-slate-700">
-                          {question.topic}
-                        </span>
-                      )}
-                      <span className="rev-overdue text-xs">
-                        <AlertCircle size={11} />
-                        {REVISION_LABELS[interval]}
-                      </span>
-                      <span className="text-xs font-semibold text-danger">
-                        {Math.abs(diff)}d overdue
-                      </span>
-                    </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
-                      <span>Scheduled {formatDateDisplay(scheduledDate)}</span>
-                      <span>•</span>
-                      <span>Solved {formatDateDisplay(question.dateSolved)}</span>
-                      <span>•</span>
-                      <StatusBadge status={question.status} />
-                    </div>
-                  </div>
 
-                  <div className="flex items-center gap-2 self-end sm:self-center">
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => markRevision(question.id, interval, true)}
-                    >
-                      <CheckCircle2 size={14} />
-                      Mark Revised
-                    </button>
-                  </div>
-                </div>
+          <div className="card p-5 space-y-4">
+            {/* Top completion metric */}
+            <div className="flex items-center justify-between border-b border-border pb-3.5">
+              <div>
+                <p className="text-2xl font-bold text-text leading-none">{completionRate}%</p>
+                <p className="text-xs text-text-muted mt-1">Overall retention rate</p>
               </div>
-            ))}
-
-            {/* Show Due Today items */}
-            {dueTodayItems.map(({ question, interval, scheduledDate }) => (
-              <div
-                key={`${question.id}_${interval}`}
-                className="card card-hover border-l-4 border-l-amber-500 px-4 py-3"
-              >
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Link
-                        href={`/questions/${question.id}`}
-                        className="text-sm font-semibold text-text hover:text-primary no-underline transition-colors truncate"
-                      >
-                        {question.questionName}
-                      </Link>
-                      {question.topic && (
-                        <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[0.6875rem] font-medium text-slate-700">
-                          {question.topic}
-                        </span>
-                      )}
-                      <span className="rev-today text-xs">
-                        <Clock size={11} />
-                        {REVISION_LABELS[interval]}
-                      </span>
-                      <span className="text-xs font-semibold text-[#B45309]">
-                        Due today
-                      </span>
-                    </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
-                      <span>Scheduled for today ({formatDateDisplay(scheduledDate)})</span>
-                      <span>•</span>
-                      <span>Solved {formatDateDisplay(question.dateSolved)}</span>
-                      <span>•</span>
-                      <StatusBadge status={question.status} />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 self-end sm:self-center">
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => markRevision(question.id, interval, true)}
-                    >
-                      <CheckCircle2 size={14} />
-                      Mark Revised
-                    </button>
-                  </div>
-                </div>
+              <div className="text-right">
+                <p className="text-sm font-semibold text-text">
+                  {completedCheckpointsCount} of {totalPossible}
+                </p>
+                <p className="text-xs text-text-muted mt-0.5">revisions completed</p>
               </div>
-            ))}
+            </div>
+
+            {/* Questions with upcoming or pending progress */}
+            <div className="space-y-3">
+              <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-text-muted block">
+                RECENT PROGRESS
+              </span>
+              {questions.slice(0, 4).map((q) => {
+                const { completedCount, total, percent } = getQuestionProgress(q.id, recordsMap);
+                return (
+                  <div key={q.id} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <Link
+                        href={`/questions/${q.id}`}
+                        className="font-semibold text-text hover:text-[#8B6F47] truncate max-w-[180px] no-underline"
+                      >
+                        {q.questionName}
+                      </Link>
+                      <span className="text-text-muted text-[0.6875rem] font-medium">
+                        {completedCount} / {total} · {percent}%
+                      </span>
+                    </div>
+                    {/* Thin 5px progress bar */}
+                    <div className="w-full bg-[#E7DED1] rounded-full h-[5px] overflow-hidden">
+                      <div
+                        className="bg-[#8B6F47] h-[5px] rounded-full transition-all duration-300"
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        )}
-      </section>
+        </div>
+      </div>
 
-      {/* Upcoming Revisions Preview */}
-      <section className="space-y-3">
+      {/* Two Column Grid: 30-Day Activity Chart & Status Breakdown */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left: 30-Day Activity Line Chart (7 cols) */}
+        <div className="lg:col-span-7">
+          <ActivityChart data={stats.last30Days} />
+        </div>
+
+        {/* Right: Revision Breakdown Bar Chart (5 cols) */}
+        <div className="lg:col-span-5">
+          <StatusBreakdown
+            completed={completedCheckpointsCount}
+            upcoming={upcomingItems.length}
+            dueToday={dueTodayItems.length}
+            overdue={overdueItems.length}
+          />
+        </div>
+      </div>
+
+      {/* Upcoming Revisions Section */}
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-text">Upcoming Revisions</h2>
+          <div className="flex items-center gap-2">
+            <Clock size={16} className="text-[#8B6F47]" />
+            <h2 className="text-base font-bold text-text">Upcoming Revisions</h2>
+          </div>
           {upcomingItems.length > 0 && (
             <Link
               href="/upcoming"
-              className="flex items-center gap-1 text-xs font-semibold text-primary no-underline hover:underline"
+              className="flex items-center gap-1 text-xs font-semibold text-[#8B6F47] no-underline hover:underline"
             >
               Full schedule ({upcomingItems.length})
               <ArrowRight size={13} />
@@ -333,25 +464,25 @@ export default function DashboardPage() {
             <EmptyState
               icon={<Clock size={36} className="text-text-muted" />}
               title="No upcoming revisions"
-              description="Add more solved questions to populate your future revision timeline."
+              description="Add more solved questions to populate your future spaced repetition schedule."
             />
           </div>
         ) : (
-          <div className="card divide-y divide-border">
+          <div className="card divide-y divide-border overflow-hidden">
             {upcomingSlice.map(({ question, interval, date, diff }) => (
               <div
                 key={`${question.id}_${interval}`}
-                className="flex items-center justify-between px-4 py-3 hover:bg-slate-50/60 transition-colors"
+                className="flex items-center justify-between px-4 py-3 hover:bg-[#FAF7F2] transition-colors"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <Link
                       href={`/questions/${question.id}`}
-                      className="text-sm font-semibold text-text hover:text-primary no-underline truncate"
+                      className="text-sm font-semibold text-text hover:text-[#8B6F47] no-underline truncate"
                     >
                       {question.questionName}
                     </Link>
-                    <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[0.6875rem] font-semibold text-slate-700">
+                    <span className="rounded bg-[#F2ECE2] px-1.5 py-0.5 text-[0.6875rem] font-semibold text-[#71695F] border border-[#E4DDD2]">
                       {REVISION_LABELS[interval]}
                     </span>
                   </div>
@@ -361,7 +492,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
+                  <span className="rounded-full bg-[#F1E9DE] px-2.5 py-0.5 text-xs font-semibold text-[#5F4930] border border-[#E4DDD2]">
                     {diff === 1 ? 'Tomorrow' : `In ${diff} days`}
                   </span>
                   <button
@@ -370,20 +501,14 @@ export default function DashboardPage() {
                     title="Mark revised early"
                   >
                     <CheckCircle2 size={13} />
-                    Done
+                    <span>Done</span>
                   </button>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </section>
-
-      {/* Backup & Export Modal */}
-      <ImportExportModal
-        open={backupOpen}
-        onClose={() => setBackupOpen(false)}
-      />
+      </div>
     </div>
   );
 }
