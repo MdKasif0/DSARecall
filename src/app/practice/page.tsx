@@ -319,25 +319,25 @@ export default function PracticePage() {
             return (
               <div
                 key={item.id}
-                className="card p-4 flex flex-col justify-between bg-[#FFFDF9] border border-[#E4DDD2] hover:border-[#D5CCBF] transition-all hover:shadow-xs"
+                className="card p-4 flex flex-col justify-between bg-white/65 border border-white/80 hover:bg-white/85 transition-all shadow-[inset_0_1px_1px_#fff,0_4px_16px_rgba(70,50,30,0.03)] hover:shadow-[inset_0_1px_2px_#fff,0_8px_24px_rgba(70,50,30,0.07)] hover:-translate-y-0.5"
               >
                 <div>
                   {/* Top line: topic + difficulty + leetcode tag */}
                   <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-                    <span className="text-[0.6875rem] font-bold uppercase tracking-wider text-[#8B6F47]">
+                    <span className="text-[0.6875rem] font-bold uppercase tracking-wider text-[#7D613D]">
                       {item.topic}
                     </span>
 
                     <div className="flex items-center gap-1.5">
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[0.625rem] font-bold border ${getDifficultyBadge(
+                        className={`rounded-full px-2 py-0.5 text-[0.625rem] font-bold border shadow-xs ${getDifficultyBadge(
                           item.difficulty
                         )}`}
                       >
                         {item.difficulty}
                       </span>
                       {item.leetcodeNumber && (
-                        <span className="rounded bg-[#F2ECE2] px-1.5 py-0.5 text-[0.625rem] font-mono font-semibold text-text-secondary">
+                        <span className="rounded-md bg-white/75 px-1.5 py-0.5 text-[0.625rem] font-mono font-bold text-text-secondary border border-white/80 shadow-xs">
                           #{item.leetcodeNumber}
                         </span>
                       )}
@@ -354,7 +354,7 @@ export default function PracticePage() {
                       }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-text-muted hover:text-[#5F4930] transition-colors shrink-0 mt-0.5"
+                      className="text-text-muted hover:text-[#543E26] transition-colors shrink-0 mt-0.5"
                       title="View problem on LeetCode"
                     >
                       <ExternalLink size={13} />
@@ -363,24 +363,24 @@ export default function PracticePage() {
 
                   {/* Pattern badge */}
                   <div className="mt-2 flex items-center gap-1.5">
-                    <span className="rounded-md bg-[#F2ECE2] px-2 py-0.5 text-[0.6875rem] font-medium text-[#5F4930]">
+                    <span className="rounded-md bg-white/70 px-2 py-0.5 text-[0.6875rem] font-bold text-[#543E26] border border-white/80 shadow-xs backdrop-blur-sm">
                       Pattern: {item.pattern}
                     </span>
                   </div>
 
                   {/* Pro Tip / Algorithmic Intuition */}
                   {item.tip && (
-                    <div className="mt-3 flex items-start gap-2 rounded-md bg-[#FAF7F2] p-2.5 border border-[#EBE4D8] text-[0.75rem] text-[#71695F] leading-relaxed">
-                      <Lightbulb size={13} className="text-[#8B6F47] shrink-0 mt-0.5" />
+                    <div className="mt-3 flex items-start gap-2 rounded-xl bg-white/50 p-2.5 border border-white/70 shadow-[inset_0_1px_1px_#fff] text-[0.75rem] text-[#635A4F] leading-relaxed backdrop-blur-sm">
+                      <Lightbulb size={13} className="text-[#7D613D] shrink-0 mt-0.5" />
                       <span>{item.tip}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Footer action */}
-                <div className="mt-4 pt-3 border-t border-[#EFE8DC] flex items-center justify-between">
+                <div className="mt-4 pt-3 border-t border-[rgba(255,255,255,0.6)] flex items-center justify-between">
                   {isTracked ? (
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#6F8064]">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#526844]">
                       <CheckCircle2 size={15} />
                       <span>In Spaced Recall</span>
                     </div>
@@ -393,13 +393,13 @@ export default function PracticePage() {
                   {isTracked ? (
                     <Link
                       href={`/questions?search=${encodeURIComponent(item.name)}`}
-                      className="btn btn-ghost btn-sm text-xs font-semibold text-[#5F4930] hover:bg-[#F2ECE2]"
+                      className="btn btn-ghost btn-sm text-xs font-bold text-[#543E26] hover:bg-white/80"
                     >
                       View Schedule &rarr;
                     </Link>
                   ) : (
                     <button
-                      className="btn btn-primary btn-sm text-xs font-bold gap-1 px-3"
+                      className="btn btn-primary btn-sm text-xs font-bold gap-1 px-3 shadow-md"
                       onClick={() => handleAddToRecall(item)}
                       disabled={isAdding}
                     >
