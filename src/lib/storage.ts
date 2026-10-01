@@ -1,6 +1,8 @@
 import type {
   DSAQuestion,
   QuestionStatus,
+  QuestionDifficulty,
+  QuestionPriority,
   RevisionRecord,
   RevisionInterval,
   TrackerExportData,
@@ -49,7 +51,9 @@ export function addQuestion(
   questionName: string,
   dateSolved: string,
   status: QuestionStatus = 'Pending',
-  topic?: string
+  topic?: string,
+  difficulty?: QuestionDifficulty,
+  priority?: QuestionPriority
 ): DSAQuestion {
   const now = new Date().toISOString();
   const revisions = calculateRevisionDates(dateSolved);
@@ -58,6 +62,8 @@ export function addQuestion(
     id: generateId(),
     questionName: questionName.trim(),
     topic: topic?.trim() || undefined,
+    difficulty,
+    priority,
     dateSolved,
     ...revisions,
     status,
@@ -80,7 +86,7 @@ export function addQuestion(
  */
 export function updateQuestion(
   id: string,
-  updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status' | 'topic'>>
+  updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status' | 'topic' | 'difficulty' | 'priority'>>
 ): DSAQuestion | null {
   const questions = getQuestions();
   const index = questions.findIndex((q) => q.id === id);
