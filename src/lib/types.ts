@@ -12,6 +12,7 @@ export interface RevisionDates {
 export interface DSAQuestion {
   id: string;
   questionName: string;
+  topic?: string;      // Optional category / topic
   dateSolved: string;  // ISO date string (YYYY-MM-DD)
   revision3: string;
   revision7: string;
@@ -60,6 +61,27 @@ export const REVISION_KEYS: Record<RevisionInterval, keyof RevisionDates> = {
 
 export const STATUS_OPTIONS: QuestionStatus[] = ['Pending', 'In Progress', 'Completed'];
 
+export const COMMON_TOPICS = [
+  'Arrays',
+  'Strings',
+  'Two Pointers',
+  'Sliding Window',
+  'Linked List',
+  'Trees',
+  'Graphs',
+  'Dynamic Programming',
+  'Binary Search',
+  'Heap / Priority Queue',
+  'Stack / Queue',
+  'Backtracking',
+  'Greedy',
+  'Matrix',
+  'Bit Manipulation',
+  'Other',
+] as const;
+
+export type CommonTopic = (typeof COMMON_TOPICS)[number];
+
 /**
  * Represents a single revision item with its question context,
  * used for listing due/overdue/upcoming items.
@@ -70,3 +92,23 @@ export interface RevisionItem {
   scheduledDate: string;
   record: RevisionRecord | null;
 }
+
+/**
+ * Schema for Export / Import of data.
+ */
+export interface TrackerExportData {
+  version: string;
+  exportedAt: string;
+  appName: string;
+  questions: DSAQuestion[];
+  records: RevisionRecord[];
+}
+
+export type SortOption =
+  | 'default'
+  | 'name-asc'
+  | 'name-desc'
+  | 'date-newest'
+  | 'date-oldest'
+  | 'next-revision'
+  | 'status';
