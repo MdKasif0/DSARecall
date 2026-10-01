@@ -301,3 +301,88 @@ export function groupByDate(
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, items]) => ({ date, items }));
 }
+
+/**
+ * Calculate completed revisions / 6 and percentage for a question.
+ */
+export function getQuestionProgress(
+  questionId: string,
+  recordsMap: Map<string, RevisionRecord>
+): { completedCount: number; total: number; percent: number } {
+  let count = 0;
+  for (const interval of REVISION_INTERVALS) {
+    if (isCheckpointCompleted(questionId, interval, recordsMap)) {
+      count++;
+    }
+  }
+  return {
+    completedCount: count,
+    total: 6,
+    percent: Math.round((count / 6) * 100),
+  };
+}
+
+/**
+ * Sort questions according to user selection.
+ * Default: Due today first -> Overdue -> Upcoming -> Finished/other.
+ */
+export function sortQuestions(
+  questions: DSAQuestion[],
+  sortBy: import('./types').SortOption,
+  recordsMap: Map<string, RevisionRecord>
+): DSAQuestion[] {
+  const copy = [...questions];
+
+  switch (sortBy) {
+    case 'name-asc':
+      return copy.sort((a, b) => a.questionName.localeCompare(b.questionName));
+
+    case 'name-desc':
+      return copy.sort((a, b) => b.questionName.localeCompare(a.questionName));
+
+    case 'date-newest':
+      return copy.sort((a, b) => b.dateSolved.localeCompare(a.dateSolved));
+
+    case 'date-oldest':
+      return copy.sort((a, b) => a.dateSolved.localeCompare(b.dateSolved));
+
+    case 'status':
+      const order = { 'In Progress': 0, Pending: 1, Completed: 2 };
+      return copy.sort((a, b) => order[a.status] - order[b.status]);
+
+    case 'next-revision': {
+      return copy.sort((a, b) => {
+        const nextA = getNextRevision(a, recordsMap);
+        const nextB = getNextRevision(b, recordsMap);
+        if (nextA && nextB) return nextA.date.localeCompare(nextB.date);
+        if (nextA && !nextB) return -1;
+        if (!nextA && nextB) return 1;
+        return a.questionName.localeCompare(b.questionName);
+      });
+    }
+
+    case 'default':
+    default: {
+      return copy.sort((a, b) => {
+        const isDueA = isDueToday(a, recordsMap);
+        const isDueB = isDueToday(b, recordsMap);
+        if (isDueA && !isDueB) return -1;
+        if (!isDueA && isDueB) return 1;
+
+        const isOverdueA = isOverdue(a, recordsMap);
+        const isOverdueB = isOverdue(b, recordsMap);
+        if (isOverdueA && !isOverdueB) return -1;
+        if (!isOverdueA && isOverdueB) return 1;
+
+        const nextA = getNextRevision(a, recordsMap);
+        const nextB = getNextRevision(b, recordsMap);
+        if (nextA && nextB) return nextA.date.localeCompare(nextB.date);
+        if (nextA && !nextB) return -1;
+        if (!nextA && nextB) return 1;
+
+        return b.dateSolved.localeCompare(a.dateSolved);
+      });
+    }
+  }
+}
+

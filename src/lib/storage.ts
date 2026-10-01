@@ -1,6 +1,17 @@
-import type { DSAQuestion, QuestionStatus, RevisionRecord, RevisionInterval } from './types';
-import { REVISION_INTERVALS, REVISION_KEYS } from './types';
-import { calculateRevisionDates, generateId, getTodayISO, isCheckpointCompleted } from './dates';
+import type {
+  DSAQuestion,
+  QuestionStatus,
+  RevisionRecord,
+  RevisionInterval,
+  TrackerExportData,
+} from './types';
+import { REVISION_INTERVALS, REVISION_KEYS, REVISION_LABELS } from './types';
+import {
+  calculateRevisionDates,
+  generateId,
+  getTodayISO,
+  isCheckpointCompleted,
+} from './dates';
 
 const STORAGE_KEY = 'dsarecall_questions';
 const RECORDS_KEY = 'dsarecall_revision_records';
@@ -37,14 +48,16 @@ export function saveQuestions(questions: DSAQuestion[]): void {
 export function addQuestion(
   questionName: string,
   dateSolved: string,
-  status: QuestionStatus = 'Pending'
+  status: QuestionStatus = 'Pending',
+  topic?: string
 ): DSAQuestion {
   const now = new Date().toISOString();
   const revisions = calculateRevisionDates(dateSolved);
 
   const question: DSAQuestion = {
     id: generateId(),
-    questionName,
+    questionName: questionName.trim(),
+    topic: topic?.trim() || undefined,
     dateSolved,
     ...revisions,
     status,
@@ -61,31 +74,34 @@ export function addQuestion(
 
 /**
  * Update an existing question by ID.
- * If dateSolved changes, recalculates scheduled dates and updates scheduledDate on records.
+ * If dateSolved changes, recalculates all scheduled revision dates and
+ * carefully synchronizes existing revision record scheduled dates so old dates
+ * do not remain incorrectly attached.
  */
 export function updateQuestion(
   id: string,
-  updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status'>>
+  updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status' | 'topic'>>
 ): DSAQuestion | null {
   const questions = getQuestions();
   const index = questions.findIndex((q) => q.id === id);
   if (index === -1) return null;
 
   const existing = questions[index];
+  const dateChanged = !!updates.dateSolved && updates.dateSolved !== existing.dateSolved;
 
-  // If dateSolved changed, recalculate revisions
-  if (updates.dateSolved && updates.dateSolved !== existing.dateSolved) {
-    const revisions = calculateRevisionDates(updates.dateSolved);
-    Object.assign(existing, revisions);
+  if (dateChanged && updates.dateSolved) {
+    const newRevisions = calculateRevisionDates(updates.dateSolved);
+    Object.assign(existing, newRevisions);
 
-    // Also update scheduledDate on existing revision records
+    // Carefully update scheduledDate on existing revision records
     const records = getRevisionRecords();
     let recordsUpdated = false;
     for (const r of records) {
       if (r.questionId === id) {
-        const newDate = revisions[REVISION_KEYS[r.interval]];
-        if (newDate) {
-          r.scheduledDate = newDate;
+        const key = REVISION_KEYS[r.interval];
+        const newScheduledDate = newRevisions[key];
+        if (newScheduledDate && r.scheduledDate !== newScheduledDate) {
+          r.scheduledDate = newScheduledDate;
           recordsUpdated = true;
         }
       }
@@ -97,6 +113,8 @@ export function updateQuestion(
 
   Object.assign(existing, {
     ...updates,
+    questionName: updates.questionName !== undefined ? updates.questionName.trim() : existing.questionName,
+    topic: updates.topic !== undefined ? updates.topic?.trim() || undefined : existing.topic,
     updatedAt: new Date().toISOString(),
   });
 
@@ -245,17 +263,23 @@ export function markRevisionCompleted(
 // Derived queries & Stats
 // ────────────────────────────────────────────────
 
-/**
- * Get statistics about the question set taking revision completions into account.
- */
-export function getStats(): {
+export interface DashboardStats {
   total: number;
   dueToday: number;
   overdue: number;
-  completed: number;
   upcoming: number;
-} {
+  completed: number;
+  completedCheckpoints: number;
+  totalCheckpoints: number;
+  completionRate: number;
+}
+
+/**
+ * Get accurate statistics derived directly from stored data.
+ */
+export function getStats(): DashboardStats {
   const questions = getQuestions();
+  const records = getRevisionRecords();
   const recordsMap = getRevisionRecordsMap();
   const today = getTodayISO();
 
@@ -288,12 +312,178 @@ export function getStats(): {
   }
 
   const completedQuestionsCount = questions.filter((q) => q.status === 'Completed').length;
+  const completedCheckpointsCount = records.filter((r) => r.completed).length;
+  const totalPossibleCheckpoints = questions.length * 6;
+
+  const completionRate =
+    totalPossibleCheckpoints > 0
+      ? Math.round((completedCheckpointsCount / totalPossibleCheckpoints) * 100)
+      : 0;
 
   return {
     total: questions.length,
     dueToday: dueTodayCount,
     overdue: overdueCount,
-    completed: completedQuestionsCount,
     upcoming: upcomingCount,
+    completed: completedQuestionsCount,
+    completedCheckpoints: completedCheckpointsCount,
+    totalCheckpoints: totalPossibleCheckpoints,
+    completionRate,
   };
+}
+
+// ────────────────────────────────────────────────
+// Import / Export
+// ────────────────────────────────────────────────
+
+/**
+ * Export all tracker data as JSON.
+ */
+export function exportDataJSON(): TrackerExportData {
+  const questions = getQuestions();
+  const records = getRevisionRecords();
+
+  return {
+    version: '1.0.0',
+    appName: 'DSARecall',
+    exportedAt: new Date().toISOString(),
+    questions,
+    records,
+  };
+}
+
+/**
+ * Export questions and revision dates as CSV matching the Excel tracker structure.
+ */
+export function exportDataCSV(): string {
+  const questions = getQuestions();
+  const recordsMap = getRevisionRecordsMap();
+
+  const headers = [
+    'Question Name',
+    'Topic',
+    'Date Solved',
+    '+3 Days',
+    '+7 Days',
+    '+15 Days',
+    '+30 Days',
+    '+60 Days',
+    '+120 Days',
+    'Status',
+    'Completed Revisions',
+  ];
+
+  const escapeCSV = (value: string | undefined | null) => {
+    if (!value) return '""';
+    const stringValue = String(value);
+    if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+    return `"${stringValue}"`;
+  };
+
+  const rows = questions.map((q) => {
+    let completedCount = 0;
+    for (const interval of REVISION_INTERVALS) {
+      if (isCheckpointCompleted(q.id, interval, recordsMap)) completedCount++;
+    }
+
+    return [
+      escapeCSV(q.questionName),
+      escapeCSV(q.topic || 'General'),
+      escapeCSV(q.dateSolved),
+      escapeCSV(q.revision3),
+      escapeCSV(q.revision7),
+      escapeCSV(q.revision15),
+      escapeCSV(q.revision30),
+      escapeCSV(q.revision60),
+      escapeCSV(q.revision120),
+      escapeCSV(q.status),
+      escapeCSV(`${completedCount}/6`),
+    ].join(',');
+  });
+
+  return [headers.join(','), ...rows].join('\n');
+}
+
+/**
+ * Validate and import JSON data.
+ */
+export function importDataJSON(
+  data: unknown,
+  overwriteExisting: boolean = false
+): { success: boolean; error?: string; count?: number } {
+  try {
+    if (!data || typeof data !== 'object') {
+      return { success: false, error: 'Invalid JSON file: Expected a JSON object' };
+    }
+
+    const payload = data as Partial<TrackerExportData>;
+    if (!Array.isArray(payload.questions)) {
+      return { success: false, error: 'Invalid data format: Missing questions array' };
+    }
+
+    // Validate questions items
+    for (let i = 0; i < payload.questions.length; i++) {
+      const q = payload.questions[i];
+      if (!q.questionName || typeof q.questionName !== 'string') {
+        return { success: false, error: `Invalid question at item #${i + 1}: Missing name` };
+      }
+      if (!q.dateSolved || typeof q.dateSolved !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(q.dateSolved)) {
+        return { success: false, error: `Invalid question "${q.questionName}": Invalid dateSolved` };
+      }
+    }
+
+    const existingQuestions = overwriteExisting ? [] : getQuestions();
+    const existingRecords = overwriteExisting ? [] : getRevisionRecords();
+
+    // Map existing to avoid duplicates by ID
+    const questionsMap = new Map<string, DSAQuestion>();
+    for (const q of existingQuestions) questionsMap.set(q.id, q);
+
+    for (const q of payload.questions) {
+      // Ensure revision dates are present/calculated
+      const revisions = calculateRevisionDates(q.dateSolved);
+      const cleanQ: DSAQuestion = {
+        ...q,
+        id: q.id || generateId(),
+        questionName: q.questionName.trim(),
+        topic: q.topic?.trim() || undefined,
+        ...revisions,
+        status: q.status || 'Pending',
+        createdAt: q.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      questionsMap.set(cleanQ.id, cleanQ);
+    }
+
+    // Merge or set records
+    const recordsMap = new Map<string, RevisionRecord>();
+    for (const r of existingRecords) recordsMap.set(`${r.questionId}_${r.interval}`, r);
+
+    if (Array.isArray(payload.records)) {
+      for (const r of payload.records) {
+        if (r.questionId && r.interval) {
+          recordsMap.set(`${r.questionId}_${r.interval}`, {
+            id: r.id || generateId(),
+            questionId: r.questionId,
+            interval: r.interval,
+            scheduledDate: r.scheduledDate || '',
+            completed: !!r.completed,
+            completedAt: r.completedAt || null,
+          });
+        }
+      }
+    }
+
+    const mergedQuestions = Array.from(questionsMap.values());
+    const mergedRecords = Array.from(recordsMap.values());
+
+    saveQuestions(mergedQuestions);
+    saveRevisionRecords(mergedRecords);
+
+    return { success: true, count: payload.questions.length };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown import error' };
+  }
 }
