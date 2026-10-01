@@ -436,10 +436,10 @@ export default function DashboardPage() {
                         {completedCount} / {total} · {percent}%
                       </span>
                     </div>
-                    {/* Thin 5px progress bar */}
-                    <div className="w-full bg-[#E7DED1] rounded-full h-[5px] overflow-hidden">
+                    {/* Thin specular liquid progress bar */}
+                    <div className="w-full bg-white/60 border border-white/70 shadow-[inset_0_1px_1px_rgba(0,0,0,0.03)] rounded-full h-[6px] overflow-hidden">
                       <div
-                        className="bg-[#8B6F47] h-[5px] rounded-full transition-all duration-300"
+                        className="bg-gradient-to-r from-[#8B6F47] to-[#6B5035] h-[6px] rounded-full transition-all duration-300 shadow-xs"
                         style={{ width: `${percent}%` }}
                       />
                     </div>
@@ -473,7 +473,7 @@ export default function DashboardPage() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Clock size={16} className="text-[#8B6F47]" />
+            <Clock size={16} className="text-[#7D613D]" />
             <h2 className="text-base font-bold text-text">Upcoming Revisions</h2>
           </div>
           {upcomingItems.length > 0 && (
@@ -496,11 +496,11 @@ export default function DashboardPage() {
             />
           </div>
         ) : (
-          <div className="card divide-y divide-border overflow-hidden">
+          <div className="card divide-y divide-[rgba(255,255,255,0.6)] overflow-hidden">
             {upcomingSlice.map(({ question, interval, date, diff }) => (
               <div
                 key={`${question.id}_${interval}`}
-                className="flex items-center justify-between px-4 py-3 hover:bg-[#FAF7F2] transition-colors"
+                className="flex items-center justify-between px-4 py-3 hover:bg-white/45 transition-colors"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -510,7 +510,7 @@ export default function DashboardPage() {
                     >
                       {question.questionName}
                     </Link>
-                    <span className="rounded bg-[#F2ECE2] px-1.5 py-0.5 text-[0.6875rem] font-semibold text-[#71695F] border border-[#E4DDD2]">
+                    <span className="rounded-md bg-white/70 px-2 py-0.5 text-[0.6875rem] font-bold text-[#635A4F] border border-white/80 shadow-xs backdrop-blur-sm">
                       {REVISION_LABELS[interval]}
                     </span>
                   </div>
@@ -520,7 +520,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-[#F1E9DE] px-2.5 py-0.5 text-xs font-semibold text-[#5F4930] border border-[#E4DDD2]">
+                  <span className="rounded-full bg-white/75 backdrop-blur-md px-3 py-0.5 text-xs font-bold text-[#543E26] border border-white/85 shadow-xs">
                     {diff === 1 ? 'Tomorrow' : `In ${diff} days`}
                   </span>
                   <button
