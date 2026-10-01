@@ -1,6 +1,7 @@
 import { addDays, format, differenceInCalendarDays } from 'date-fns';
 import type { RevisionDates, DSAQuestion, RevisionInterval, RevisionItem, RevisionRecord } from './types';
 import { REVISION_INTERVALS, REVISION_KEYS, REVISION_LABELS } from './types';
+import { getSettings } from './settings';
 
 // ────────────────────────────────────────────────
 // Core: local calendar date (YYYY-MM-DD)
@@ -33,18 +34,36 @@ export function parseLocalDate(dateStr: string): Date {
 
 /**
  * Calculate all six revision dates from a solved date.
- * Exactly: dateSolved + 3, +7, +15, +30, +60, +120 days.
+ * Defaults to: dateSolved + 3, +7, +15, +30, +60, +120 days, or user's custom intervals.
  * @param dateSolved — YYYY-MM-DD
+ * @param customIntervals — optional 6 day offsets [d1, d2, d3, d4, d5, d6]
  */
-export function calculateRevisionDates(dateSolved: string): RevisionDates {
+export function calculateRevisionDates(dateSolved: string, customIntervals?: number[]): RevisionDates {
   const base = parseLocalDate(dateSolved);
+  let intervals = customIntervals;
+  if (!intervals || intervals.length !== 6) {
+    if (typeof window !== 'undefined') {
+      try {
+        const s = getSettings();
+        if (s && Array.isArray(s.intervals) && s.intervals.length === 6) {
+          intervals = s.intervals;
+        }
+      } catch {
+        intervals = [3, 7, 15, 30, 60, 120];
+      }
+    }
+  }
+  if (!intervals || intervals.length !== 6) {
+    intervals = [3, 7, 15, 30, 60, 120];
+  }
+
   return {
-    revision3: format(addDays(base, 3), 'yyyy-MM-dd'),
-    revision7: format(addDays(base, 7), 'yyyy-MM-dd'),
-    revision15: format(addDays(base, 15), 'yyyy-MM-dd'),
-    revision30: format(addDays(base, 30), 'yyyy-MM-dd'),
-    revision60: format(addDays(base, 60), 'yyyy-MM-dd'),
-    revision120: format(addDays(base, 120), 'yyyy-MM-dd'),
+    revision3: format(addDays(base, intervals[0]), 'yyyy-MM-dd'),
+    revision7: format(addDays(base, intervals[1]), 'yyyy-MM-dd'),
+    revision15: format(addDays(base, intervals[2]), 'yyyy-MM-dd'),
+    revision30: format(addDays(base, intervals[3]), 'yyyy-MM-dd'),
+    revision60: format(addDays(base, intervals[4]), 'yyyy-MM-dd'),
+    revision120: format(addDays(base, intervals[5]), 'yyyy-MM-dd'),
   };
 }
 

@@ -181,6 +181,38 @@ export function getQuestionById(id: string): DSAQuestion | null {
   return questions.find((q) => q.id === id) || null;
 }
 
+/**
+ * Recalculate scheduled revision dates for all questions using current or provided intervals.
+ * Synchronizes uncompleted revision records.
+ */
+export function recalculateAllQuestionIntervals(customIntervals?: number[]): { count: number } {
+  const questions = getQuestions();
+  const records = getRevisionRecords();
+  let updatedQuestions = 0;
+
+  for (const q of questions) {
+    const newRevisions = calculateRevisionDates(q.dateSolved, customIntervals);
+    Object.assign(q, newRevisions);
+    q.updatedAt = new Date().toISOString();
+    updatedQuestions++;
+
+    // Update scheduledDate on uncompleted records
+    for (const r of records) {
+      if (r.questionId === q.id && !r.completed) {
+        const key = REVISION_KEYS[r.interval];
+        const newDate = newRevisions[key];
+        if (newDate) {
+          r.scheduledDate = newDate;
+        }
+      }
+    }
+  }
+
+  saveQuestions(questions);
+  saveRevisionRecords(records);
+  return { count: updatedQuestions };
+}
+
 // ────────────────────────────────────────────────
 // Revision Records
 // ────────────────────────────────────────────────
