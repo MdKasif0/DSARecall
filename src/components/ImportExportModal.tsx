@@ -227,7 +227,7 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
                 </div>
               </div>
             </div>
-          ) : (
+          ) : activeTab === 'import' ? (
             <div className="space-y-4">
               <p className="text-xs text-text-muted">
                 Restore questions from a previously exported <code className="text-primary font-semibold">.json</code> backup file.
