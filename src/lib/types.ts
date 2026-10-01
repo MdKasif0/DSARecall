@@ -24,6 +24,19 @@ export interface DSAQuestion {
   updatedAt: string;   // ISO datetime string
 }
 
+/**
+ * Tracks completion of individual revision checkpoints.
+ * Scheduled dates stay fixed; only completion state changes.
+ */
+export interface RevisionRecord {
+  id: string;
+  questionId: string;
+  interval: RevisionInterval;
+  scheduledDate: string;   // YYYY-MM-DD, derived from dateSolved
+  completed: boolean;
+  completedAt: string | null;  // ISO datetime string or null
+}
+
 export const REVISION_INTERVALS = [3, 7, 15, 30, 60, 120] as const;
 export type RevisionInterval = (typeof REVISION_INTERVALS)[number];
 
@@ -46,3 +59,14 @@ export const REVISION_KEYS: Record<RevisionInterval, keyof RevisionDates> = {
 };
 
 export const STATUS_OPTIONS: QuestionStatus[] = ['Pending', 'In Progress', 'Completed'];
+
+/**
+ * Represents a single revision item with its question context,
+ * used for listing due/overdue/upcoming items.
+ */
+export interface RevisionItem {
+  question: DSAQuestion;
+  interval: RevisionInterval;
+  scheduledDate: string;
+  record: RevisionRecord | null;
+}
