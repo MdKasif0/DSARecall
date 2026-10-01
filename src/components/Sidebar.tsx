@@ -9,7 +9,10 @@ import {
   CalendarCheck,
   CalendarClock,
   ClockAlert,
+  Compass,
+  Trophy,
   Download,
+  Settings,
   ArrowRight,
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
@@ -58,6 +61,12 @@ export default function Sidebar({ onOpenBackup }: SidebarProps) {
       badge: questions.length > 0 ? questions.length : null,
     },
     {
+      href: '/practice',
+      label: 'Practice',
+      icon: Compass,
+      badge: null,
+    },
+    {
       href: '/today',
       label: "Today's Revisions",
       icon: CalendarCheck,
@@ -74,6 +83,12 @@ export default function Sidebar({ onOpenBackup }: SidebarProps) {
       label: 'Overdue',
       icon: ClockAlert,
       badge: overdueCount > 0 ? overdueCount : null,
+    },
+    {
+      href: '/achievements',
+      label: 'Achievements',
+      icon: Trophy,
+      badge: null,
     },
   ];
 
@@ -149,6 +164,23 @@ export default function Sidebar({ onOpenBackup }: SidebarProps) {
             DATA
           </span>
           <div className="space-y-1">
+            <Link
+              href="/settings"
+              className={`flex items-center justify-between rounded-md px-3 py-2 text-xs font-semibold no-underline transition-colors ${
+                pathname === '/settings'
+                  ? 'bg-[#E9DDCB] text-[#5F4930]'
+                  : 'text-[#71695F] hover:bg-[#F1E9DE] hover:text-[#29251F]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5 pl-1">
+                <Settings
+                  size={17}
+                  className={pathname === '/settings' ? 'text-[#5F4930]' : 'text-[#9A9287]'}
+                />
+                <span>Settings</span>
+              </div>
+            </Link>
+
             <button
               className="flex w-full items-center justify-between rounded-md px-3 py-2 text-xs font-semibold text-[#71695F] hover:bg-[#F1E9DE] hover:text-[#29251F] transition-colors"
               onClick={onOpenBackup}

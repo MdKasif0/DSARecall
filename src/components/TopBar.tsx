@@ -33,6 +33,15 @@ export default function TopBar({ onSearchClick }: TopBarProps) {
   if (pathname === '/questions') {
     pageTitle = 'Questions';
     backHref = '/';
+  } else if (pathname === '/practice') {
+    pageTitle = 'Topic-Wise Practice';
+    backHref = '/';
+  } else if (pathname === '/achievements') {
+    pageTitle = 'Achievements & Milestones';
+    backHref = '/';
+  } else if (pathname === '/settings') {
+    pageTitle = 'Settings & Preferences';
+    backHref = '/';
   } else if (pathname === '/today') {
     pageTitle = "Today's Revisions";
     backHref = '/';
@@ -91,13 +100,14 @@ export default function TopBar({ onSearchClick }: TopBarProps) {
         </Link>
 
         {/* User Avatar Circle */}
-        <div
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-[#8B6F47] text-[#FFFDF9] text-xs font-bold shadow-sm select-none"
-          title="Kasif"
-          aria-label="User profile: Kasif"
+        <Link
+          href="/settings"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-[#8B6F47] text-[#FFFDF9] text-xs font-bold shadow-sm select-none hover:bg-[#6B5035] transition-colors"
+          title="Settings & Profile"
+          aria-label="User settings"
         >
           K
-        </div>
+        </Link>
       </div>
     </div>
   );
