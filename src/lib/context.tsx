@@ -152,6 +152,12 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
     [refreshQuestions]
   );
 
+  const handleLoadSample = useCallback(() => {
+    storage.loadSampleData();
+    refreshQuestions();
+    toast.success('Loaded curated sample DSA questions and revision history!');
+  }, [refreshQuestions]);
+
   return (
     <QuestionsContext.Provider
       value={{
@@ -164,6 +170,7 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
         deleteQuestion: handleDelete,
         markRevision: handleMarkRevision,
         importData: handleImport,
+        loadSampleData: handleLoadSample,
         refreshQuestions,
       }}
     >
