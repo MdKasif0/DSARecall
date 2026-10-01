@@ -8,11 +8,12 @@ import {
   Plus,
   ArrowRight,
   Search,
-  Filter,
+  X,
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
 import {
   formatDateDisplay,
+  formatDateShort,
   getDaysUntilRevision,
   isCheckpointCompleted,
 } from '@/lib/dates';
@@ -23,8 +24,8 @@ import {
   type RevisionInterval,
   type DSAQuestion,
 } from '@/lib/types';
-import StatusBadge from '@/components/StatusBadge';
 import EmptyState from '@/components/EmptyState';
+import TopBar from '@/components/TopBar';
 import { openAddModal } from '@/lib/events';
 
 interface UpcomingRevision {
@@ -58,7 +59,7 @@ export default function RevisionsPage() {
       const scheduledDate = q[REVISION_KEYS[interval]];
       const daysUntil = getDaysUntilRevision(scheduledDate);
 
-      // Only strictly future items
+      // Strictly future items
       if (daysUntil > 0) {
         allUpcoming.push({
           question: q,
@@ -84,70 +85,70 @@ export default function RevisionsPage() {
   // Filter by search
   if (search.trim()) {
     filtered = filtered.filter((item) =>
-      item.question.questionName.toLowerCase().includes(search.toLowerCase())
+      item.question.questionName.toLowerCase().includes(search.toLowerCase().trim())
     );
   }
 
-  // Group into timeline buckets
-  const tomorrowItems: UpcomingRevision[] = [];
-  const thisWeekItems: UpcomingRevision[] = [];
-  const nextTwoWeeksItems: UpcomingRevision[] = [];
-  const thisMonthItems: UpcomingRevision[] = [];
-  const laterItems: UpcomingRevision[] = [];
-
+  // Group by Date for calendar schedule matching Section 20
+  const dateGroupsMap = new Map<string, UpcomingRevision[]>();
   for (const item of filtered) {
-    if (item.daysUntil === 1) {
-      tomorrowItems.push(item);
-    } else if (item.daysUntil <= 7) {
-      thisWeekItems.push(item);
-    } else if (item.daysUntil <= 14) {
-      nextTwoWeeksItems.push(item);
-    } else if (item.daysUntil <= 30) {
-      thisMonthItems.push(item);
-    } else {
-      laterItems.push(item);
-    }
+    const list = dateGroupsMap.get(item.scheduledDate) || [];
+    list.push(item);
+    dateGroupsMap.set(item.scheduledDate, list);
   }
 
-  const sections = [
-    { title: 'Tomorrow', items: tomorrowItems, count: tomorrowItems.length },
-    { title: 'This Week (Days 2–7)', items: thisWeekItems, count: thisWeekItems.length },
-    { title: 'Next 2 Weeks (Days 8–14)', items: nextTwoWeeksItems, count: nextTwoWeeksItems.length },
-    { title: 'This Month (Days 15–30)', items: thisMonthItems, count: thisMonthItems.length },
-    { title: 'Later (30+ Days)', items: laterItems, count: laterItems.length },
-  ].filter((s) => s.count > 0);
+  const dateGroups = Array.from(dateGroupsMap.entries()).map(([dateStr, items]) => {
+    const daysUntil = items[0].daysUntil;
+    let label = formatDateDisplay(dateStr);
+    if (daysUntil === 1) {
+      label = 'Tomorrow';
+    } else {
+      label = formatDateShort(dateStr);
+    }
+    return {
+      dateStr,
+      daysUntil,
+      label,
+      items,
+      count: items.length,
+    };
+  });
 
   return (
     <div className="space-y-6">
+      {/* Top Bar with Breadcrumb and Profile */}
+      <TopBar />
+
       {/* Header */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold text-text">Upcoming Revisions Timeline</h1>
-          <p className="text-sm text-text-muted">
-            Future spaced repetition schedule across all tracked questions
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text">
+            Upcoming Schedule
+          </h1>
+          <p className="text-sm text-text-secondary mt-1">
+            {allUpcoming.length} future checkpoint{allUpcoming.length !== 1 ? 's' : ''} across your tracked problems.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/today" className="btn btn-secondary btn-sm no-underline">
-            Check Today&apos;s Due
+            <span>Check Today</span>
             <ArrowRight size={14} />
           </Link>
           <button className="btn btn-primary btn-sm" onClick={openAddModal}>
             <Plus size={15} />
-            Add Question
+            <span>Add Question</span>
           </button>
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-        {/* Timeframe Chips */}
-        <div className="flex items-center gap-1.5 p-1 bg-surface border border-border rounded-lg self-start">
+      {/* Toolbar: Timeframe pills + Search */}
+      <div className="card p-3 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div className="flex items-center gap-1.5 p-1 bg-[#F2ECE2] border border-[#E4DDD2] rounded-lg self-start">
           <button
             className={`btn btn-sm ${
               filter === 'all'
-                ? 'bg-primary text-white hover:bg-primary-hover shadow-none'
-                : 'btn-ghost'
+                ? 'bg-[#6B5035] text-white hover:bg-[#57412C] shadow-none'
+                : 'btn-ghost text-text-secondary'
             }`}
             onClick={() => setFilter('all')}
           >
@@ -156,8 +157,8 @@ export default function RevisionsPage() {
           <button
             className={`btn btn-sm ${
               filter === '7days'
-                ? 'bg-primary text-white hover:bg-primary-hover shadow-none'
-                : 'btn-ghost'
+                ? 'bg-[#6B5035] text-white hover:bg-[#57412C] shadow-none'
+                : 'btn-ghost text-text-secondary'
             }`}
             onClick={() => setFilter('7days')}
           >
@@ -166,8 +167,8 @@ export default function RevisionsPage() {
           <button
             className={`btn btn-sm ${
               filter === '30days'
-                ? 'bg-primary text-white hover:bg-primary-hover shadow-none'
-                : 'btn-ghost'
+                ? 'bg-[#6B5035] text-white hover:bg-[#57412C] shadow-none'
+                : 'btn-ghost text-text-secondary'
             }`}
             onClick={() => setFilter('30days')}
           >
@@ -176,112 +177,117 @@ export default function RevisionsPage() {
         </div>
 
         {/* Search */}
-        {allUpcoming.length > 0 && (
-          <div className="relative w-full sm:w-64">
-            <Search
-              size={15}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
-            />
-            <input
-              type="text"
-              className="input pl-9 text-xs"
-              placeholder="Filter by question..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-        )}
+        <div className="relative min-w-[200px] sm:w-64">
+          <Search
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+          />
+          <input
+            type="text"
+            className="input pl-8.5 pr-7 text-xs h-8.5"
+            placeholder="Search upcoming..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {search && (
+            <button
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text"
+              onClick={() => setSearch('')}
+            >
+              <X size={12} />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Content */}
-      {allUpcoming.length === 0 ? (
+      {/* Date-grouped timeline schedule */}
+      {dateGroups.length === 0 ? (
         <div className="card">
           <EmptyState
-            icon={<CalendarClock size={44} className="text-text-muted" />}
-            title="No upcoming revisions scheduled"
-            description="Add questions or mark revisions to build your spaced repetition learning schedule."
+            icon={<CalendarClock size={40} className="text-text-muted" />}
+            title="No revisions match your filter"
+            description="All upcoming spaced repetitions have either been completed or none are scheduled in this timeframe."
             action={
-              <button className="btn btn-primary btn-sm" onClick={openAddModal}>
-                <Plus size={15} />
-                Add Question
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => {
+                  setFilter('all');
+                  setSearch('');
+                }}
+              >
+                Reset Filters
               </button>
             }
           />
         </div>
-      ) : filtered.length === 0 ? (
-        <div className="card">
-          <EmptyState
-            icon={<Filter size={40} className="text-text-muted" />}
-            title="No matches found"
-            description="Try changing the timeframe filter or search query."
-          />
-        </div>
       ) : (
         <div className="space-y-6">
-          {sections.map((section) => (
-            <section key={section.title} className="space-y-2.5">
-              <div className="flex items-center gap-2 border-b border-border pb-1.5">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted">
-                  {section.title}
-                </h2>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[0.6875rem] font-semibold text-text-muted">
-                  {section.count}
-                </span>
-              </div>
+          <div className="relative pl-6 space-y-7 before:content-[''] before:absolute before:left-[9px] before:top-2 before:bottom-3 before:w-[2px] before:bg-[#E4DDD2]">
+            {dateGroups.map((group) => (
+              <div key={group.dateStr} className="relative space-y-3">
+                {/* Timeline Marker */}
+                <div className="absolute -left-6 top-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#FFFDF9] border-2 border-[#8B6F47] shadow-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#8B6F47]" />
+                </div>
 
-              <div className="space-y-2">
-                {section.items.map(({ question, interval, scheduledDate, daysUntil }) => (
-                  <div
-                    key={`${question.id}_${interval}`}
-                    className="card p-3.5 hover:border-slate-300 transition-colors flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Link
-                          href={`/questions/${question.id}`}
-                          className="font-medium text-sm text-text hover:text-primary no-underline transition-colors truncate"
+                {/* Date header matching Section 20 */}
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-bold text-text">
+                    {group.label}
+                  </h2>
+                  <span className="rounded bg-[#F2ECE2] px-2 py-0.5 text-xs font-semibold text-[#71695F] border border-[#E4DDD2]">
+                    {group.count} question{group.count !== 1 ? 's' : ''}
+                  </span>
+                  <span className="text-xs text-text-muted">
+                    (in {group.daysUntil} day{group.daysUntil !== 1 ? 's' : ''})
+                  </span>
+                </div>
+
+                {/* Question items scheduled for this date */}
+                <div className="card divide-y divide-border overflow-hidden">
+                  {group.items.map(({ question, interval, scheduledDate, daysUntil }) => (
+                    <div
+                      key={`${question.id}_${interval}`}
+                      className="p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 hover:bg-[#FAF7F2] transition-colors"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href={`/questions/${question.id}`}
+                            className="font-bold text-sm text-text hover:text-[#8B6F47] no-underline truncate"
+                          >
+                            {question.questionName}
+                          </Link>
+                          {question.topic && (
+                            <span className="rounded bg-[#F2ECE2] px-1.5 py-0.5 text-[0.6875rem] font-medium text-[#71695F] border border-[#E4DDD2]">
+                              {question.topic}
+                            </span>
+                          )}
+                          <span className="rounded bg-[#EDE1CF] px-2 py-0.5 text-xs font-semibold text-[#795B39] border border-[#DFD1BC]">
+                            {REVISION_LABELS[interval]}
+                          </span>
+                        </div>
+                        <p className="text-xs text-text-muted mt-0.5">
+                          Originally solved {formatDateDisplay(question.dateSolved)}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => markRevision(question.id, interval, true)}
+                          title="Mark revised early"
                         >
-                          {question.questionName}
-                        </Link>
-                        <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
-                          {REVISION_LABELS[interval]}
-                        </span>
-                      </div>
-
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
-                        <span>
-                          Scheduled for {formatDateDisplay(scheduledDate)}
-                        </span>
-                        <span>•</span>
-                        <span>
-                          Solved {formatDateDisplay(question.dateSolved)}
-                        </span>
-                        <span>•</span>
-                        <StatusBadge status={question.status} />
+                          <CheckCircle2 size={13} />
+                          <span>Done</span>
+                        </button>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-3 sm:self-center self-end">
-                      <div className="text-right">
-                        <span className="inline-block rounded-full bg-primary-light px-2.5 py-0.5 text-xs font-bold text-primary">
-                          {daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`}
-                        </span>
-                      </div>
-
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => markRevision(question.id, interval, true)}
-                        title="Mark revised early"
-                      >
-                        <CheckCircle2 size={14} />
-                        Mark Done
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </section>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
