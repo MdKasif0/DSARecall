@@ -25,11 +25,11 @@ export default function SpreadsheetTable({
   };
 
   return (
-    <div className="table-container card overflow-hidden border border-border">
+    <div className="table-container card-glass overflow-hidden rounded-2xl border border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.03),inset_0_1px_1.5px_rgba(255,255,255,0.95)]">
       <table className="data-table w-full border-collapse text-left">
         <thead>
-          <tr className="bg-[#FAF7F2] border-b border-border text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-text-secondary">
-            <th className="sticky left-0 bg-[#FAF7F2] z-10 shadow-[1px_0_0_0_#E4DDD2] px-4 py-3">
+          <tr className="bg-white/40 border-b border-white/60 backdrop-blur-md text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">
+            <th className="sticky left-0 bg-white/70 backdrop-blur-md z-10 shadow-[1px_0_0_0_rgba(255,255,255,0.8)] px-4 py-3">
               Question Name
             </th>
             <th className="px-3 py-3">Topic</th>
@@ -45,17 +45,17 @@ export default function SpreadsheetTable({
             <th className="px-4 py-3 text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border bg-surface">
+        <tbody className="divide-y divide-white/60">
           {questions.map((q) => {
             const hasDueToday = isDueToday(q, recordsMap);
 
             return (
-              <tr key={q.id} className="hover:bg-[#FAF7F2] transition-colors">
+              <tr key={q.id} className="hover:bg-white/40 transition-colors">
                 {/* Sticky Question Name */}
-                <td className="sticky left-0 bg-surface z-10 shadow-[1px_0_0_0_#E4DDD2] px-4 py-3 font-semibold text-sm text-[#29251F] max-w-[200px]">
+                <td className="sticky left-0 bg-white/70 backdrop-blur-md z-10 shadow-[1px_0_0_0_rgba(255,255,255,0.8)] px-4 py-3 font-bold text-sm text-slate-900 max-w-[200px]">
                   <Link
                     href={`/questions/${q.id}`}
-                    className="font-bold text-text hover:text-[#8B6F47] no-underline block truncate"
+                    className="font-bold text-slate-900 hover:text-emerald-700 no-underline block truncate"
                     title={q.questionName}
                   >
                     {q.questionName}
@@ -64,13 +64,13 @@ export default function SpreadsheetTable({
 
                 {/* Topic */}
                 <td className="px-3 py-3">
-                  <span className="inline-block rounded bg-[#F2ECE2] px-2 py-0.5 text-[0.6875rem] font-medium text-[#71695F] border border-[#E4DDD2]">
+                  <span className="inline-block rounded-lg bg-white/70 backdrop-blur-sm px-2 py-0.5 text-[11px] font-semibold text-slate-600 border border-white/80 shadow-xs">
                     {q.topic || 'General'}
                   </span>
                 </td>
 
                 {/* Date Solved */}
-                <td className="px-3 py-3 text-text-secondary text-xs whitespace-nowrap">
+                <td className="px-3 py-3 text-slate-500 text-xs whitespace-nowrap font-medium">
                   {formatDateDisplay(q.dateSolved)}
                 </td>
 
@@ -99,15 +99,15 @@ export default function SpreadsheetTable({
                   <StatusBadge status={q.status} />
                 </td>
 
-                {/* Due Today (Excel Formula reproduction: IF(OR(...), "YES", "NO")) */}
+                {/* Due Today */}
                 <td className="px-3 py-3 text-center">
                   {hasDueToday ? (
-                    <span className="inline-flex items-center gap-1 rounded bg-[#EDE1CF] px-2 py-0.5 text-[0.6875rem] font-bold text-[#795B39] border border-[#DFD1BC]">
+                    <span className="inline-flex items-center gap-1 rounded-lg bg-amber-500/15 px-2 py-0.5 text-[11px] font-bold text-amber-800 border border-amber-500/25">
                       <CheckCircle2 size={11} />
                       YES
                     </span>
                   ) : (
-                    <span className="text-[0.6875rem] text-text-muted">NO</span>
+                    <span className="text-[11px] text-slate-400 font-medium">NO</span>
                   )}
                 </td>
 
@@ -115,20 +115,20 @@ export default function SpreadsheetTable({
                 <td className="px-4 py-3 text-right whitespace-nowrap">
                   <div className="flex items-center justify-end gap-1">
                     <button
-                      className="flex h-7 w-7 items-center justify-center rounded text-text-muted hover:bg-[#F1E9DE] hover:text-[#5F4930] transition-colors"
+                      className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-white/80 hover:text-slate-900 border border-transparent hover:border-white/80 transition-all shadow-xs"
                       onClick={() => onEdit(q.id)}
                       aria-label={`Edit ${q.questionName}`}
                       title="Edit Question"
                     >
-                      <Pencil size={14} />
+                      <Pencil size={13} />
                     </button>
                     <button
-                      className="flex h-7 w-7 items-center justify-center rounded text-text-muted hover:bg-[#F4E4DF] hover:text-[#A65D50] transition-colors"
+                      className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-500/15 hover:text-rose-700 border border-transparent hover:border-rose-500/25 transition-all shadow-xs"
                       onClick={() => onDelete(q.id)}
                       aria-label={`Delete ${q.questionName}`}
                       title="Delete Question"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 </td>
