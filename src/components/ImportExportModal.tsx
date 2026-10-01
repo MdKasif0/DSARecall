@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, type ChangeEvent } from 'react';
+import { useState, useEffect, useRef, type ChangeEvent } from 'react';
 import {
   X,
   Download,
