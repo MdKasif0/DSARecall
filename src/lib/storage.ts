@@ -14,6 +14,7 @@ import {
   getTodayISO,
   isCheckpointCompleted,
 } from './dates';
+import { generateSeedData } from './seed';
 
 const STORAGE_KEY = 'dsarecall_questions';
 const RECORDS_KEY = 'dsarecall_revision_records';
@@ -24,16 +25,39 @@ const RECORDS_KEY = 'dsarecall_revision_records';
 
 /**
  * Get all questions from localStorage.
+ * Automatically initializes rich sample DSA data on first run if empty.
  */
 export function getQuestions(): DSAQuestion[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as DSAQuestion[];
+    if (!raw) {
+      const seed = generateSeedData();
+      saveQuestions(seed.questions);
+      saveRevisionRecords(seed.records);
+      return seed.questions;
+    }
+    const parsed = JSON.parse(raw) as DSAQuestion[];
+    if (parsed.length === 0) {
+      const seed = generateSeedData();
+      saveQuestions(seed.questions);
+      saveRevisionRecords(seed.records);
+      return seed.questions;
+    }
+    return parsed;
   } catch {
     return [];
   }
+}
+
+/**
+ * Manually reset/load sample demo data.
+ */
+export function loadSampleData(): { questions: DSAQuestion[]; records: RevisionRecord[] } {
+  const seed = generateSeedData();
+  saveQuestions(seed.questions);
+  saveRevisionRecords(seed.records);
+  return seed;
 }
 
 /**
@@ -168,8 +192,20 @@ export function getRevisionRecords(): RevisionRecord[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(RECORDS_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as RevisionRecord[];
+    if (!raw) {
+      const seed = generateSeedData();
+      saveQuestions(seed.questions);
+      saveRevisionRecords(seed.records);
+      return seed.records;
+    }
+    const parsed = JSON.parse(raw) as RevisionRecord[];
+    if (parsed.length === 0) {
+      const seed = generateSeedData();
+      saveQuestions(seed.questions);
+      saveRevisionRecords(seed.records);
+      return seed.records;
+    }
+    return parsed;
   } catch {
     return [];
   }
