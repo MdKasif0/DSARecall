@@ -36,6 +36,7 @@ interface QuestionsContextValue {
     data: unknown,
     overwriteExisting?: boolean
   ) => { success: boolean; error?: string; count?: number };
+  loadSampleData: () => void;
   refreshQuestions: () => void;
 }
 
