@@ -243,13 +243,13 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
             </div>
           ) : activeTab === 'import' ? (
             <div className="space-y-4">
-              <p className="text-xs text-text-muted">
-                Restore questions from a previously exported <code className="text-primary font-semibold">.json</code> backup file.
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Restore questions from a previously exported <code className="text-emerald-700 bg-emerald-500/10 px-1.5 py-0.5 rounded font-mono font-semibold">.json</code> backup file.
               </p>
 
               {/* File upload dropzone */}
               <div
-                className="card border-dashed border-2 p-5 text-center cursor-pointer hover:bg-slate-50 transition-colors"
+                className="card-glass border-dashed border-2 border-white/90 p-6 text-center cursor-pointer hover:bg-white/70 transition-all rounded-2xl"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <input
@@ -260,13 +260,13 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
                   onChange={handleFileChange}
                 />
                 <div className="flex flex-col items-center justify-center gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-light text-primary">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-700 border border-emerald-500/25 shadow-xs">
                     <Upload size={18} />
                   </div>
-                  <span className="text-xs font-semibold text-text">
+                  <span className="text-xs font-bold text-slate-800">
                     {selectedFile ? selectedFile.name : 'Click to select JSON backup file'}
                   </span>
-                  <span className="text-[0.6875rem] text-text-muted">
+                  <span className="text-[11px] text-slate-500">
                     Only valid DSARecall JSON files are supported
                   </span>
                 </div>
@@ -274,44 +274,44 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
 
               {/* Error message */}
               {importError && (
-                <div className="flex items-center gap-2 rounded-lg bg-danger-light p-3 text-xs text-danger">
-                  <AlertTriangle size={15} className="shrink-0" />
+                <div className="flex items-center gap-2 rounded-xl bg-rose-500/10 border border-rose-500/25 p-3 text-xs text-rose-800 backdrop-blur-sm shadow-xs">
+                  <AlertTriangle size={15} className="shrink-0 text-rose-600" />
                   <span>{importError}</span>
                 </div>
               )}
 
               {/* Parsed Preview */}
               {parsedData && !importError && (
-                <div className="rounded-lg border border-border bg-slate-50/60 p-3.5 space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-primary">
+                <div className="rounded-xl border border-white/80 bg-white/50 backdrop-blur-md p-4 space-y-3 shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.95)]">
+                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-700">
                     <FileCheck size={16} />
                     <span>File Validated Successfully</span>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 text-xs text-text">
-                    <span className="rounded bg-white border border-border px-2 py-1">
-                      <strong>{parsedData.questions?.length || 0}</strong> questions found
+                  <div className="flex flex-wrap gap-2 text-xs text-slate-800">
+                    <span className="rounded-lg bg-white/80 backdrop-blur-sm border border-white/90 px-2.5 py-1 font-medium shadow-xs">
+                      <strong className="text-slate-900 font-bold">{parsedData.questions?.length || 0}</strong> questions found
                     </span>
-                    <span className="rounded bg-white border border-border px-2 py-1">
-                      <strong>{parsedData.records?.length || 0}</strong> revision checkpoints found
+                    <span className="rounded-lg bg-white/80 backdrop-blur-sm border border-white/90 px-2.5 py-1 font-medium shadow-xs">
+                      <strong className="text-slate-900 font-bold">{parsedData.records?.length || 0}</strong> revision checkpoints found
                     </span>
                   </div>
 
                   {/* Overwrite or Merge Option */}
-                  <div className="pt-2 border-t border-border space-y-2">
-                    <label className="flex items-center gap-2 text-xs text-text cursor-pointer">
+                  <div className="pt-2 border-t border-white/60 space-y-2">
+                    <label className="flex items-center gap-2 text-xs text-slate-800 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={overwrite}
                         onChange={(e) => setOverwrite(e.target.checked)}
-                        className="rounded border-border text-primary focus:ring-primary"
+                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                       />
-                      <span>
+                      <span className="font-medium">
                         Replace all existing data (Warning: will overwrite current questions)
                       </span>
                     </label>
                     {!overwrite && (
-                      <p className="text-[0.6875rem] text-text-muted">
+                      <p className="text-[11px] text-slate-500 pl-5">
                         Unchecked: Items will be merged safely with your existing data.
                       </p>
                     )}
@@ -320,7 +320,7 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
               )}
 
               {/* Action */}
-              <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <div className="flex justify-end gap-2 pt-3 border-t border-white/60">
                 <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>
                   Cancel
                 </button>
@@ -338,18 +338,18 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
           ) : (
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-bold text-text">Load Curated DSA Practice Dataset</h3>
-                <p className="text-xs text-text-muted mt-1 leading-relaxed">
-                  Populate 18 realistic DSA questions across topics (Binary Search, Two Sum, LRU Cache, Trapping Rain Water, Number of Islands, etc.) with completed revisions, active 12-day streak, and historical activity matching the visual benchmark.
+                <h3 className="text-sm font-bold text-slate-900">Load Curated DSA Practice Dataset</h3>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Populate 18 realistic DSA questions across topics (Binary Search, Two Sum, LRU Cache, Trapping Rain Water, Number of Islands, etc.) with completed revisions, active 12-day streak, and historical activity.
                 </p>
               </div>
 
-              <div className="rounded-lg border border-border bg-[#FAF7F2] p-4 space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#5F4930]">
-                  <Sparkles size={14} className="text-[#8B6F47]" />
+              <div className="rounded-2xl border border-white/80 bg-white/50 backdrop-blur-md p-4 space-y-2.5 shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.95)]">
+                <div className="flex items-center gap-2 text-xs font-bold text-emerald-800">
+                  <Sparkles size={14} className="text-emerald-600" />
                   <span>Included in Demo Data</span>
                 </div>
-                <ul className="text-xs text-text-secondary space-y-1 list-disc pl-4">
+                <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-4 font-medium">
                   <li>18 curated problems across Arrays, Trees, Graphs, DP, Binary Search</li>
                   <li>Today&apos;s revisions (2 actionable questions due today)</li>
                   <li>Overdue revision (1 item for testing alerts)</li>
@@ -358,7 +358,7 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
                 </ul>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <div className="flex justify-end gap-2 pt-3 border-t border-white/60">
                 <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>
                   Cancel
                 </button>
