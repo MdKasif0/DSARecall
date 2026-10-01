@@ -22,7 +22,7 @@ export default function StatCard({
   return (
     <div className="card p-4 flex items-center gap-3.5 hover:-translate-y-0.5 transition-all duration-150 cursor-default">
       {/* Liquid Glass Icon Container */}
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/80 bg-white/60 text-[#7D613D] shadow-[inset_0_1px_1.5px_#fff,0_2px_6px_rgba(70,50,30,0.03)] backdrop-blur-md">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/85 bg-white/70 text-[#0F172A] shadow-[inset_0_1px_1.5px_#fff,0_2px_6px_rgba(15,23,42,0.03)] backdrop-blur-md">
         {icon}
       </div>
 
@@ -40,12 +40,12 @@ export default function StatCard({
               <span
                 className={
                   trendType === 'success'
-                    ? 'text-[#6F8064] font-semibold'
+                    ? 'text-emerald-600 font-semibold'
                     : trendType === 'danger'
-                    ? 'text-[#A65D50] font-semibold'
+                    ? 'text-rose-600 font-semibold'
                     : trendType === 'warning'
-                    ? 'text-[#B18A50] font-semibold'
-                    : 'text-[#71695F]'
+                    ? 'text-amber-600 font-semibold'
+                    : 'text-slate-500'
                 }
               >
                 {trend}

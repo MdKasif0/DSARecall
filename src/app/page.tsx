@@ -153,18 +153,18 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2 self-start flex-wrap">
           <Link
             href="/practice"
-            className="btn btn-secondary btn-sm gap-1.5 text-xs font-semibold hover:border-[#8B6F47] hover:text-[#5F4930] no-underline"
+            className="btn btn-secondary btn-sm gap-1.5 text-xs font-semibold hover:border-slate-300 hover:text-slate-900 no-underline"
             title="Explore topic-wise practice questions"
           >
-            <Compass size={14} className="text-[#8B6F47]" />
+            <Compass size={14} className="text-slate-500" />
             <span>Practice</span>
           </Link>
           <Link
             href="/achievements"
-            className="btn btn-secondary btn-sm gap-1.5 text-xs font-semibold hover:border-[#8B6F47] hover:text-[#5F4930] no-underline"
+            className="btn btn-secondary btn-sm gap-1.5 text-xs font-semibold hover:border-slate-300 hover:text-slate-900 no-underline"
             title="View achievements and share on LinkedIn / X"
           >
-            <Trophy size={14} className="text-[#8B6F47]" />
+            <Trophy size={14} className="text-slate-500" />
             <span>Achievements</span>
           </Link>
           <button
