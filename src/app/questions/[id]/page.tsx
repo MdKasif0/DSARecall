@@ -153,6 +153,11 @@ export default function QuestionDetailPage() {
               <h1 className="text-2xl font-bold text-text break-words">
                 {question.questionName}
               </h1>
+              {question.topic && (
+                <span className="rounded bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+                  {question.topic}
+                </span>
+              )}
               <StatusBadge status={question.status} />
             </div>
 
