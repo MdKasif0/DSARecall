@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
 import {
-  getTodayISO,
   formatDateDisplay,
   getDaysUntilRevision,
   isCheckpointCompleted,
@@ -49,8 +48,6 @@ export default function RevisionsPage() {
       </div>
     );
   }
-
-  const today = getTodayISO();
 
   // Gather all future uncompleted revisions
   const allUpcoming: UpcomingRevision[] = [];
