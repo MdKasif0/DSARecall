@@ -47,10 +47,10 @@ export default function ActivityChart({ data }: ActivityChartProps) {
   return (
     <div className="card p-5">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border pb-3 mb-3">
+      <div className="flex items-center justify-between border-b border-[rgba(255,255,255,0.6)] pb-3 mb-3">
         <div>
           <div className="flex items-center gap-1.5">
-            <TrendingUp size={16} className="text-[#8B6F47]" />
+            <TrendingUp size={16} className="text-[#7D613D]" />
             <h3 className="text-sm font-bold text-text">Revision Activity</h3>
           </div>
           <p className="text-xs text-text-muted mt-0.5">
@@ -58,7 +58,7 @@ export default function ActivityChart({ data }: ActivityChartProps) {
           </p>
         </div>
 
-        <span className="rounded bg-surface-secondary border border-border px-2 py-0.5 text-xs font-semibold text-text-secondary">
+        <span className="rounded-full bg-white/70 backdrop-blur-md border border-white/80 px-3 py-0.5 text-xs font-bold text-[#543E26] shadow-xs">
           Last 30 days
         </span>
       </div>
