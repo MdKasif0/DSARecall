@@ -30,10 +30,10 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
   return (
     <div className="card p-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3.5 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[rgba(255,255,255,0.6)] pb-3.5 mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Calendar size={16} className="text-[#8B6F47]" />
+            <Calendar size={16} className="text-[#7D613D]" />
             <h3 className="text-sm font-bold text-text">Revision Activity</h3>
           </div>
           <p className="text-xs text-text-muted mt-0.5">
@@ -42,7 +42,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="rounded bg-surface-secondary border border-border px-2.5 py-1 text-xs font-semibold text-text-secondary">
+          <span className="rounded-full bg-white/70 backdrop-blur-md border border-white/80 px-3 py-0.5 text-xs font-bold text-[#543E26] shadow-xs">
             Last 12 months
           </span>
         </div>
