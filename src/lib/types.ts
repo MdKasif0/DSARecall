@@ -9,10 +9,15 @@ export interface RevisionDates {
   revision120: string;
 }
 
+export type QuestionDifficulty = 'Easy' | 'Medium' | 'Hard';
+export type QuestionPriority = 'High' | 'Medium' | 'Low';
+
 export interface DSAQuestion {
   id: string;
   questionName: string;
   topic?: string;      // Optional category / topic
+  difficulty?: QuestionDifficulty;
+  priority?: QuestionPriority;
   dateSolved: string;  // ISO date string (YYYY-MM-DD)
   revision3: string;
   revision7: string;
