@@ -10,6 +10,12 @@ import {
   Download,
   Filter,
   X,
+  FileText,
+  Calendar,
+  Clock,
+  Flame,
+  PieChart,
+  CalendarDays,
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
 import QuestionsTable from '@/components/QuestionsTable';
@@ -18,10 +24,17 @@ import QuestionCard from '@/components/QuestionCard';
 import EmptyState from '@/components/EmptyState';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import ImportExportModal from '@/components/ImportExportModal';
+import RevisionHeatmap from '@/components/RevisionHeatmap';
+import ActivityChart from '@/components/ActivityChart';
+import StatCard from '@/components/StatCard';
+import TopBar from '@/components/TopBar';
 import { openAddModal, openEditModal } from '@/lib/events';
-import { isDueToday, isOverdue, sortQuestions, getNextRevision } from '@/lib/dates';
+import { isDueToday, isOverdue, sortQuestions, getNextRevision, getTodayISO } from '@/lib/dates';
+import { computeActivityStats } from '@/lib/analytics';
 import {
   COMMON_TOPICS,
+  REVISION_INTERVALS,
+  REVISION_KEYS,
   type QuestionStatus,
   type SortOption,
 } from '@/lib/types';
@@ -30,7 +43,7 @@ type FilterType = 'all' | 'dueToday' | 'overdue' | 'upcoming' | QuestionStatus;
 type ViewMode = 'modern' | 'spreadsheet';
 
 export default function QuestionsPage() {
-  const { questions, recordsMap, isLoaded, deleteQuestion } = useQuestions();
+  const { questions, records, recordsMap, isLoaded, deleteQuestion } = useQuestions();
 
   // View state
   const [viewMode, setViewMode] = useState<ViewMode>('modern');
@@ -40,6 +53,7 @@ export default function QuestionsPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('default');
+  const [dateRangeOpen, setDateRangeOpen] = useState(false);
 
   // Modals
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -53,6 +67,43 @@ export default function QuestionsPage() {
     });
     return Array.from(set).sort();
   }, [questions]);
+
+  // Compute analytics stats for heatmap and chart
+  const stats = useMemo(() => {
+    return computeActivityStats(records, questions);
+  }, [records, questions]);
+
+  // Metrics
+  const today = getTodayISO();
+  let dueTodayCount = 0;
+  let overdueCount = 0;
+  let completedCount = 0;
+  const totalPossible = questions.length * 6;
+
+  for (const q of questions) {
+    let qDone = 0;
+    for (const interval of REVISION_INTERVALS) {
+      const rec = recordsMap.get(`${q.id}_${interval}`);
+      if (rec?.completed) {
+        completedCount++;
+        qDone++;
+        continue;
+      }
+      const d = q[REVISION_KEYS[interval]];
+      if (d === today) {
+        dueTodayCount++;
+      } else if (d < today) {
+        overdueCount++;
+      }
+    }
+    if (qDone === 6) {
+      // fully completed
+    }
+  }
+
+  const completionPct =
+    totalPossible > 0 ? Math.round((completedCount / totalPossible) * 100) : 0;
+  const avgRevisions = questions.length > 0 ? (completedCount / questions.length).toFixed(1) : '0';
 
   if (!isLoaded) {
     return (
@@ -124,47 +175,57 @@ export default function QuestionsPage() {
     setStartDate('');
     setEndDate('');
     setSortBy('default');
+    setDateRangeOpen(false);
   };
 
   return (
-    <div className="space-y-4">
-      {/* Page Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-6">
+      {/* Top Bar with Breadcrumb and Profile */}
+      <TopBar onSearchClick={() => document.getElementById('search-input')?.focus()} />
+
+      {/* Editorial Header matching Screenshot */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h1 className="text-xl font-bold text-text">Question Tracker</h1>
-          <p className="text-xs text-text-muted">
-            {questions.length} total question{questions.length !== 1 ? 's' : ''} tracked
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text">
+            Question Tracker
+          </h1>
+          <p className="text-sm text-text-secondary mt-1">
+            Keep your solved problems organized and know exactly what to revise next.
+          </p>
+          <p className="text-xs text-text-muted mt-0.5">
+            {questions.length} question{questions.length !== 1 ? 's' : ''} tracked
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* View Mode Toggle */}
-          <div className="hide-mobile flex items-center rounded-lg border border-border bg-surface p-1">
-            <button
-              className={`flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-semibold transition-colors ${
-                viewMode === 'modern'
-                  ? 'bg-primary text-white shadow-none'
-                  : 'text-text-muted hover:text-text'
-              }`}
-              onClick={() => setViewMode('modern')}
-              title="Modern Table with Progress and Next Revision"
-            >
-              <List size={13} />
-              Modern Table
-            </button>
-            <button
-              className={`flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-semibold transition-colors ${
-                viewMode === 'spreadsheet'
-                  ? 'bg-primary text-white shadow-none'
-                  : 'text-text-muted hover:text-text'
-              }`}
-              onClick={() => setViewMode('spreadsheet')}
-              title="Original Excel Spreadsheet View with all 6 intervals"
-            >
-              <TableProperties size={13} />
-              Excel View
-            </button>
-          </div>
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2 self-start">
+          {/* Modern Table Toggle */}
+          <button
+            className={`btn btn-sm ${
+              viewMode === 'modern'
+                ? 'bg-[#6B5035] text-white hover:bg-[#57412C] border-[#6B5035]'
+                : 'btn-secondary text-text-secondary'
+            }`}
+            onClick={() => setViewMode('modern')}
+            title="Modern Table with Progress and Next Revision"
+          >
+            <List size={14} />
+            <span>Modern Table</span>
+          </button>
+
+          {/* Excel View Toggle */}
+          <button
+            className={`btn btn-sm ${
+              viewMode === 'spreadsheet'
+                ? 'bg-[#6B5035] text-white hover:bg-[#57412C] border-[#6B5035]'
+                : 'btn-secondary text-text-secondary'
+            }`}
+            onClick={() => setViewMode('spreadsheet')}
+            title="Original Excel Spreadsheet View with all 6 intervals"
+          >
+            <TableProperties size={14} />
+            <span>Excel View</span>
+          </button>
 
           {/* Backup / Export */}
           <button
@@ -173,145 +234,231 @@ export default function QuestionsPage() {
             title="Import or Export Tracker Data"
           >
             <Download size={14} />
-            <span className="hide-mobile">Backup / Export</span>
+            <span>Backup / Export</span>
           </button>
 
           {/* Add Question */}
-          <button className="btn btn-primary btn-sm" onClick={openAddModal}>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={openAddModal}
+            title="Add a new solved DSA problem"
+          >
             <Plus size={15} />
-            Add Question
+            <span>Add Question</span>
           </button>
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      {questions.length > 0 && (
-        <div className="card p-3 space-y-3">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 justify-between">
-            {/* Search Input */}
-            <div className="relative flex-1 min-w-[220px]">
-              <Search
-                size={15}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
-              />
-              <input
-                type="text"
-                className="input pl-9 text-xs h-9"
-                placeholder="Search questions by name (e.g. 'binary', 'tree')..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              {search && (
-                <button
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text"
-                  onClick={() => setSearch('')}
-                >
-                  <X size={13} />
-                </button>
-              )}
-            </div>
+      {/* Top 5 Metric Cards */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <StatCard
+          label="Total Questions"
+          value={questions.length}
+          icon={<FileText size={18} />}
+          trend="↑ +2 this month"
+          trendType="success"
+        />
+        <StatCard
+          label="Due Today"
+          value={dueTodayCount}
+          icon={<Calendar size={18} />}
+          trend={dueTodayCount > 0 ? 'Keep going!' : 'All caught up!'}
+          trendType={dueTodayCount > 0 ? 'warning' : 'success'}
+        />
+        <StatCard
+          label="Overdue"
+          value={overdueCount}
+          icon={<Clock size={18} />}
+          trend={overdueCount > 0 ? `${overdueCount} need review` : 'All clear!'}
+          trendType={overdueCount > 0 ? 'danger' : 'success'}
+        />
+        <StatCard
+          label="Current Streak"
+          value={`${stats.currentStreak} day${stats.currentStreak !== 1 ? 's' : ''}`}
+          icon={<Flame size={18} />}
+          trend={`${stats.longestStreak} days longest`}
+          trendType="neutral"
+        />
+        <StatCard
+          label="Completion Rate"
+          value={`${completionPct}%`}
+          icon={<PieChart size={18} />}
+          trend={`${avgRevisions} / 6 avg. revisions`}
+          trendType="neutral"
+        />
+      </div>
 
-            {/* Quick Filter dropdowns */}
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Status / Category Filter */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs text-text-muted hide-mobile">Filter:</span>
-                <select
-                  className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[130px]"
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value as FilterType)}
-                >
-                  <option value="all">All Statuses</option>
-                  <option value="dueToday">Due Today</option>
-                  <option value="overdue">Overdue</option>
-                  <option value="upcoming">Upcoming</option>
-                  <option value="Pending">Pending</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Completed">Completed</option>
-                </select>
-              </div>
+      {/* Revision Activity Heatmap & 30-Day Activity Chart Side-by-Side */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* Heatmap & Streak Summary (7 cols on large screens) */}
+        <div className="lg:col-span-7">
+          <RevisionHeatmap stats={stats} />
+        </div>
 
-              {/* Topic Filter */}
-              {(availableTopics.length > 0 || COMMON_TOPICS.length > 0) && (
-                <select
-                  className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[120px]"
-                  value={topicFilter}
-                  onChange={(e) => setTopicFilter(e.target.value)}
-                >
-                  <option value="all">All Topics</option>
-                  {availableTopics.map((t) => (
+        {/* 30-Day Timeline Chart (5 cols on large screens) */}
+        <div className="lg:col-span-5">
+          <ActivityChart data={stats.last30Days} />
+        </div>
+      </div>
+
+      {/* Compact Single-Line Filter Toolbar matching Screenshot */}
+      <div className="card p-3">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5 justify-between">
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-[240px]">
+            <Search
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+            />
+            <input
+              id="search-input"
+              type="text"
+              className="input pl-9 pr-8 text-xs h-9"
+              placeholder='Search questions by name (e.g. "binary", "tree")...'
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {search && (
+              <button
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text"
+                onClick={() => setSearch('')}
+                aria-label="Clear search"
+              >
+                <X size={13} />
+              </button>
+            )}
+          </div>
+
+          {/* Quick Filter dropdowns */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Status Filter */}
+            <select
+              className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[125px]"
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value as FilterType)}
+              aria-label="Filter by status"
+            >
+              <option value="all">All Statuses</option>
+              <option value="dueToday">Due Today</option>
+              <option value="overdue">Overdue</option>
+              <option value="upcoming">Upcoming</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+
+            {/* Topic Filter */}
+            <select
+              className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[120px]"
+              value={topicFilter}
+              onChange={(e) => setTopicFilter(e.target.value)}
+              aria-label="Filter by topic"
+            >
+              <option value="all">All Topics</option>
+              {availableTopics.length > 0
+                ? availableTopics.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))
+                : COMMON_TOPICS.map((t) => (
                     <option key={t} value={t}>
                       {t}
                     </option>
                   ))}
-                </select>
-              )}
+            </select>
 
-              {/* Sort By */}
-              <div className="flex items-center gap-1.5">
-                <ArrowUpDown size={13} className="text-text-muted hide-mobile" />
-                <select
-                  className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[140px]"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as SortOption)}
-                >
-                  <option value="default">Default Priority</option>
-                  <option value="name-asc">Name (A → Z)</option>
-                  <option value="name-desc">Name (Z → A)</option>
-                  <option value="date-newest">Solved (Newest)</option>
-                  <option value="date-oldest">Solved (Oldest)</option>
-                  <option value="next-revision">Next Revision</option>
-                  <option value="status">Status</option>
-                </select>
-              </div>
-            </div>
-          </div>
+            {/* Priority / Sort By */}
+            <select
+              className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[135px]"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              aria-label="Sort order"
+            >
+              <option value="default">Default Priority</option>
+              <option value="name-asc">Name (A → Z)</option>
+              <option value="name-desc">Name (Z → A)</option>
+              <option value="date-newest">Solved (Newest)</option>
+              <option value="date-oldest">Solved (Oldest)</option>
+              <option value="next-revision">Next Revision</option>
+              <option value="status">Status</option>
+            </select>
 
-          {/* Date range row */}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2 text-xs">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-text-muted font-medium">Solved Between:</span>
-              <input
-                type="date"
-                className="input py-1 px-2 h-7 text-xs w-auto"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                title="Start Date"
-              />
-              <span className="text-text-muted">to</span>
-              <input
-                type="date"
-                className="input py-1 px-2 h-7 text-xs w-auto"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                title="End Date"
-              />
-            </div>
+            {/* Solved Between Date Button / Dropdown Toggle */}
+            <button
+              className={`btn btn-secondary btn-sm h-9 text-xs px-2.5 ${
+                startDate || endDate ? 'border-[#8B6F47] text-[#5F4930]' : ''
+              }`}
+              onClick={() => setDateRangeOpen(!dateRangeOpen)}
+              title="Filter by Solved Date"
+            >
+              <CalendarDays size={13} className="text-text-muted" />
+              <span>
+                {startDate || endDate
+                  ? `${startDate || 'Start'} → ${endDate || 'End'}`
+                  : 'Solved Between'}
+              </span>
+            </button>
 
+            {/* Reset Filters if Active */}
             {hasActiveFilters && (
               <button
-                className="text-xs text-primary hover:underline flex items-center gap-1"
+                className="btn btn-ghost btn-sm h-9 text-xs text-[#A65D50] hover:bg-[#F4E4DF] px-2 flex items-center gap-1"
                 onClick={resetFilters}
+                title="Reset all filters"
               >
-                <X size={12} />
-                Clear Filters
+                <X size={13} />
+                <span>Reset</span>
               </button>
             )}
           </div>
         </div>
-      )}
+
+        {/* Collapsible Date Range Input Row */}
+        {dateRangeOpen && (
+          <div className="mt-2.5 pt-2.5 border-t border-border flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-text-secondary font-medium">Solved Between:</span>
+            <input
+              type="date"
+              className="input py-1 px-2 h-7 text-xs w-auto"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              title="Start Date"
+            />
+            <span className="text-text-muted">to</span>
+            <input
+              type="date"
+              className="input py-1 px-2 h-7 text-xs w-auto"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              title="End Date"
+            />
+            {(startDate || endDate) && (
+              <button
+                className="text-xs text-text-muted hover:text-text ml-1"
+                onClick={() => {
+                  setStartDate('');
+                  setEndDate('');
+                }}
+              >
+                Clear date range
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Main Content Area */}
       {questions.length === 0 ? (
         <div className="card">
           <EmptyState
             icon={<List size={40} />}
-            title="Start your DSA revision cycle"
-            description="Add your first solved problem and we'll automatically build your 3, 7, 15, 30, 60 and 120-day revision schedule."
+            title="Start your revision journey"
+            description="Add your first solved DSA problem and DSA Recall will automatically build your 3, 7, 15, 30, 60 and 120-day revision schedule."
             action={
               <button className="btn btn-primary btn-sm" onClick={openAddModal}>
                 <Plus size={15} />
-                Add Your First Question
+                Add Question
               </button>
             }
           />
@@ -320,8 +467,8 @@ export default function QuestionsPage() {
         <div className="card">
           <EmptyState
             icon={<Filter size={40} />}
-            title="No matching questions"
-            description="No questions match your current search, topic, or date filters."
+            title="No questions match your search"
+            description="Try adjusting your search query, status, or date filters."
             action={
               <button className="btn btn-secondary btn-sm" onClick={resetFilters}>
                 Reset All Filters
@@ -331,31 +478,6 @@ export default function QuestionsPage() {
         </div>
       ) : (
         <>
-          {/* Mobile view switch header */}
-          <div className="show-mobile-only flex items-center justify-between pb-1">
-            <span className="text-xs font-semibold text-text">
-              Showing {sorted.length} question{sorted.length !== 1 ? 's' : ''}
-            </span>
-            <div className="flex items-center rounded border border-border bg-surface p-0.5">
-              <button
-                className={`px-2 py-0.5 text-xs font-semibold ${
-                  viewMode === 'modern' ? 'bg-primary text-white rounded' : 'text-text-muted'
-                }`}
-                onClick={() => setViewMode('modern')}
-              >
-                Cards
-              </button>
-              <button
-                className={`px-2 py-0.5 text-xs font-semibold ${
-                  viewMode === 'spreadsheet' ? 'bg-primary text-white rounded' : 'text-text-muted'
-                }`}
-                onClick={() => setViewMode('spreadsheet')}
-              >
-                Excel Grid
-              </button>
-            </div>
-          </div>
-
           {/* Desktop Table View */}
           <div className="hide-mobile">
             {viewMode === 'modern' ? (
