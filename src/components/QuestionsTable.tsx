@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import { Pencil, Trash2, ArrowRight, CheckCircle2 } from 'lucide-react';
 import type { DSAQuestion, RevisionRecord } from '@/lib/types';
+import { REVISION_LABELS } from '@/lib/types';
 import {
   formatDateDisplay,
   formatDateShort,
   getNextRevision,
   getQuestionProgress,
-  REVISION_LABELS,
   getTodayISO,
 } from '@/lib/dates';
 import StatusBadge from './StatusBadge';
