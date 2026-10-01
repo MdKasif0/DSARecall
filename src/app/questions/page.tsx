@@ -306,8 +306,8 @@ export default function QuestionsPage() {
         <div className="card">
           <EmptyState
             icon={<List size={40} />}
-            title="No questions yet"
-            description="Start building your spaced repetition schedule. Add your first DSA question with its solved date."
+            title="Start your DSA revision cycle"
+            description="Add your first solved problem and we'll automatically build your 3, 7, 15, 30, 60 and 120-day revision schedule."
             action={
               <button className="btn btn-primary btn-sm" onClick={openAddModal}>
                 <Plus size={15} />
