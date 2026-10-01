@@ -132,9 +132,9 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
         </div>
 
         {/* Streak & Activity Summary Beside Heatmap */}
-        <div className="border-t lg:border-t-0 lg:border-l border-border pt-4 lg:pt-0 lg:pl-6 space-y-3.5">
+        <div className="border-t lg:border-t-0 lg:border-l border-[rgba(255,255,255,0.6)] pt-4 lg:pt-0 lg:pl-6 space-y-3.5">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#F1E9DE] text-[#8B6F47]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] text-[#7D613D]">
               <Flame size={16} />
             </div>
             <div>
@@ -146,7 +146,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#F1E9DE] text-[#8B6F47]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] text-[#7D613D]">
               <Trophy size={16} />
             </div>
             <div>
@@ -158,7 +158,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#F1E9DE] text-[#8B6F47]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] text-[#7D613D]">
               <BarChart3 size={16} />
             </div>
             <div>
@@ -170,7 +170,7 @@ export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#F1E9DE] text-[#8B6F47]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] text-[#7D613D]">
               <Target size={16} />
             </div>
             <div>
