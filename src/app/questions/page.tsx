@@ -301,26 +301,26 @@ export default function QuestionsPage() {
         </div>
       </div>
 
-      {/* Compact Single-Line Filter Toolbar matching Screenshot */}
-      <div className="card p-3">
+      {/* Compact Single-Line Liquid Glass Filter Toolbar */}
+      <div className="card-glass p-3.5 rounded-2xl border border-white/80 shadow-[0_4px_20px_rgba(0,0,0,0.03),inset_0_1px_1.5px_rgba(255,255,255,0.95)]">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5 justify-between">
           {/* Search Input */}
           <div className="relative flex-1 min-w-[240px]">
             <Search
               size={15}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
             />
             <input
               id="search-input"
               type="text"
-              className="input pl-9 pr-8 text-xs h-9"
+              className="input pl-9 pr-8 text-xs h-9 bg-white/70 backdrop-blur-md border border-white/80 focus:bg-white rounded-xl shadow-xs"
               placeholder='Search questions by name (e.g. "binary", "tree")...'
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             {search && (
               <button
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-800"
                 onClick={() => setSearch('')}
                 aria-label="Clear search"
               >
@@ -333,7 +333,7 @@ export default function QuestionsPage() {
           <div className="flex flex-wrap items-center gap-2">
             {/* Status Filter */}
             <select
-              className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[125px]"
+              className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[125px] bg-white/70 backdrop-blur-md border border-white/80 rounded-xl shadow-xs"
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as FilterType)}
               aria-label="Filter by status"
@@ -349,7 +349,7 @@ export default function QuestionsPage() {
 
             {/* Topic Filter */}
             <select
-              className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[120px]"
+              className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[120px] bg-white/70 backdrop-blur-md border border-white/80 rounded-xl shadow-xs"
               value={topicFilter}
               onChange={(e) => setTopicFilter(e.target.value)}
               aria-label="Filter by topic"
@@ -370,7 +370,7 @@ export default function QuestionsPage() {
 
             {/* Priority / Sort By */}
             <select
-              className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[135px]"
+              className="select text-xs py-1 px-2.5 h-9 w-auto min-w-[135px] bg-white/70 backdrop-blur-md border border-white/80 rounded-xl shadow-xs"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
               aria-label="Sort order"
@@ -386,13 +386,13 @@ export default function QuestionsPage() {
 
             {/* Solved Between Date Button / Dropdown Toggle */}
             <button
-              className={`btn btn-secondary btn-sm h-9 text-xs px-2.5 ${
-                startDate || endDate ? 'border-[#8B6F47] text-[#5F4930]' : ''
+              className={`btn btn-secondary btn-sm h-9 text-xs px-2.5 rounded-xl ${
+                startDate || endDate ? 'border-emerald-500/40 text-emerald-800 bg-emerald-500/10' : ''
               }`}
               onClick={() => setDateRangeOpen(!dateRangeOpen)}
               title="Filter by Solved Date"
             >
-              <CalendarDays size={13} className="text-text-muted" />
+              <CalendarDays size={13} className="text-slate-500" />
               <span>
                 {startDate || endDate
                   ? `${startDate || 'Start'} → ${endDate || 'End'}`
@@ -403,7 +403,7 @@ export default function QuestionsPage() {
             {/* Reset Filters if Active */}
             {hasActiveFilters && (
               <button
-                className="btn btn-ghost btn-sm h-9 text-xs text-[#A65D50] hover:bg-[#F4E4DF] px-2 flex items-center gap-1"
+                className="btn btn-ghost btn-sm h-9 text-xs text-rose-700 hover:bg-rose-500/10 px-2.5 rounded-xl flex items-center gap-1 font-semibold"
                 onClick={resetFilters}
                 title="Reset all filters"
               >
@@ -416,26 +416,26 @@ export default function QuestionsPage() {
 
         {/* Collapsible Date Range Input Row */}
         {dateRangeOpen && (
-          <div className="mt-2.5 pt-2.5 border-t border-border flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-text-secondary font-medium">Solved Between:</span>
+          <div className="mt-3 pt-3 border-t border-white/60 flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-slate-600 font-semibold">Solved Between:</span>
             <input
               type="date"
-              className="input py-1 px-2 h-7 text-xs w-auto"
+              className="input py-1 px-2 h-7.5 text-xs w-auto bg-white/80 rounded-lg border-white/90 shadow-xs"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               title="Start Date"
             />
-            <span className="text-text-muted">to</span>
+            <span className="text-slate-400">to</span>
             <input
               type="date"
-              className="input py-1 px-2 h-7 text-xs w-auto"
+              className="input py-1 px-2 h-7.5 text-xs w-auto bg-white/80 rounded-lg border-white/90 shadow-xs"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               title="End Date"
             />
             {(startDate || endDate) && (
               <button
-                className="text-xs text-text-muted hover:text-text ml-1"
+                className="text-xs text-slate-500 hover:text-slate-900 ml-1 font-medium"
                 onClick={() => {
                   setStartDate('');
                   setEndDate('');
