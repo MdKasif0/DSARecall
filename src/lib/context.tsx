@@ -11,19 +11,29 @@ import {
 } from 'react';
 import type { DSAQuestion, QuestionStatus, RevisionRecord, RevisionInterval } from '@/lib/types';
 import * as storage from '@/lib/storage';
+import { toast } from '@/lib/toast';
 
 interface QuestionsContextValue {
   questions: DSAQuestion[];
   records: RevisionRecord[];
   recordsMap: Map<string, RevisionRecord>;
   isLoaded: boolean;
-  addQuestion: (name: string, dateSolved: string, status?: QuestionStatus) => DSAQuestion;
+  addQuestion: (
+    name: string,
+    dateSolved: string,
+    status?: QuestionStatus,
+    topic?: string
+  ) => DSAQuestion;
   updateQuestion: (
     id: string,
-    updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status'>>
+    updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status' | 'topic'>>
   ) => DSAQuestion | null;
   deleteQuestion: (id: string) => boolean;
   markRevision: (questionId: string, interval: RevisionInterval, completed?: boolean) => void;
+  importData: (
+    data: unknown,
+    overwriteExisting?: boolean
+  ) => { success: boolean; error?: string; count?: number };
   refreshQuestions: () => void;
 }
 
@@ -65,9 +75,10 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
   }, [records]);
 
   const handleAdd = useCallback(
-    (name: string, dateSolved: string, status?: QuestionStatus) => {
-      const q = storage.addQuestion(name, dateSolved, status);
+    (name: string, dateSolved: string, status?: QuestionStatus, topic?: string) => {
+      const q = storage.addQuestion(name, dateSolved, status, topic);
       refreshQuestions();
+      toast.success(`Added "${q.questionName}"`);
       return q;
     },
     [refreshQuestions]
@@ -76,10 +87,13 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
   const handleUpdate = useCallback(
     (
       id: string,
-      updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status'>>
+      updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status' | 'topic'>>
     ) => {
       const q = storage.updateQuestion(id, updates);
       refreshQuestions();
+      if (q) {
+        toast.success(`Updated "${q.questionName}"`);
+      }
       return q;
     },
     [refreshQuestions]
@@ -87,17 +101,43 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
 
   const handleDelete = useCallback(
     (id: string) => {
+      const q = questions.find((item) => item.id === id);
+      const name = q ? q.questionName : 'Question';
       const result = storage.deleteQuestion(id);
       refreshQuestions();
+      if (result) {
+        toast.info(`Deleted "${name}"`);
+      }
       return result;
     },
-    [refreshQuestions]
+    [questions, refreshQuestions]
   );
 
   const handleMarkRevision = useCallback(
     (questionId: string, interval: RevisionInterval, completed: boolean = true) => {
-      storage.markRevisionCompleted(questionId, interval, completed);
+      const { question } = storage.markRevisionCompleted(questionId, interval, completed);
       refreshQuestions();
+      if (question) {
+        if (completed) {
+          toast.success(`Marked +${interval}d revision completed for "${question.questionName}"`);
+        } else {
+          toast.info(`Unmarked revision for "${question.questionName}"`);
+        }
+      }
+    },
+    [refreshQuestions]
+  );
+
+  const handleImport = useCallback(
+    (data: unknown, overwriteExisting: boolean = false) => {
+      const res = storage.importDataJSON(data, overwriteExisting);
+      if (res.success) {
+        refreshQuestions();
+        toast.success(`Successfully imported ${res.count} questions!`);
+      } else {
+        toast.error(res.error || 'Import failed');
+      }
+      return res;
     },
     [refreshQuestions]
   );
@@ -113,6 +153,7 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
         updateQuestion: handleUpdate,
         deleteQuestion: handleDelete,
         markRevision: handleMarkRevision,
+        importData: handleImport,
         refreshQuestions,
       }}
     >
