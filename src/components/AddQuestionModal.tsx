@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { X, CalendarDays, AlertCircle } from 'lucide-react';
 import { calculateRevisionDates, formatDateDisplay, getTodayISO } from '@/lib/dates';
 import { useQuestions } from '@/lib/context';
