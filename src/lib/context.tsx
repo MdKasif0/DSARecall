@@ -6,17 +6,24 @@ import {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   type ReactNode,
 } from 'react';
-import type { DSAQuestion, QuestionStatus } from '@/lib/types';
+import type { DSAQuestion, QuestionStatus, RevisionRecord, RevisionInterval } from '@/lib/types';
 import * as storage from '@/lib/storage';
 
 interface QuestionsContextValue {
   questions: DSAQuestion[];
+  records: RevisionRecord[];
+  recordsMap: Map<string, RevisionRecord>;
   isLoaded: boolean;
   addQuestion: (name: string, dateSolved: string, status?: QuestionStatus) => DSAQuestion;
-  updateQuestion: (id: string, updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status'>>) => DSAQuestion | null;
+  updateQuestion: (
+    id: string,
+    updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status'>>
+  ) => DSAQuestion | null;
   deleteQuestion: (id: string) => boolean;
+  markRevision: (questionId: string, interval: RevisionInterval, completed?: boolean) => void;
   refreshQuestions: () => void;
 }
 
@@ -24,16 +31,26 @@ const QuestionsContext = createContext<QuestionsContextValue | null>(null);
 
 export function QuestionsProvider({ children }: { children: ReactNode }) {
   const [questions, setQuestions] = useState<DSAQuestion[]>([]);
+  const [records, setRecords] = useState<RevisionRecord[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const refreshQuestions = useCallback(() => {
     setQuestions(storage.getQuestions());
+    setRecords(storage.getRevisionRecords());
   }, []);
 
   useEffect(() => {
     refreshQuestions();
     setIsLoaded(true);
   }, [refreshQuestions]);
+
+  const recordsMap = useMemo(() => {
+    const map = new Map<string, RevisionRecord>();
+    for (const r of records) {
+      map.set(`${r.questionId}_${r.interval}`, r);
+    }
+    return map;
+  }, [records]);
 
   const handleAdd = useCallback(
     (name: string, dateSolved: string, status?: QuestionStatus) => {
@@ -45,7 +62,10 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
   );
 
   const handleUpdate = useCallback(
-    (id: string, updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status'>>) => {
+    (
+      id: string,
+      updates: Partial<Pick<DSAQuestion, 'questionName' | 'dateSolved' | 'status'>>
+    ) => {
       const q = storage.updateQuestion(id, updates);
       refreshQuestions();
       return q;
@@ -62,14 +82,25 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
     [refreshQuestions]
   );
 
+  const handleMarkRevision = useCallback(
+    (questionId: string, interval: RevisionInterval, completed: boolean = true) => {
+      storage.markRevisionCompleted(questionId, interval, completed);
+      refreshQuestions();
+    },
+    [refreshQuestions]
+  );
+
   return (
     <QuestionsContext.Provider
       value={{
         questions,
+        records,
+        recordsMap,
         isLoaded,
         addQuestion: handleAdd,
         updateQuestion: handleUpdate,
         deleteQuestion: handleDelete,
+        markRevision: handleMarkRevision,
         refreshQuestions,
       }}
     >
