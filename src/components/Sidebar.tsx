@@ -104,14 +104,14 @@ export default function Sidebar({ onOpenBackup }: SidebarProps) {
         </div>
 
         <Link href="/" className="flex items-center gap-3 no-underline pl-1">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-b from-[#6E5338] to-[#4F3A24] shadow-md border border-white/25">
-            <BookOpen size={16} className="text-[#FFFDF9]" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-b from-[#1E293B] to-[#0F172A] shadow-md border border-white/25">
+            <BookOpen size={16} className="text-white" />
           </div>
           <div>
-            <span className="text-[0.9375rem] font-bold tracking-tight text-[#231E18] block leading-none">
+            <span className="text-[0.9375rem] font-bold tracking-tight text-[#0F172A] block leading-none">
               DSA Recall
             </span>
-            <span className="text-[0.625rem] font-semibold text-[#8F8578] uppercase tracking-[0.08em] block mt-1">
+            <span className="text-[0.625rem] font-semibold text-slate-400 uppercase tracking-[0.08em] block mt-1">
               SPACED REVISION
             </span>
           </div>
@@ -121,7 +121,7 @@ export default function Sidebar({ onOpenBackup }: SidebarProps) {
       {/* Navigation List */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
         <div>
-          <span className="px-2.5 text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-[#8F8578] block mb-2">
+          <span className="px-2.5 text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-slate-400 block mb-2">
             NAVIGATION
           </span>
           <nav className="space-y-1">
@@ -137,20 +137,20 @@ export default function Sidebar({ onOpenBackup }: SidebarProps) {
                   href={href}
                   className={`group relative flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold no-underline transition-all duration-150 ${
                     active
-                      ? 'bg-white/75 text-[#4E3924] shadow-[0_2px_8px_rgba(70,50,30,0.06),inset_0_1px_1px_rgba(255,255,255,0.95)] border border-white/80 backdrop-blur-md font-bold'
-                      : 'text-[#635A4F] hover:bg-white/45 hover:text-[#231E18] border border-transparent'
+                      ? 'bg-white/85 text-[#0F172A] shadow-[0_2px_8px_rgba(15,23,42,0.06),inset_0_1px_1.5px_rgba(255,255,255,0.95)] border border-white/90 backdrop-blur-md font-bold'
+                      : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-2.5 pl-0.5">
                     <Icon
                       size={16}
-                      className={active ? 'text-[#543E26]' : 'text-[#8F8578] group-hover:text-[#635A4F]'}
+                      className={active ? 'text-[#0F172A]' : 'text-slate-400 group-hover:text-slate-600'}
                     />
                     <span>{label}</span>
                   </div>
 
                   {badge !== null && (
-                    <span className="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[0.6875rem] font-bold bg-white/80 text-[#543E26] border border-white/90 shadow-xs min-w-[20px]">
+                    <span className="inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[0.6875rem] font-bold bg-white/90 text-[#0F172A] border border-white/95 shadow-xs min-w-[20px]">
                       {badge}
                     </span>
                   )}
@@ -162,7 +162,7 @@ export default function Sidebar({ onOpenBackup }: SidebarProps) {
 
         {/* Data Section */}
         <div>
-          <span className="px-2.5 text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-[#8F8578] block mb-2">
+          <span className="px-2.5 text-[0.6875rem] font-bold uppercase tracking-[0.08em] text-slate-400 block mb-2">
             DATA
           </span>
           <div className="space-y-1">
@@ -170,33 +170,33 @@ export default function Sidebar({ onOpenBackup }: SidebarProps) {
               href="/settings"
               className={`flex items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold no-underline transition-all duration-150 ${
                 pathname === '/settings'
-                  ? 'bg-white/75 text-[#4E3924] shadow-[0_2px_8px_rgba(70,50,30,0.06),inset_0_1px_1px_rgba(255,255,255,0.95)] border border-white/80 backdrop-blur-md font-bold'
-                  : 'text-[#635A4F] hover:bg-white/45 hover:text-[#231E18] border border-transparent'
+                  ? 'bg-white/85 text-[#0F172A] shadow-[0_2px_8px_rgba(15,23,42,0.06),inset_0_1px_1.5px_rgba(255,255,255,0.95)] border border-white/90 backdrop-blur-md font-bold'
+                  : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'
               }`}
             >
               <div className="flex items-center gap-2.5 pl-0.5">
                 <Settings
                   size={16}
-                  className={pathname === '/settings' ? 'text-[#543E26]' : 'text-[#8F8578]'}
+                  className={pathname === '/settings' ? 'text-[#0F172A]' : 'text-slate-400'}
                 />
                 <span>Settings</span>
               </div>
             </Link>
 
             <button
-              className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold text-[#635A4F] hover:bg-white/45 hover:text-[#231E18] transition-all duration-150 border border-transparent"
+              className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-white/50 hover:text-slate-900 transition-all duration-150 border border-transparent"
               onClick={onOpenBackup}
             >
               <div className="flex items-center gap-2.5 pl-0.5">
-                <Download size={16} className="text-[#8F8578]" />
+                <Download size={16} className="text-slate-400" />
                 <span>Backup / Export</span>
               </div>
             </button>
 
-            <div className="flex items-center justify-between px-3 py-2 text-xs text-[#635A4F]">
+            <div className="flex items-center justify-between px-3 py-2 text-xs text-slate-600">
               <span className="pl-0.5 text-xs">Local Storage</span>
-              <span className="flex items-center gap-1.5 font-bold text-[#526844] text-[0.6875rem]">
-                <span className="h-2 w-2 rounded-full bg-[#526844] shadow-[0_0_6px_rgba(82,104,68,0.5)]" />
+              <span className="flex items-center gap-1.5 font-bold text-emerald-600 text-[0.6875rem]">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
                 Active
               </span>
             </div>
@@ -206,19 +206,19 @@ export default function Sidebar({ onOpenBackup }: SidebarProps) {
 
       {/* Sidebar Footer: macOS Frosted Widget with Leaf Motif */}
       <div className="p-3.5 border-t border-[rgba(255,255,255,0.5)]">
-        <div className="rounded-xl border border-white/70 bg-white/45 p-3 flex items-center justify-between gap-2 shadow-[inset_0_1px_1px_#fff,0_2px_8px_rgba(70,50,30,0.03)] backdrop-blur-md">
+        <div className="rounded-xl border border-white/80 bg-white/55 p-3 flex items-center justify-between gap-2 shadow-[inset_0_1px_1px_#fff,0_2px_8px_rgba(15,23,42,0.03)] backdrop-blur-md">
           <div className="flex items-center gap-2.5">
             <span className="text-xl select-none" role="img" aria-label="sprout">
               🌿
             </span>
-            <div className="text-[0.6875rem] font-bold text-[#543E26] leading-snug">
+            <div className="text-[0.6875rem] font-bold text-[#0F172A] leading-snug">
               <span>Keep Learning</span>
-              <span className="block text-[#8F8578] font-normal">Keep Growing</span>
+              <span className="block text-slate-400 font-normal">Keep Growing</span>
             </div>
           </div>
           <Link
             href="/questions"
-            className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/80 text-[#543E26] border border-white/90 shadow-xs hover:bg-[#543E26] hover:text-white transition-colors"
+            className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/85 text-[#0F172A] border border-white/90 shadow-xs hover:bg-[#0F172A] hover:text-white transition-colors"
             title="Browse all questions"
           >
             <ArrowRight size={13} />

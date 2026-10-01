@@ -61,11 +61,11 @@ export default function TopBar({ onSearchClick }: TopBarProps) {
       {/* Liquid Glass Breadcrumb Capsule */}
       <Link
         href={backHref}
-        className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-bold text-[#543E26] bg-white/65 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_4px_rgba(70,50,30,0.03)] hover:bg-white/90 no-underline transition-all group"
+        className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-bold text-[#0F172A] bg-white/75 backdrop-blur-md border border-white/85 shadow-[inset_0_1px_1px_#fff,0_1px_4px_rgba(15,23,42,0.03)] hover:bg-white/95 no-underline transition-all group"
       >
         <ArrowLeft
           size={13}
-          className="text-[#8F8578] group-hover:text-[#543E26] group-hover:-translate-x-0.5 transition-transform"
+          className="text-slate-400 group-hover:text-[#0F172A] group-hover:-translate-x-0.5 transition-transform"
         />
         <span>{pageTitle}</span>
       </Link>
@@ -74,7 +74,7 @@ export default function TopBar({ onSearchClick }: TopBarProps) {
       <div className="flex items-center gap-2.5">
         {/* Search trigger */}
         <button
-          className="flex h-8 w-8 items-center justify-center rounded-full text-[#635A4F] bg-white/65 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] hover:bg-white/95 hover:text-[#231E18] hover:scale-105 transition-all"
+          className="flex h-8 w-8 items-center justify-center rounded-full text-slate-600 bg-white/75 backdrop-blur-md border border-white/85 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(15,23,42,0.03)] hover:bg-white/95 hover:text-slate-900 hover:scale-105 transition-all"
           onClick={onSearchClick}
           aria-label="Quick Search"
           title="Search questions"
@@ -85,7 +85,7 @@ export default function TopBar({ onSearchClick }: TopBarProps) {
         {/* Notifications / Pending Revisions Alert */}
         <Link
           href="/today"
-          className="relative flex h-8 w-8 items-center justify-center rounded-full text-[#635A4F] bg-white/65 backdrop-blur-md border border-white/80 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(70,50,30,0.03)] hover:bg-white/95 hover:text-[#231E18] hover:scale-105 transition-all"
+          className="relative flex h-8 w-8 items-center justify-center rounded-full text-slate-600 bg-white/75 backdrop-blur-md border border-white/85 shadow-[inset_0_1px_1px_#fff,0_1px_3px_rgba(15,23,42,0.03)] hover:bg-white/95 hover:text-slate-900 hover:scale-105 transition-all"
           aria-label={
             pendingCount > 0 ? `${pendingCount} revisions need attention` : 'All caught up'
           }
@@ -95,14 +95,14 @@ export default function TopBar({ onSearchClick }: TopBarProps) {
         >
           <Bell size={15} />
           {pendingCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#994738] shadow-[0_0_6px_rgba(153,71,56,0.6)]" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.6)]" />
           )}
         </Link>
 
         {/* User Avatar Circle */}
         <Link
           href="/settings"
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-b from-[#7A5D3E] to-[#4F3A24] text-[#FFFDF9] text-xs font-bold shadow-sm border border-white/30 select-none hover:scale-105 transition-all"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-b from-[#1E293B] to-[#0F172A] text-white text-xs font-bold shadow-sm border border-white/30 select-none hover:scale-105 transition-all"
           title="Settings & Profile"
           aria-label="User settings"
         >
