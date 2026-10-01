@@ -115,69 +115,83 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
       aria-modal="true"
       aria-labelledby="backup-modal-title"
     >
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <div className="flex items-center gap-2">
-            <h2 id="backup-modal-title" className="text-base font-semibold text-text">
-              Backup & Transfer
-            </h2>
+      <div className="modal-content !p-0 overflow-hidden shadow-[0_24px_64px_rgba(15,23,42,0.18),inset_0_1px_1.5px_rgba(255,255,255,0.95)] border border-white/80" onClick={(e) => e.stopPropagation()}>
+        {/* Header with macOS traffic lights & specular sheen */}
+        <div className="flex items-center justify-between border-b border-white/60 bg-white/40 px-6 py-4.5 backdrop-blur-md">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 mr-1">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]/80 shadow-[inset_0_0.5px_1px_rgba(255,255,255,0.8)]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]/80 shadow-[inset_0_0.5px_1px_rgba(255,255,255,0.8)]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]/80 shadow-[inset_0_0.5px_1px_rgba(255,255,255,0.8)]" />
+            </div>
+            <div>
+              <h2 id="backup-modal-title" className="text-base font-bold text-slate-900 tracking-tight">
+                Data Transfer & Backup
+              </h2>
+              <p className="text-[11px] text-slate-500 font-medium">Export, restore, or load curated problem sets</p>
+            </div>
           </div>
-          <button className="btn-icon btn-ghost" onClick={onClose} aria-label="Close modal">
-            <X size={18} />
+          <button
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-white/60 hover:bg-white text-slate-500 hover:text-slate-800 transition-all border border-white/80 shadow-xs"
+            onClick={onClose}
+            aria-label="Close modal"
+          >
+            <X size={15} />
           </button>
         </div>
 
-        {/* Tab selection */}
-        <div className="flex border-b border-border px-5">
-          <button
-            className={`flex items-center gap-2 border-b-2 py-3 px-4 text-xs font-semibold transition-colors ${
-              activeTab === 'export'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-text-muted hover:text-text'
-            }`}
-            onClick={() => setActiveTab('export')}
-          >
-            <Download size={14} />
-            Export Data
-          </button>
-          <button
-            className={`flex items-center gap-2 border-b-2 py-3 px-4 text-xs font-semibold transition-colors ${
-              activeTab === 'import'
-                ? 'border-[#8B6F47] text-[#5F4930]'
-                : 'border-transparent text-text-muted hover:text-text'
-            }`}
-            onClick={() => setActiveTab('import')}
-          >
-            <Upload size={14} />
-            Import Data
-          </button>
-          <button
-            className={`flex items-center gap-2 border-b-2 py-3 px-4 text-xs font-semibold transition-colors ${
-              activeTab === 'sample'
-                ? 'border-[#8B6F47] text-[#5F4930]'
-                : 'border-transparent text-text-muted hover:text-text'
-            }`}
-            onClick={() => setActiveTab('sample')}
-          >
-            <Sparkles size={14} />
-            Sample Data
-          </button>
+        {/* Tab selection (macOS segmented capsule control) */}
+        <div className="px-6 pt-4 pb-2">
+          <div className="flex p-1 bg-slate-200/50 backdrop-blur-md border border-white/70 rounded-xl gap-1">
+            <button
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold rounded-lg transition-all ${
+                activeTab === 'export'
+                  ? 'bg-white text-slate-900 shadow-sm border border-white/90'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+              onClick={() => setActiveTab('export')}
+            >
+              <Download size={14} />
+              Export
+            </button>
+            <button
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold rounded-lg transition-all ${
+                activeTab === 'import'
+                  ? 'bg-white text-slate-900 shadow-sm border border-white/90'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+              onClick={() => setActiveTab('import')}
+            >
+              <Upload size={14} />
+              Import
+            </button>
+            <button
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold rounded-lg transition-all ${
+                activeTab === 'sample'
+                  ? 'bg-white text-slate-900 shadow-sm border border-white/90'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+              onClick={() => setActiveTab('sample')}
+            >
+              <Sparkles size={14} className="text-emerald-600" />
+              Demo Data
+            </button>
+          </div>
         </div>
 
         {/* Content */}
-        <div className="p-5">
+        <div className="p-6 pt-2">
           {activeTab === 'export' ? (
             <div className="space-y-4">
               <div>
-                <p className="text-xs text-text-muted">
-                  Download a backup of your questions and revision records. You can save it locally or transfer to another device.
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Download a complete backup of your questions and revision records. You can save it locally or sync across your devices.
                 </p>
-                <div className="mt-2 flex items-center gap-3 text-xs font-medium text-text">
-                  <span className="rounded bg-slate-100 px-2 py-1">
+                <div className="mt-2.5 flex items-center gap-2 text-xs font-semibold">
+                  <span className="rounded-lg bg-white/70 backdrop-blur-sm border border-white/90 px-2.5 py-1 text-slate-700 shadow-xs">
                     {questions.length} Questions
                   </span>
-                  <span className="rounded bg-slate-100 px-2 py-1">
+                  <span className="rounded-lg bg-white/70 backdrop-blur-sm border border-white/90 px-2.5 py-1 text-slate-700 shadow-xs">
                     {records.length} Revision Records
                   </span>
                 </div>
@@ -185,13 +199,13 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {/* JSON Export */}
-                <div className="card p-4 flex flex-col justify-between gap-3 border hover:border-primary/50 transition-colors">
+                <div className="card-glass p-4 rounded-xl flex flex-col justify-between gap-3 border border-white/80 hover:border-emerald-500/40 transition-all">
                   <div>
-                    <div className="flex items-center gap-2 text-primary mb-1">
+                    <div className="flex items-center gap-2 text-emerald-600 mb-1.5">
                       <FileJson size={20} />
-                      <span className="text-sm font-semibold text-text">Full Backup (JSON)</span>
+                      <span className="text-sm font-bold text-slate-900">Full Backup (JSON)</span>
                     </div>
-                    <p className="text-xs text-text-muted">
+                    <p className="text-xs text-slate-500 leading-relaxed">
                       Complete state including revision records, status, and metadata. Best for restoring or moving to another browser.
                     </p>
                   </div>
@@ -206,14 +220,14 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
                 </div>
 
                 {/* CSV Export */}
-                <div className="card p-4 flex flex-col justify-between gap-3 border hover:border-primary/50 transition-colors">
+                <div className="card-glass p-4 rounded-xl flex flex-col justify-between gap-3 border border-white/80 hover:border-emerald-500/40 transition-all">
                   <div>
-                    <div className="flex items-center gap-2 text-[#15803d] mb-1">
+                    <div className="flex items-center gap-2 text-emerald-700 mb-1.5">
                       <FileSpreadsheet size={20} />
-                      <span className="text-sm font-semibold text-text">Spreadsheet (CSV)</span>
+                      <span className="text-sm font-bold text-slate-900">Spreadsheet (CSV)</span>
                     </div>
-                    <p className="text-xs text-text-muted">
-                      Original Excel table format with all 6 interval dates (+3, +7, etc.). Opens in Excel or Google Sheets.
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Original Excel table format with all 6 interval dates (+3, +7, etc.). Opens seamlessly in Excel or Google Sheets.
                     </p>
                   </div>
                   <button
