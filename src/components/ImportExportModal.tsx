@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   FileCheck,
+  Sparkles,
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
 import { exportDataJSON, exportDataCSV } from '@/lib/storage';
@@ -22,8 +23,8 @@ interface ImportExportModalProps {
 }
 
 export default function ImportExportModal({ open, onClose }: ImportExportModalProps) {
-  const { questions, records, importData } = useQuestions();
-  const [activeTab, setActiveTab] = useState<'export' | 'import'>('export');
+  const { questions, records, importData, loadSampleData } = useQuestions();
+  const [activeTab, setActiveTab] = useState<'export' | 'import' | 'sample'>('export');
 
   // Import state
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
