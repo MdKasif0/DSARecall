@@ -325,7 +325,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Interactive Interval Days Input Boxes */}
-        <div className="rounded-lg bg-[#FAF7F2] border border-[#E4DDD2] p-4">
+        <div className="rounded-xl bg-white/60 border border-white/80 p-4 shadow-[inset_0_1px_1px_#fff]">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold text-text">
               Revision Checkpoint Days ({customIntervals.length} Stages)
@@ -353,7 +353,7 @@ export default function SettingsPage() {
                     onChange={(e) =>
                       handleIntervalChange(idx, parseInt(e.target.value, 10))
                     }
-                    className="input pl-6 pr-6 text-xs text-center font-mono font-bold bg-[#FFFDF9] border-[#E4DDD2] w-full"
+                    className="input pl-6 pr-6 text-xs text-center font-mono font-bold bg-white/85 border-white/90 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] w-full"
                   />
                   <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[0.6875rem] text-text-muted">
                     d
@@ -364,18 +364,18 @@ export default function SettingsPage() {
           </div>
 
           {/* Interactive Date Timeline Visualizer */}
-          <div className="mt-4 pt-3 border-t border-[#EBE4D8]">
+          <div className="mt-4 pt-3 border-t border-[rgba(255,255,255,0.6)]">
             <span className="text-[0.6875rem] font-semibold text-text-muted block mb-2">
               Preview Schedule (if solved today {format(sampleBaseDate, 'MMM d')}):
             </span>
             <div className="flex items-center gap-1.5 overflow-x-auto text-[0.6875rem] font-medium text-text-secondary py-1">
-              <span className="rounded bg-[#E9DDCB] px-2 py-0.5 font-bold text-[#5F4930]">
+              <span className="rounded-full bg-white/80 border border-white/90 px-2.5 py-0.5 font-bold text-[#543E26] shadow-xs">
                 Today ({format(sampleBaseDate, 'MMM d')})
               </span>
               {previewDates.map((item, idx) => (
                 <div key={idx} className="flex items-center gap-1.5 shrink-0">
-                  <ArrowRight size={11} className="text-[#9A9287]" />
-                  <span className="rounded bg-[#FFFDF9] border border-[#E4DDD2] px-2 py-0.5 font-mono text-[0.6875rem]">
+                  <ArrowRight size={11} className="text-[#8F8578]" />
+                  <span className="rounded-full bg-white/70 border border-white/80 px-2.5 py-0.5 font-mono text-[0.6875rem] shadow-xs">
                     +{item.days}d ({item.date})
                   </span>
                 </div>
@@ -384,12 +384,12 @@ export default function SettingsPage() {
           </div>
 
           {/* Apply to existing questions action */}
-          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-[#EBE4D8]">
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-[rgba(255,255,255,0.6)]">
             <p className="text-xs text-text-secondary">
               By default, interval changes apply to new questions. You can also re-calculate all existing questions:
             </p>
             <button
-              className="btn btn-secondary btn-sm text-xs font-semibold gap-1.5 hover:border-[#8B6F47] hover:text-[#5F4930] shrink-0"
+              className="btn btn-secondary btn-sm text-xs font-bold gap-1.5 shrink-0 shadow-xs"
               onClick={handleApplyToAllQuestions}
             >
               <RotateCcw size={13} />
@@ -402,9 +402,9 @@ export default function SettingsPage() {
       {/* Section 2: Study Target & Profile */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* User Profile & Greeting */}
-        <div className="card p-5 bg-[#FFFDF9] border border-[#E4DDD2] space-y-4">
+        <div className="card p-5 bg-white/65 border border-white/80 backdrop-blur-md shadow-[inset_0_1px_1.5px_#fff,0_4px_20px_rgba(70,50,30,0.04)] space-y-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F2ECE2] text-[#5F4930]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff] text-[#7D613D]">
               <User size={18} />
             </div>
             <div>
@@ -422,14 +422,14 @@ export default function SettingsPage() {
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="e.g. Kasif"
-              className="input text-xs w-full bg-[#FAF7F2] border-[#E4DDD2]"
+              className="input text-xs w-full bg-white/80 border-white/85 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"
             />
             <p className="text-[0.6875rem] text-text-muted">
               Used in the dashboard greeting (&ldquo;Good afternoon, {userName}&rdquo;) and exported reports.
             </p>
           </div>
 
-          <div className="pt-2 border-t border-[#EFE8DC] flex items-center justify-between">
+          <div className="pt-2 border-t border-[rgba(255,255,255,0.6)] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Volume2 size={16} className="text-text-muted" />
               <div>
@@ -442,16 +442,16 @@ export default function SettingsPage() {
                 type="checkbox"
                 checked={enableSound}
                 onChange={(e) => setEnableSound(e.target.checked)}
-                className="rounded border-[#D5CCBF] text-[#5F4930] focus:ring-[#8B6F47]"
+                className="rounded border-[#D5CCBF] text-[#543E26] focus:ring-[#8B6F47]"
               />
             </label>
           </div>
         </div>
 
         {/* Daily Goal Target */}
-        <div className="card p-5 bg-[#FFFDF9] border border-[#E4DDD2] space-y-4">
+        <div className="card p-5 bg-white/65 border border-white/80 backdrop-blur-md shadow-[inset_0_1px_1.5px_#fff,0_4px_20px_rgba(70,50,30,0.04)] space-y-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F2ECE2] text-[#5F4930]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff] text-[#7D613D]">
               <Sliders size={18} />
             </div>
             <div>
@@ -465,7 +465,7 @@ export default function SettingsPage() {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-text">Target Questions / Day</label>
-              <span className="font-mono text-xs font-bold text-[#5F4930]">
+              <span className="font-mono text-xs font-bold text-[#543E26]">
                 {dailyTarget} problems / day
               </span>
             </div>
@@ -475,7 +475,7 @@ export default function SettingsPage() {
               max={25}
               value={dailyTarget}
               onChange={(e) => setDailyTarget(parseInt(e.target.value, 10))}
-              className="w-full accent-[#5F4930]"
+              className="w-full accent-[#543E26]"
             />
             <div className="flex items-center justify-between text-[0.625rem] text-text-muted">
               <span>1 (Light)</span>
@@ -485,16 +485,16 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="rounded-md bg-[#FAF7F2] p-2.5 border border-[#EBE4D8] text-[0.75rem] text-[#71695F]">
+          <div className="rounded-xl bg-white/50 p-2.5 border border-white/70 shadow-[inset_0_1px_1px_#fff] text-[0.75rem] text-[#635A4F] backdrop-blur-sm">
             Setting this target powers the daily progress ring on your dashboard and streaks.
           </div>
         </div>
       </div>
 
       {/* Section 3: Data Management */}
-      <div className="card p-5 bg-[#FFFDF9] border border-[#E4DDD2] space-y-4">
+      <div className="card p-5 bg-white/65 border border-white/80 backdrop-blur-md shadow-[inset_0_1px_1.5px_#fff,0_4px_20px_rgba(70,50,30,0.04)] space-y-4">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#F2ECE2] text-[#5F4930]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/70 border border-white/80 shadow-[inset_0_1px_1px_#fff] text-[#7D613D]">
             <Database size={18} />
           </div>
           <div>
