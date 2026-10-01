@@ -260,10 +260,27 @@ export default function AddQuestionModal({
   onClose,
   editId,
 }: AddQuestionModalProps) {
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="modal-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={editId ? 'Edit Question' : 'Add Question'}
+    >
       <AddQuestionForm
         key={editId ?? 'new'}
         editId={editId}
