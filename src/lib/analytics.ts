@@ -120,7 +120,7 @@ export function computeActivityStats(
   let tempStreak = 0;
 
   // Calculate current streak backward from today (or yesterday if today not done yet)
-  let checkDate = new Date(todayDate);
+  const checkDate = new Date(todayDate);
   const todayCount = countMap.get(today) || 0;
 
   if (todayCount > 0) {

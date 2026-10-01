@@ -8,7 +8,7 @@ import {
   List,
   CalendarCheck,
   CalendarClock,
-  AlertCircle,
+  ClockAlert,
   Plus,
 } from 'lucide-react';
 import { useQuestions } from '@/lib/context';
@@ -65,7 +65,7 @@ export default function MobileNav() {
     {
       href: '/overdue',
       label: 'Overdue',
-      icon: AlertCircle,
+      icon: ClockAlert,
       badge: overdueCount,
     },
   ];
@@ -73,14 +73,22 @@ export default function MobileNav() {
   return (
     <>
       {/* Compact Mobile Top Header */}
-      <header className="show-mobile-only sticky top-0 z-30 border-b border-border bg-surface px-4 py-2.5">
+      <header className="show-mobile-only sticky top-0 z-30 border-b border-border bg-[#FBF8F2] px-4 py-2.5">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 no-underline">
-            <div className="flex h-7 w-7 items-center justify-center rounded bg-primary">
-              <BookOpen size={14} className="text-white" />
+          <Link href="/" className="flex items-center gap-2.5 no-underline">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#5F4930] shadow-xs">
+              <BookOpen size={14} className="text-[#FFFDF9]" />
             </div>
-            <span className="text-sm font-bold text-text">DSA Recall</span>
+            <div>
+              <span className="text-sm font-bold text-[#29251F] leading-none block">
+                DSA Recall
+              </span>
+              <span className="text-[0.5625rem] font-semibold text-[#9A9287] uppercase tracking-[0.08em] block mt-0.5">
+                SPACED REVISION
+              </span>
+            </div>
           </Link>
+
           <button
             className="btn btn-primary btn-sm px-2.5 py-1 text-xs"
             onClick={openAddModal}
@@ -93,7 +101,7 @@ export default function MobileNav() {
       </header>
 
       {/* Fixed Mobile Bottom Bar */}
-      <nav className="mobile-bottom-nav show-mobile-only" aria-label="Mobile Navigation">
+      <nav className="mobile-bottom-nav show-mobile-only bg-[#FFFDF9] border-t border-[#E4DDD2]" aria-label="Mobile Navigation">
         {items.map(({ href, label, icon: Icon, badge }) => {
           const active =
             href === '/'
@@ -107,18 +115,20 @@ export default function MobileNav() {
               className={`mobile-bottom-item ${active ? 'active' : ''}`}
             >
               <div className="relative">
-                <Icon size={18} />
+                <Icon size={18} className={active ? 'text-[#5F4930]' : 'text-[#9A9287]'} />
                 {badge > 0 && (
                   <span
                     className={`absolute -top-1 -right-2.5 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[0.625rem] font-bold text-white ${
-                      label === 'Overdue' ? 'bg-danger' : 'bg-[#B45309]'
+                      label === 'Overdue' ? 'bg-[#A65D50]' : 'bg-[#B18A50]'
                     }`}
                   >
                     {badge}
                   </span>
                 )}
               </div>
-              <span>{label}</span>
+              <span className={active ? 'text-[#5F4930] font-bold' : 'text-[#71695F]'}>
+                {label}
+              </span>
             </Link>
           );
         })}

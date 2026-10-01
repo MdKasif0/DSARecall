@@ -17,11 +17,9 @@ import {
 import { useQuestions } from '@/lib/context';
 import {
   formatDateDisplay,
-  formatDateShort,
   getDaysUntilRevision,
   isCheckpointCompleted,
   getQuestionProgress,
-  getTodayISO,
 } from '@/lib/dates';
 import {
   REVISION_INTERVALS,
@@ -32,7 +30,6 @@ import {
 } from '@/lib/types';
 import StatCard from '@/components/StatCard';
 import EmptyState from '@/components/EmptyState';
-import StatusBadge from '@/components/StatusBadge';
 import RevisionHeatmap from '@/components/RevisionHeatmap';
 import ActivityChart from '@/components/ActivityChart';
 import StatusBreakdown from '@/components/StatusBreakdown';

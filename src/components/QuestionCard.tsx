@@ -45,13 +45,13 @@ export default function QuestionCard({
           <div className="flex flex-wrap items-center gap-1.5">
             <Link
               href={`/questions/${question.id}`}
-              className="flex items-center gap-1 text-sm font-semibold text-text hover:text-primary no-underline transition-colors"
+              className="flex items-center gap-1 text-sm font-bold text-text hover:text-[#8B6F47] no-underline transition-colors"
             >
               <span className="truncate">{question.questionName}</span>
               <ChevronRight size={14} className="shrink-0 text-text-muted" />
             </Link>
             {question.topic && (
-              <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[0.6875rem] font-medium text-slate-700">
+              <span className="rounded bg-[#F2ECE2] px-2 py-0.5 text-[0.6875rem] font-medium text-[#71695F] border border-[#E4DDD2]">
                 {question.topic}
               </span>
             )}
@@ -63,17 +63,17 @@ export default function QuestionCard({
         <StatusBadge status={question.status} />
       </div>
 
-      {/* Progress Bar */}
+      {/* Progress Bar (5px matching Section 16) */}
       <div className="space-y-1">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-text-muted">Progress</span>
-          <span className="font-semibold text-text">
-            {completedCount} / {total} ({percent}%)
+          <span className="text-text-muted text-[0.6875rem]">Progress</span>
+          <span className="font-semibold text-text text-[0.75rem]">
+            {completedCount} / {total} revisions ({percent}%)
           </span>
         </div>
-        <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden border border-border">
+        <div className="w-full bg-[#E7DED1] rounded-full h-[5px] overflow-hidden">
           <div
-            className="bg-primary h-1.5 rounded-full transition-all duration-300"
+            className="bg-[#8B6F47] h-[5px] rounded-full transition-all duration-300"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -81,9 +81,9 @@ export default function QuestionCard({
 
       {/* Next Revision callout if available */}
       {nextRev && (
-        <div className="rounded bg-slate-50 border border-border px-2.5 py-1.5 text-xs flex items-center justify-between">
+        <div className="rounded-md bg-[#FAF7F2] border border-border px-3 py-1.5 text-xs flex items-center justify-between">
           <span className="text-text-muted">Next Checkpoint:</span>
-          <span className="font-semibold text-primary">
+          <span className="font-semibold text-[#8B6F47]">
             {REVISION_LABELS[nextRev.interval]} · {formatDateDisplay(nextRev.date)}
           </span>
         </div>
@@ -98,13 +98,13 @@ export default function QuestionCard({
           const today = isToday(dateStr);
           const past = isPast(dateStr);
 
-          let badgeClass = 'bg-bg text-text-muted';
+          let badgeClass = 'bg-[#FAF7F2] text-text-muted border border-border';
           if (completed) {
-            badgeClass = 'bg-primary-light text-primary font-medium';
+            badgeClass = 'bg-[#E8EDE4] text-[#65755D] font-medium border border-[#D7DFD2]';
           } else if (today) {
-            badgeClass = 'bg-[#FEF3C7] text-[#B45309] font-semibold border border-[#FDE68A]';
+            badgeClass = 'bg-[#EDE1CF] text-[#795B39] font-bold border border-[#DFD1BC]';
           } else if (past) {
-            badgeClass = 'bg-danger-light text-danger font-semibold border border-[#FECACA]';
+            badgeClass = 'bg-[#F4E4DF] text-[#925A4D] font-bold border border-[#E6D0CA]';
           }
 
           return (
@@ -112,11 +112,11 @@ export default function QuestionCard({
               key={interval}
               className={`flex items-center justify-between rounded px-2 py-1.5 text-xs ${badgeClass}`}
             >
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1 text-[0.6875rem]">
                 {completed && <Check size={11} strokeWidth={2.5} />}
                 {REVISION_LABELS[interval]}
               </span>
-              <span className="font-medium">
+              <span className="font-bold text-[0.6875rem]">
                 {formatDateDisplay(dateStr).replace(/, \d{4}$/, '')}
               </span>
             </div>
@@ -128,7 +128,7 @@ export default function QuestionCard({
       <div className="flex items-center justify-between border-t border-border pt-2.5">
         <Link
           href={`/questions/${question.id}`}
-          className="text-xs font-semibold text-primary hover:underline no-underline"
+          className="text-xs font-semibold text-[#8B6F47] hover:underline no-underline"
         >
           View Full Timeline →
         </Link>
@@ -139,15 +139,15 @@ export default function QuestionCard({
             aria-label={`Edit ${question.questionName}`}
           >
             <Pencil size={13} />
-            Edit
+            <span>Edit</span>
           </button>
           <button
-            className="btn btn-ghost btn-sm py-1 px-2 text-xs text-danger"
+            className="btn btn-ghost btn-sm py-1 px-2 text-xs text-[#A65D50] hover:bg-[#F4E4DF]"
             onClick={() => onDelete(question.id)}
             aria-label={`Delete ${question.questionName}`}
           >
             <Trash2 size={13} />
-            Delete
+            <span>Delete</span>
           </button>
         </div>
       </div>
