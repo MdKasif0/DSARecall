@@ -15,7 +15,6 @@ import { useQuestions } from '@/lib/context';
 import {
   getGreeting,
   formatTodayLong,
-  getTodayISO,
   formatDateDisplay,
   getDaysUntilRevision,
   isCheckpointCompleted,
@@ -49,8 +48,6 @@ export default function DashboardPage() {
       </div>
     );
   }
-
-  const today = getTodayISO();
 
   // Find due today, overdue, and upcoming revisions
   const dueTodayItems: ActionItem[] = [];
