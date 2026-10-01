@@ -159,7 +159,7 @@ export default function PracticePage() {
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text">
               Topic-Wise Practice Questions
             </h1>
-            <span className="rounded-full bg-[#E9DDCB] px-2.5 py-0.5 text-xs font-bold text-[#5F4930]">
+            <span className="rounded-full bg-white/75 backdrop-blur-md border border-white/80 px-3 py-0.5 text-xs font-bold text-[#543E26] shadow-xs">
               {PRACTICE_QUESTIONS.length} Curated
             </span>
           </div>
@@ -169,21 +169,21 @@ export default function PracticePage() {
         </div>
 
         {/* Global Stats Summary */}
-        <div className="flex items-center gap-3 self-start rounded-xl border border-border bg-[#FFFDF9] px-4 py-2.5 shadow-xs">
+        <div className="flex items-center gap-3 self-start rounded-xl border border-white/80 bg-white/60 px-4 py-2.5 shadow-[inset_0_1px_1.5px_#fff,0_4px_16px_rgba(70,50,30,0.03)] backdrop-blur-md">
           <div>
-            <span className="text-[0.6875rem] font-semibold uppercase tracking-wider text-text-muted block">
+            <span className="text-[0.6875rem] font-bold uppercase tracking-wider text-text-muted block">
               IN RECALL
             </span>
-            <span className="text-sm font-bold text-[#5F4930]">
+            <span className="text-sm font-bold text-[#543E26]">
               {trackedCount} / {PRACTICE_QUESTIONS.length}
             </span>
           </div>
-          <div className="h-7 w-px bg-border" />
+          <div className="h-7 w-px bg-white/60" />
           <div>
-            <span className="text-[0.6875rem] font-semibold uppercase tracking-wider text-text-muted block">
+            <span className="text-[0.6875rem] font-bold uppercase tracking-wider text-text-muted block">
               COVERAGE
             </span>
-            <span className="text-sm font-bold text-[#6F8064]">
+            <span className="text-sm font-bold text-[#526844]">
               {Math.round((trackedCount / PRACTICE_QUESTIONS.length) * 100)}%
             </span>
           </div>
@@ -191,7 +191,7 @@ export default function PracticePage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="card p-4 space-y-3.5 bg-[#FAF7F2] border border-[#E4DDD2]">
+      <div className="card p-4 space-y-3.5 bg-white/60 border border-white/80 backdrop-blur-md shadow-[inset_0_1px_1px_#fff]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Search Input */}
           <div className="relative flex-1">
@@ -204,7 +204,7 @@ export default function PracticePage() {
               placeholder="Search by name, pattern (e.g. 'Two Pointers', 'Sliding Window', 'DP')..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="input pl-9 text-xs w-full bg-[#FFFDF9] border-[#E4DDD2]"
+              className="input pl-9 text-xs w-full bg-white/70 border-white/80 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"
             />
           </div>
 
@@ -219,7 +219,7 @@ export default function PracticePage() {
             <select
               value={selectedDifficulty}
               onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="select text-xs py-1.5 px-2.5 bg-[#FFFDF9] border-[#E4DDD2] text-text rounded-md"
+              className="select text-xs py-1.5 px-2.5 bg-white/70 border-white/80 text-text rounded-lg"
             >
               <option value="All">All Difficulties</option>
               <option value="Easy">Easy</option>
@@ -232,7 +232,7 @@ export default function PracticePage() {
                 type="checkbox"
                 checked={hideTracked}
                 onChange={(e) => setHideTracked(e.target.checked)}
-                className="rounded border-[#D5CCBF] text-[#5F4930] focus:ring-[#8B6F47]"
+                className="rounded border-[#D5CCBF] text-[#543E26] focus:ring-[#8B6F47]"
               />
               <span>Unadded Only</span>
             </label>
@@ -242,10 +242,10 @@ export default function PracticePage() {
         {/* Topic Horizontal Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 no-scrollbar">
           <button
-            className={`btn btn-sm shrink-0 text-xs ${
+            className={`btn btn-sm shrink-0 text-xs rounded-full ${
               selectedTopic === 'All'
-                ? 'bg-[#5F4930] text-white hover:bg-[#4D3A24] shadow-none'
-                : 'bg-[#FFFDF9] text-text-secondary border border-[#E4DDD2] hover:bg-[#F2ECE2]'
+                ? 'bg-gradient-to-b from-[#6E5338] to-[#4F3A24] text-white shadow-md border border-white/20'
+                : 'bg-white/60 text-[#635A4F] border border-white/80 backdrop-blur-md hover:bg-white/90 shadow-xs'
             }`}
             onClick={() => setSelectedTopic('All')}
           >
@@ -257,10 +257,10 @@ export default function PracticePage() {
             return (
               <button
                 key={topic}
-                className={`btn btn-sm shrink-0 text-xs ${
+                className={`btn btn-sm shrink-0 text-xs rounded-full ${
                   isSelected
-                    ? 'bg-[#5F4930] text-white hover:bg-[#4D3A24] shadow-none'
-                    : 'bg-[#FFFDF9] text-text-secondary border border-[#E4DDD2] hover:bg-[#F2ECE2]'
+                    ? 'bg-gradient-to-b from-[#6E5338] to-[#4F3A24] text-white shadow-md border border-white/20'
+                    : 'bg-white/60 text-[#635A4F] border border-white/80 backdrop-blur-md hover:bg-white/90 shadow-xs'
                 }`}
                 onClick={() => setSelectedTopic(topic)}
               >
