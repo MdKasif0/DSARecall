@@ -144,13 +144,24 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
           <button
             className={`flex items-center gap-2 border-b-2 py-3 px-4 text-xs font-semibold transition-colors ${
               activeTab === 'import'
-                ? 'border-primary text-primary'
+                ? 'border-[#8B6F47] text-[#5F4930]'
                 : 'border-transparent text-text-muted hover:text-text'
             }`}
             onClick={() => setActiveTab('import')}
           >
             <Upload size={14} />
             Import Data
+          </button>
+          <button
+            className={`flex items-center gap-2 border-b-2 py-3 px-4 text-xs font-semibold transition-colors ${
+              activeTab === 'sample'
+                ? 'border-[#8B6F47] text-[#5F4930]'
+                : 'border-transparent text-text-muted hover:text-text'
+            }`}
+            onClick={() => setActiveTab('sample')}
+          >
+            <Sparkles size={14} />
+            Sample Data
           </button>
         </div>
 
@@ -307,6 +318,46 @@ export default function ImportExportModal({ open, onClose }: ImportExportModalPr
                 >
                   <CheckCircle2 size={14} />
                   Confirm Import
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-bold text-text">Load Curated DSA Practice Dataset</h3>
+                <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                  Populate 18 realistic DSA questions across topics (Binary Search, Two Sum, LRU Cache, Trapping Rain Water, Number of Islands, etc.) with completed revisions, active 12-day streak, and historical activity matching the visual benchmark.
+                </p>
+              </div>
+
+              <div className="rounded-lg border border-border bg-[#FAF7F2] p-4 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#5F4930]">
+                  <Sparkles size={14} className="text-[#8B6F47]" />
+                  <span>Included in Demo Data</span>
+                </div>
+                <ul className="text-xs text-text-secondary space-y-1 list-disc pl-4">
+                  <li>18 curated problems across Arrays, Trees, Graphs, DP, Binary Search</li>
+                  <li>Today&apos;s revisions (2 actionable questions due today)</li>
+                  <li>Overdue revision (1 item for testing alerts)</li>
+                  <li>Active 12-day streak and 184 completed revisions</li>
+                  <li>Full 53-week GitHub-style heatmap and 30-day activity chart</li>
+                </ul>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-border">
+                <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => {
+                    loadSampleData();
+                    onClose();
+                  }}
+                >
+                  <Sparkles size={14} />
+                  Load Sample Data
                 </button>
               </div>
             </div>
