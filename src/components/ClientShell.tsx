@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { QuestionsProvider } from '@/lib/context';
 import Header from '@/components/Header';
 import AddQuestionModal from '@/components/AddQuestionModal';
+import ToastContainer from '@/components/ToastContainer';
 
 interface ClientShellProps {
   children: ReactNode;
@@ -55,6 +56,7 @@ export default function ClientShell({ children }: ClientShellProps) {
         onClose={handleClose}
         editId={editId}
       />
+      <ToastContainer />
     </QuestionsProvider>
   );
 }
