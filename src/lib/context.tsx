@@ -40,8 +40,20 @@ export function QuestionsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    refreshQuestions();
-    setIsLoaded(true);
+    // Hydrate from localStorage asynchronously on mount
+    const handleInit = () => {
+      setQuestions(storage.getQuestions());
+      setRecords(storage.getRevisionRecords());
+      setIsLoaded(true);
+    };
+
+    queueMicrotask(handleInit);
+
+    // Sync across tabs if user has multiple tabs open
+    window.addEventListener('storage', refreshQuestions);
+    return () => {
+      window.removeEventListener('storage', refreshQuestions);
+    };
   }, [refreshQuestions]);
 
   const recordsMap = useMemo(() => {
