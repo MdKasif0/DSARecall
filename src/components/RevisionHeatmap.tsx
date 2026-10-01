@@ -18,8 +18,6 @@ const LEVEL_COLORS: Record<0 | 1 | 2 | 3 | 4 | 5, string> = {
   5: '#6B5035',
 };
 
-const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
 export default function RevisionHeatmap({ stats }: RevisionHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<DayActivity | null>(null);
 
