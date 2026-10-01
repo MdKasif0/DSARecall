@@ -125,8 +125,8 @@ export default function TodayPage() {
         <div className="card">
           <EmptyState
             icon={<CheckCircle2 size={44} className="text-primary" />}
-            title="All caught up for today!"
-            description="You don't have any pending revisions due today or overdue. Keep solving new problems or check your upcoming schedule."
+            title="No revisions today"
+            description="Your schedule is clear. Enjoy the progress or add another problem to keep building momentum."
             action={
               <div className="flex items-center gap-2">
                 <button className="btn btn-primary btn-sm" onClick={openAddModal}>
