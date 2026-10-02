@@ -22,29 +22,29 @@ export default function StatusBreakdown({
       label: 'Completed',
       count: completed,
       pct: total > 0 ? Math.round((completed / total) * 100) : 0,
-      color: '#6F8064', // success sage
-      barBg: '#E8EDE4',
+      color: '#059669', // Apple Emerald
+      barBg: '#D1FAE5',
     },
     {
       label: 'Upcoming',
       count: upcoming,
       pct: total > 0 ? Math.round((upcoming / total) * 100) : 0,
-      color: '#8B6F47', // warm brown
-      barBg: '#F1E9DE',
+      color: '#64748B', // Apple Slate
+      barBg: '#F1F5F9',
     },
     {
       label: 'Due Today',
       count: dueToday,
       pct: total > 0 ? Math.round((dueToday / total) * 100) : 0,
-      color: '#B18A50', // warm amber
-      barBg: '#EDE1CF',
+      color: '#D97706', // Apple Amber
+      barBg: '#FEF3C7',
     },
     {
       label: 'Overdue',
       count: overdue,
       pct: total > 0 ? Math.round((overdue / total) * 100) : 0,
-      color: '#A65D50', // terracotta
-      barBg: '#F4E4DF',
+      color: '#DC2626', // Apple Rose
+      barBg: '#FEE2E2',
     },
   ];
 
@@ -52,7 +52,7 @@ export default function StatusBreakdown({
     <div className="card p-5">
       <div className="flex items-center justify-between border-b border-border pb-3 mb-3">
         <div className="flex items-center gap-1.5">
-          <PieChart size={16} className="text-[#8B6F47]" />
+          <PieChart size={16} className="text-slate-700" />
           <h3 className="text-sm font-bold text-text">Revision Breakdown</h3>
         </div>
         <span className="text-xs text-text-muted font-medium">
@@ -61,7 +61,7 @@ export default function StatusBreakdown({
       </div>
 
       {/* Horizontal Multi-Bar Visualizer */}
-      <div className="h-3 w-full rounded-full overflow-hidden flex border border-border bg-[#F1E9DE] mb-4">
+      <div className="h-3 w-full rounded-full overflow-hidden flex border border-white/80 bg-white/50 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)] mb-4">
         {categories.map((c) =>
           c.pct > 0 ? (
             <div
