@@ -2,6 +2,7 @@
   "name": "dsarecall",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://dsarecall.netlify.app/",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
