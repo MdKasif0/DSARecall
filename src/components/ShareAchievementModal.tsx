@@ -31,7 +31,7 @@ export default function ShareAchievementModal({
   const twitterUrl = generateTwitterShareUrl(achievement);
   const linkedInUrl = generateLinkedInShareUrl(achievement);
 
-  const fullShareText = `${achievement.shareTitle}\n\n${achievement.shareMessage}\n\nTrack your spaced repetition cycle with DSA Recall: https://dsarecall.app`;
+  const fullShareText = `${achievement.shareTitle}\n\n${achievement.shareMessage}\n\nTrack your spaced repetition cycle with DSA Recall: https://dsarecall.netlify.app`;
 
   const handleCopy = async () => {
     try {

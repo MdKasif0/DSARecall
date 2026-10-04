@@ -213,13 +213,13 @@ export function evaluateAchievements(
 
 export function generateTwitterShareUrl(achievement: Achievement): string {
   const text = `${achievement.shareTitle}\n\n${achievement.shareMessage}\n\nTrack your revision cycle:`;
-  const url = 'https://dsarecall.app';
+  const url = 'https://dsarecall.netlify.app';
   return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
 }
 
 export function generateLinkedInShareUrl(achievement?: Achievement): string {
   const url = achievement
-    ? `https://dsarecall.app/achievements#${achievement.id}`
-    : 'https://dsarecall.app';
+    ? `https://dsarecall.netlify.app/achievements#${achievement.id}`
+    : 'https://dsarecall.netlify.app';
   return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
 }

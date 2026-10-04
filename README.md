@@ -2,18 +2,21 @@
 
 <div align="center">
 
-![DSA Recall Banner](https://img.shields.io/badge/DSA%20Recall-Spaced%20Repetition-10B981?style=for-the-badge&logo=apple&logoColor=white)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-dsarecall.netlify.app-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://dsarecall.netlify.app/)
+[![DSA Recall Banner](https://img.shields.io/badge/DSA%20Recall-Spaced%20Repetition-10B981?style=for-the-badge&logo=apple&logoColor=white)](https://dsarecall.netlify.app/)
 <br />
 **A macOS & iOS Liquid Glass Spaced-Repetition System for Mastering Data Structures & Algorithms**
+
+🌐 **[Try Live Demo: dsarecall.netlify.app](https://dsarecall.netlify.app/)**
 
 [![Next.js](https://img.shields.io/badge/Next.js%2016-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React%2019-20232A?style=flat-square&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript%205-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Offline First](https://img.shields.io/badge/Storage-100%25%20Offline%20First-059669?style=flat-square&logo=databricks&logoColor=white)](#offline-first-architecture)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![Offline First](https://img.shields.io/badge/Storage-100%25%20Offline%20First-059669?style=flat-square&logo=databricks&logoColor=white)](#-offline-first-architecture)
 
-[Features](#-key-features) • [Cognitive Science](#-the-cognitive-science-ebbinghaus-curve) • [Graphs & Diagrams](#-graphs--architecture-diagrams) • [Schedule Formula](#-spaced-repetition-schedule) • [Getting Started](#-getting-started) • [Contributing](#-contributing)
+[🌐 Live Demo](https://dsarecall.netlify.app/) • [Features](#-key-features) • [Cognitive Science](#-the-cognitive-science-ebbinghaus-curve) • [Graphs & Diagrams](#-graphs--architecture-diagrams) • [Schedule Formula](#-spaced-repetition-schedule) • [Getting Started](#-getting-started) • [Contributing](#-contributing)
 
 </div>
 
@@ -282,12 +285,17 @@ DSARecall/
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 🌐 Live Deployment
+
+Experience the full application live in your browser:
+👉 **[https://dsarecall.netlify.app/](https://dsarecall.netlify.app/)**
+
+### Local Prerequisites
 
 - **Node.js**: `v18.17.0` or higher
 - **npm**, **pnpm**, or **yarn**
 
-### Installation
+### Local Installation
 
 1. **Clone the repository:**
    ```bash
